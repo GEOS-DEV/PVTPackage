@@ -1,6 +1,6 @@
 #include "PVTModel/CompositionalPVTModel.hpp"
-#include "PVTModel/Flash/CompositionalFlash.hpp"
-#include "PVTModel/Flash/TrivialFlash.hpp"
+#include "PVTModel/PhaseSplitModel/CompositionalFlash.hpp"
+#include "PVTModel/PhaseSplitModel/TrivialFlash.hpp"
 
 namespace PVTPackage
 {
@@ -18,13 +18,19 @@ namespace PVTPackage
 			m_EoSTypes[phase_types[i]] = eos_types[i];
 		}
 
+		//Create Phase Models
+		for (size_t i = 0; i != m_PhaseTypes.size(); ++i)
+		{
+			m_PhaseModel[m_PhaseTypes[i]] = new CubicEoSPhaseModel(&m_ComponentProperties, m_EoSTypes[m_PhaseTypes[i]], m_PhaseTypes[i]);
+		}
+
 
 		//Create Flash pointer
 		switch (m_FlashType)
 		{
 		case COMPOSITIONAL_FLASH_TYPE::TRIVIAL:
 			{
-				m_CompositionalFlash = new TrivialFlash(phase_types, eos_types, &m_ComponentProperties);
+				m_CompositionalFlash = new TrivialFlash(phase_types, eos_types, &m_ComponentProperties, &m_PhaseModel);
 				break;
 			}
 		case COMPOSITIONAL_FLASH_TYPE::FREE_WATER_FLASH:
@@ -39,9 +45,9 @@ namespace PVTPackage
 		delete m_CompositionalFlash;
 	}
 
-	void CompositionalPVTModel::Flash(const FlashInputVariables& in_variables, FlashOutputVariables& out_variables)
+	void CompositionalPVTModel::Flash(double pressure, double temperature, std::vector<double> feed, PhaseSplitModelOutputVariables& out_variables)
 	{
-		m_CompositionalFlash->ComputeEquilibrium(in_variables, out_variables);
+		m_CompositionalFlash->ComputeEquilibrium(pressure,temperature,feed, out_variables);
 	}
 
 }

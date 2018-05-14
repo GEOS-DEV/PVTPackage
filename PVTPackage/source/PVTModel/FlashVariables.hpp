@@ -81,7 +81,7 @@ namespace PVTPackage
 	class FlashOutputVariables
 	{
 	public:
-		FlashOutputVariables(FlashInputVariables* input_variables): m_InputVariables(input_variables)
+		FlashOutputVariables(FlashInputVariables* input_variables): m_PhaseState(PHASE_STATE::UNKNOWN), m_InputVariables(input_variables)
 		{
 		}
 
@@ -92,21 +92,23 @@ namespace PVTPackage
 			return m_MoleFraction[phase];
 		}
 
-		//--Vector of density (mol/m3) of 'phase'
-		 double& get_MoleDensity(PHASE_TYPE phase)
-		{
-			return m_MoleDensity[phase];
-		}
-
 		//--Vector of Phase composition (mol/mol) of 'phase' 
 		 std::vector<double>& get_Composition(PHASE_TYPE phase)
 		{
 			return m_MoleComposition[phase];
 		}
 
+		 //--Vector of Phase composition (mol/mol) of 'phase' 
+		 void set_PhaseState()
+		 {
+			 m_PhaseState = PhaseStateMap.at({ m_MoleFraction[PHASE_TYPE::OIL] > 0., m_MoleFraction[PHASE_TYPE::GAS] > 0., m_MoleFraction[PHASE_TYPE::LIQUID_WATER_RICH] > 0.});
+		 }
+
 	protected:
+		
+		//Primary
+		PHASE_STATE m_PhaseState;
 		std::unordered_map<PHASE_TYPE, std::vector<double>> m_MoleComposition;
-		std::unordered_map<PHASE_TYPE, double> m_MoleDensity;
 		std::unordered_map<PHASE_TYPE, double> m_MoleFraction;
 		const FlashInputVariables* m_InputVariables;
 

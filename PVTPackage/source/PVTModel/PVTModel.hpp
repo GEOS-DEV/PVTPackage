@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
 #include "PVTModel/PVTEnums.hpp"
-#include "PVTModel/FlashVariables.hpp"
 
 namespace PVTPackage
 {
+	struct PhaseSplitModelOutputVariables;
 
 	class PVTModel
 	{
@@ -14,7 +14,7 @@ namespace PVTPackage
 		PVTModel(size_t nc, std::vector<PHASE_TYPE> phase_types);
 
 		// Compute secondary variables from phase equilibrium
-		virtual void Flash(const FlashInputVariables& in_variables, FlashOutputVariables& out_variables)=0;
+		virtual void Flash(double pressure, double temperature, std::vector<double> feed, PhaseSplitModelOutputVariables& out_variables)=0;
 
 	protected:
 
