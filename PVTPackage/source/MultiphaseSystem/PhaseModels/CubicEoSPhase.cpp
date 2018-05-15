@@ -1,12 +1,34 @@
 #include <algorithm>
-#include "CubicEoSPhaseModel.hpp"
+#include "CubicEoSPhase.hpp"
 #include "Utils/Logger.hpp"
-#include "PVTModel/ComponentProperties.hpp"
+#include "MultiphaseSystem/ComponentProperties.hpp"
 
 namespace PVTPackage
 {
 
-	CubicEosMixtureCoefficients CubicEoSPhaseModel::ComputeMixtureCoefficients( double Pressure, double Temperature, std::vector<double>& composition)
+//////////////////////////////////////////// PUBLIC
+
+
+	CubicEoSPhaseProperties* CubicEoSPhase::ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition)
+	{
+		auto mix_coeffs = ComputeMixtureCoefficients(Pressure, Temperature, composition);
+		auto Z = ComputeCompressibilityFactor(Pressure, Temperature, composition, mix_coeffs);
+		auto ln_phi = ComputeLnFugacitiesCoefficients(Pressure, Temperature, composition, Z, mix_coeffs);
+		auto mol_dens = ComputeMoleDensity_(Pressure, Temperature, composition, Z);
+		auto mw = ComputeMolecularWeight(composition);
+		auto mass_dens = ComputeMassDensity_(mol_dens, mw);
+		m_CubicEoSPhaseProperties->CompressibilityFactor = Z;
+		m_CubicEoSPhaseProperties->MoleDensity = mol_dens;
+		m_CubicEoSPhaseProperties->MolecularWeight = mw;
+		m_CubicEoSPhaseProperties->MassDensity = mass_dens;
+		m_CubicEoSPhaseProperties->LnFugacityCoefficients = ln_phi;
+		return m_CubicEoSPhaseProperties;
+	}
+
+
+//////////////////////////////////////////// PROTECTED
+
+	CubicEoSPhase::CubicEosMixtureCoefficients CubicEoSPhase::ComputeMixtureCoefficients( double Pressure, double Temperature, std::vector<double>& composition)
 	{
 		auto nbc = m_ComponentsProperties->NComponents;
 		auto& Tc = m_ComponentsProperties->Tc;
@@ -36,7 +58,7 @@ namespace PVTPackage
 
 	}
 
-	double CubicEoSPhaseModel::ComputeCompressibilityFactor(double Pressure, double Temperature, std::vector<double>& composition, CubicEosMixtureCoefficients& mix_coeffs) const
+	double CubicEoSPhase::ComputeCompressibilityFactor(double Pressure, double Temperature, std::vector<double>& composition, CubicEosMixtureCoefficients& mix_coeffs) const
 	{
 		//ASSERT(m_MixtureCoefficientsUpToDate, "Z factor requires mixture properties up-to-date.");
 		std::vector<double> coeff(3);
@@ -68,7 +90,49 @@ namespace PVTPackage
 
 	}
 
-	double CubicEoSPhaseModel::ComputeMoleDensity_(double Pressure, double Temperature, std::vector<double>& composition, double Z) const
+
+	/**
+	* \brief
+	* \param Pressure
+	* \param Temperature
+	* \param composition
+	* \param Z
+	* \param mix_coeffs
+	* \return
+	*/
+	std::vector<double> CubicEoSPhase::ComputeLnFugacitiesCoefficients(double Pressure, double Temperature, std::vector<double>& composition, double Z, CubicEosMixtureCoefficients& mix_coeffs) const
+	{
+		auto nbc = m_ComponentsProperties->NComponents;
+
+		auto ki = std::vector<double>(nbc, 0);
+
+		std::vector<double> ln_fugacity_coeffs(nbc);
+
+		//Ki
+		for (size_t i = 0; i < nbc; ++i)
+		{
+			for (size_t j = 0; j < nbc; ++j)
+			{
+				ki[i] = ki[i] + composition[j] * (1.0 - m_BICs) * sqrt(mix_coeffs.APure[i] * mix_coeffs.APure[j]);
+			}
+		}
+
+		//E
+		double E = (Z + m_Delta1*mix_coeffs.BMixture) / (Z + m_Delta2*mix_coeffs.BMixture);
+
+		//Ln phi
+		for (size_t i = 0; i < nbc; ++i)
+		{
+			ln_fugacity_coeffs[i] = (Z - 1)*mix_coeffs.BPure[i] / mix_coeffs.BMixture - log(Z - mix_coeffs.BMixture)
+				- 1 / ((m_Delta1 - m_Delta2)*mix_coeffs.BMixture) * (2 * ki[i] - mix_coeffs.AMixture + mix_coeffs.BPure[i] / mix_coeffs.BMixture) * log(E);
+		}
+
+		return ln_fugacity_coeffs;
+
+	}
+
+
+	double CubicEoSPhase::ComputeMoleDensity_(double Pressure, double Temperature, std::vector<double>& composition, double Z) const
 	{
 		auto nbc = m_ComponentsProperties->NComponents;
 		auto& Vs = m_ComponentsProperties->VolumeShift;
@@ -95,67 +159,27 @@ namespace PVTPackage
 		return mole_density;
 	}
 
-	CubicEoSPhaseModelProperties CubicEoSPhaseModel::ComputeMoleDensity(double Pressure, double Temperature, std::vector<double>& composition)
-	{
-		auto mix_coeffs = ComputeMixtureCoefficients(Pressure, Temperature, composition);
-		auto Z = ComputeCompressibilityFactor(Pressure, Temperature, composition, mix_coeffs);
-		auto mol_dens = ComputeMoleDensity_(Pressure, Temperature, composition,Z);
-
-		return CubicEoSPhaseModelProperties(Z,mol_dens,{});
-	}
-
-	CubicEoSPhaseModelProperties CubicEoSPhaseModel::ComputeFugacities(double Pressure, double Temperature, std::vector<double>& composition)
-	{
-		auto mix_coeffs = ComputeMixtureCoefficients(Pressure, Temperature, composition);
-		auto Z = ComputeCompressibilityFactor(Pressure, Temperature, composition,mix_coeffs);
-		auto ln_phi = ComputeLnFugacitiesCoefficients(Pressure, Temperature, composition,Z,mix_coeffs);
-		return CubicEoSPhaseModelProperties(Z, 0, ln_phi);
-	}
-
-	CubicEoSPhaseModelProperties CubicEoSPhaseModel::ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition)
-	{
-		auto mix_coeffs = ComputeMixtureCoefficients(Pressure, Temperature, composition);
-		auto Z = ComputeCompressibilityFactor(Pressure, Temperature, composition, mix_coeffs);
-		auto ln_phi = ComputeLnFugacitiesCoefficients(Pressure, Temperature, composition, Z, mix_coeffs);
-		auto mol_dens = ComputeMoleDensity_(Pressure, Temperature, composition, Z);
-		return CubicEoSPhaseModelProperties(Z, mol_dens, ln_phi);
-	}
-
-	std::vector<double> CubicEoSPhaseModel::ComputeLnFugacitiesCoefficients(double Pressure, double Temperature, std::vector<double>& composition, double Z, CubicEosMixtureCoefficients& mix_coeffs) const
+	double CubicEoSPhase::ComputeMolecularWeight(std::vector<double>& composition) const
 	{
 		auto nbc = m_ComponentsProperties->NComponents;
-
-		auto ki = std::vector<double>(nbc, 0);
-
-		std::vector<double> ln_fugacity_coeffs(nbc);
-
-		//Ki
-		for (size_t i = 0; i < nbc; ++i)
+		double Mw = 0;
+		for (size_t i = 0; i < nbc; i++)
 		{
-			for (size_t j = 0; j < nbc; ++j)
-			{
-				ki[i] = ki[i] + composition[j] * (1.0 - m_BICs) * sqrt(mix_coeffs.APure[i] * mix_coeffs.APure[j]);
-			}
+			Mw = Mw + m_ComponentsProperties->Mw[i] * composition[i];
 		}
-	
-		//E
-		double E = (Z + m_Delta1*mix_coeffs.BMixture) / (Z + m_Delta2*mix_coeffs.BMixture);
-
-		//Ln phi
-		for (size_t i = 0; i < nbc; ++i)
-		{
-			ln_fugacity_coeffs[i] = (Z - 1)*mix_coeffs.BPure[i] / mix_coeffs.BMixture - log(Z - mix_coeffs.BMixture)
-				- 1 / ((m_Delta1 - m_Delta2)*mix_coeffs.BMixture) * (2 * ki[i] - mix_coeffs.AMixture + mix_coeffs.BPure[i] / mix_coeffs.BMixture) * log(E);
-		}
-
-		return ln_fugacity_coeffs;
-
+		return Mw;
 	}
 
+
+
+	double CubicEoSPhase::ComputeMassDensity_(double mole_density, double mw) const
+	{
+		return mole_density*mw;
+	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void CubicEoSPhaseModel::Init()
+	void CubicEoSPhase::Init()
 	{
 		auto nbc = m_ComponentsProperties->NComponents;
 		auto& omega = m_ComponentsProperties->Omega;
@@ -168,14 +192,14 @@ namespace PVTPackage
 			m_OmegaB = 0.077796074;
 			m_Delta1 = 1 + sqrt(2);
 			m_Delta2 = 1 - sqrt(2);
-			EOS_m_function = &CubicEoSPhaseModel::m_function_PR;
+			EOS_m_function = &CubicEoSPhase::m_function_PR;
 			break;
 		case EOS_TYPE::REDLICH_KWONG_SOAVE:
 			m_OmegaA = 0.42748;
 			m_OmegaB = 0.08664;
 			m_Delta1 = 0.0;
 			m_Delta2 = 1;
-			EOS_m_function = &CubicEoSPhaseModel::m_function_SRK;
+			EOS_m_function = &CubicEoSPhase::m_function_SRK;
 			break;
 		default:
 			LOGERROR("non supported equation of state");
@@ -183,8 +207,6 @@ namespace PVTPackage
 		}
 
 		//Set Constant properties
-		m_aTc.resize(nbc, 0);
-		m_bTc.resize(nbc, 0);
 		m_m.resize(nbc, 0);
 
 		for (size_t i = 0; i < nbc; i++)
@@ -199,7 +221,7 @@ namespace PVTPackage
 	* \param coeff
 	* \return
 	*/
-	std::vector<double> CubicEoSPhaseModel::SolveCubicPolynomial(double m3, double m2, double m1, double m0) const
+	std::vector<double> CubicEoSPhase::SolveCubicPolynomial(double m3, double m2, double m1, double m0) const
 	{
 		////CUBIC EQUATION :  m3 * x^3 +  m3 * x^2 + m1 *x + m0  = 0
 		double x1, x2, x3;
@@ -235,7 +257,7 @@ namespace PVTPackage
 		}
 	}
 
-	double CubicEoSPhaseModel::m_function_PR(double omega)
+	double CubicEoSPhase::m_function_PR(double omega)
 	{
 		if (omega < 0.49)
 		{
@@ -247,8 +269,30 @@ namespace PVTPackage
 		}
 	}
 
-	double CubicEoSPhaseModel::m_function_SRK(double omega)
+	double CubicEoSPhase::m_function_SRK(double omega)
 	{
 		return 0.480 + 1.574 * omega - 0.176 * omega * omega;
 	}
+
+
+	///**
+	// * \brief 
+	// * \param Pressure 
+	// * \param Temperature 
+	// * \param composition 
+	// * \param props 
+	// */
+	//void CubicEoSPhaseModel::ComputeFugacities(double Pressure, double Temperature, std::vector<double>& composition, CubicEoSPhaseProperties* props)
+	//{
+	//	auto mix_coeffs = ComputeMixtureCoefficients(Pressure, Temperature, composition);
+	//	auto Z = ComputeCompressibilityFactor(Pressure, Temperature, composition, mix_coeffs);
+	//	auto ln_phi = ComputeLnFugacitiesCoefficients(Pressure, Temperature, composition, Z, mix_coeffs);
+	//	return CubicEoSPhaseProperties(Z, 0, ln_phi);
+	//}
+
+
+
+
+
 }
+

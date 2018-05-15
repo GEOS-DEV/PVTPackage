@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_map>
-#include "PVTModel/PVTEnums.hpp"
+#include "MultiphaseSystem/PVTEnums.hpp"
 
 namespace PVTPackage
 {

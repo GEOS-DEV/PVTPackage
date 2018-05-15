@@ -1,5 +1,5 @@
-#include "PVTModel/PhaseSplitModel/CompositionalFlash.hpp"
-#include "PVTModel/ComponentProperties.hpp"
+#include "MultiphaseSystem/PhaseSplitModel/CompositionalFlash.hpp"
+#include "MultiphaseSystem/ComponentProperties.hpp"
 
 namespace PVTPackage
 {
@@ -9,7 +9,7 @@ namespace PVTPackage
 	}
 
 	CompositionalFlash::CompositionalFlash(std::vector<PHASE_TYPE> phase_types, std::vector<EOS_TYPE> eos_types,
-	                                       ComponentProperties* comp_props, std::unordered_map<PHASE_TYPE, CubicEoSPhaseModel*>* phase_models)
+	                                       ComponentProperties* comp_props, std::unordered_map<PHASE_TYPE, CubicEoSPhase*>* phase_models)
 																			  : m_PhaseTypes(std::move(phase_types)),
 																				m_EoSTypes(std::move(eos_types)),
 																				m_ComponentsProperties(comp_props),

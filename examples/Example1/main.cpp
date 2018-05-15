@@ -1,9 +1,9 @@
-#include "PVTModel/ComponentProperties.hpp"
-#include "PVTModel/CompositionalPVTModel.hpp"
+#include "MultiphaseSystem/ComponentProperties.hpp"
+#include "MultiphaseSystem/CompositionalMultiphaseSystem.hpp"
 #include <chrono>
-#include "PVTModel/FlashVariables.hpp"
+#include "MultiphaseSystem/FlashVariables.hpp"
 #include <ctime>
-#include "PVTModel/PhaseSplitModelOutputVariables.hpp"
+#include "MultiphaseSystem/PhaseSplitModelOutputVariables.hpp"
 //#include <vld.h> //Visual leak detector
 
 int main(int argc, const char * argv[]) 
@@ -23,7 +23,7 @@ int main(int argc, const char * argv[])
 	const ComponentProperties CompProps(nbc, Labels, Mw, Tc, Pc, Omega);
 	PhaseSplitModelOutputVariables Flash_out;
 
-	auto Model = CompositionalPVTModel({ PHASE_TYPE::OIL,PHASE_TYPE::GAS,PHASE_TYPE::LIQUID_WATER_RICH }, { EOS_TYPE::PENG_ROBINSON,EOS_TYPE::PENG_ROBINSON,EOS_TYPE::PENG_ROBINSON }, COMPOSITIONAL_FLASH_TYPE::TRIVIAL, CompProps);
+	auto Model = CompositionalMultiphaseSystem({ PHASE_TYPE::OIL,PHASE_TYPE::GAS,PHASE_TYPE::LIQUID_WATER_RICH }, { EOS_TYPE::PENG_ROBINSON,EOS_TYPE::PENG_ROBINSON,EOS_TYPE::PENG_ROBINSON }, COMPOSITIONAL_FLASH_TYPE::TRIVIAL, CompProps);
 	
 	for (size_t nb = 0; nb != 100; ++nb)
 	{
@@ -34,6 +34,9 @@ int main(int argc, const char * argv[])
 
 	double elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>
 		(end - start).count();
+
+	//Proprietes de chaque phase ? ? ? ou ? comment ? Pas de duplication!
+
 
 	std::cout << "elapsed time: " << elapsed_seconds/1000 << "s\n";
 

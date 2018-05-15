@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_map>
-#include "PVTModel/PVTEnums.hpp"
+#include "MultiphaseSystem/PVTEnums.hpp"
 #include "PhaseSplitModel/CompositionalFlash.hpp"
 
 namespace PVTPackage
@@ -17,7 +17,7 @@ namespace PVTPackage
 			PhaseState = PhaseStateMap.at({ MoleFraction[PHASE_TYPE::OIL] > 0., MoleFraction[PHASE_TYPE::GAS] > 0. , MoleFraction[PHASE_TYPE::LIQUID_WATER_RICH] > 0. });
 		}
 
-		const CubicEoSPhaseModel* PhaseSplitModel;
+		const CubicEoSPhase* PhaseSplitModel;
 		PHASE_STATE PhaseState;
 		std::unordered_map<PHASE_TYPE, std::vector<double>> MoleComposition;
 		std::unordered_map<PHASE_TYPE, double> MoleFraction;

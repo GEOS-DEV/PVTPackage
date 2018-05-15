@@ -1,17 +1,17 @@
 #pragma once
 #include <vector>
-#include "PVTModel/PVTEnums.hpp"
+#include "MultiphaseSystem/PVTEnums.hpp"
 
 namespace PVTPackage
 {
 	struct PhaseSplitModelOutputVariables;
 
-	class PVTModel
+	class MultiphaseSystem
 	{
 	public:
-		virtual ~PVTModel();
+		virtual ~MultiphaseSystem();
 
-		PVTModel(size_t nc, std::vector<PHASE_TYPE> phase_types);
+		MultiphaseSystem(size_t nc, std::vector<PHASE_TYPE> phase_types);
 
 		// Compute secondary variables from phase equilibrium
 		virtual void Flash(double pressure, double temperature, std::vector<double> feed, PhaseSplitModelOutputVariables& out_variables)=0;
@@ -23,7 +23,7 @@ namespace PVTPackage
 		size_t m_NMaxPhases; 
 
 		//Phases
-		std::vector<PHASE_TYPE> m_PhaseTypes;
+		std::vector<PHASE_TYPE> m_Phases;
 
 	};
 

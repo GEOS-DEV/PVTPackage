@@ -1,5 +1,5 @@
-#include "PVTModel/PhaseSplitModel/TrivialFlash.hpp"
-#include "PVTModel/ComponentProperties.hpp"
+#include "MultiphaseSystem/PhaseSplitModel/TrivialFlash.hpp"
+#include "MultiphaseSystem/ComponentProperties.hpp"
 #include <vector>
 #include <numeric>
 
