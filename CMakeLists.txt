@@ -15,7 +15,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 #Options
 option(COMPILE_EXAMPLES "Compile examples" ON)
 
-#PAMELA
+#PVTPACKAGE
 add_subdirectory (PVTPackage)
 
 # #Examples

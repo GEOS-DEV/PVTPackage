@@ -8,17 +8,30 @@ namespace PVTPackage
 		
 	}
 
-	CompositionalFlash::CompositionalFlash(std::vector<PHASE_TYPE> phase_types, std::vector<EOS_TYPE> eos_types,
-	                                       ComponentProperties* comp_props, std::unordered_map<PHASE_TYPE, CubicEoSPhase*>* phase_models)
-																			  : m_PhaseTypes(std::move(phase_types)),
-																				m_EoSTypes(std::move(eos_types)),
-																				m_ComponentsProperties(comp_props),
-																				m_PhaseModel(phase_models)
+	CompositionalFlash::CompositionalFlash(std::unordered_map<PHASE_TYPE, PhaseModel*>& phase_models)
 	{
+		//Check components properties are the same
+		for (auto it = phase_models.begin(); it != std::prev(phase_models.end()); ++it)
+		{
+			auto phase1 = dynamic_cast<CubicEoSPhaseModel*>(it->second);
+			auto phase2 = dynamic_cast<CubicEoSPhaseModel*>(std::next(it)->second);
+			ASSERT(phase1->get_ComponentsProperties() == phase2->get_ComponentsProperties(),"Different component properties in flash");
+			
+		}
+
+		//If so define attribute to be used as global properties for flash calculations
+		m_ComponentsProperties = &dynamic_cast<CubicEoSPhaseModel*>(phase_models.begin()->second)->get_ComponentsProperties();
+
+		for (auto& phase_model : phase_models)
+		{
+			m_PhaseModels[phase_model.first] = static_cast<PhaseModel*>(phase_model.second);
+		}
+
 	}
 
 	std::vector<double> CompositionalFlash::ComputeWilsonGasOilKvalue(double Pressure, double Temperature) const
 	{
+
 		const auto nbc = m_ComponentsProperties->NComponents;
 		const auto& Tc = m_ComponentsProperties->Tc;
 		const auto& Pc = m_ComponentsProperties->Pc;

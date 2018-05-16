@@ -24,6 +24,20 @@ struct ComponentProperties
 		}
 	}
 
+	bool operator ==(const ComponentProperties& d) const
+	{
+		return
+			NComponents == d.NComponents&&
+			Label == d.Label&&
+			Mw == d.Mw&&
+			Pc == d.Pc&&
+			Tc == d.Tc&&
+			Omega == d.Omega&&
+			BIC == d.BIC&&
+			VolumeShift == d.VolumeShift&&
+			WaterIndex == d.WaterIndex;
+	}
+
 	const size_t NComponents;
 	const std::vector<std::string> Label;
 	const std::vector<double> Mw;
@@ -34,3 +48,5 @@ struct ComponentProperties
 	const std::vector<std::vector<double>> VolumeShift;
 	size_t WaterIndex;
 };
+
+

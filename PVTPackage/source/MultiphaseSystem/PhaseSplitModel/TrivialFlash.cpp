@@ -1,27 +1,28 @@
 #include "MultiphaseSystem/PhaseSplitModel/TrivialFlash.hpp"
 #include "MultiphaseSystem/ComponentProperties.hpp"
+#include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
 #include <vector>
 #include <numeric>
 
 namespace PVTPackage
 {
-	void TrivialFlash::ComputeEquilibrium(double pressure, double temperature, std::vector<double> feed , PhaseSplitModelOutputVariables& out_variables)
+	void TrivialFlash::ComputeEquilibrium(double pressure, double temperature, std::vector<double> feed, MultiphaseSystemProperties* out_variables)
 	{
 
 		const auto nbc = m_ComponentsProperties->NComponents;
 
-		auto& gas_comp = out_variables.MoleComposition[PHASE_TYPE::GAS] = std::vector<double>(nbc);
-		auto& oil_comp = out_variables.MoleComposition[PHASE_TYPE::OIL] = std::vector<double>(nbc);
-		auto& water_comp = out_variables.MoleComposition[PHASE_TYPE::LIQUID_WATER_RICH] = std::vector<double>(nbc);
+		auto& gas_comp = out_variables->MoleComposition[PHASE_TYPE::GAS] = std::vector<double>(nbc);
+		auto& oil_comp = out_variables->MoleComposition[PHASE_TYPE::OIL] = std::vector<double>(nbc);
+		auto& water_comp = out_variables->MoleComposition[PHASE_TYPE::LIQUID_WATER_RICH] = std::vector<double>(nbc);
 
 		auto KGasOil = ComputeWilsonGasOilKvalue(pressure, temperature);
 		auto KWaterGas = ComputeWaterGasKvalue(pressure, temperature);
 		auto KWaterOil = ComputeWaterOilKvalue(pressure, temperature);
 
 		//Trivial split
-		auto& Vo = out_variables.MoleFraction[PHASE_TYPE::OIL] = 0;
-		auto& Vg = out_variables.MoleFraction[PHASE_TYPE::GAS] = 0;
-		auto& Vw = out_variables.MoleFraction[PHASE_TYPE::LIQUID_WATER_RICH] = 0;
+		auto& Vo = out_variables->MoleFraction[PHASE_TYPE::OIL] = 0;
+		auto& Vg = out_variables->MoleFraction[PHASE_TYPE::GAS] = 0;
+		auto& Vw = out_variables->MoleFraction[PHASE_TYPE::LIQUID_WATER_RICH] = 0;
 
 		for (size_t i = 0; i != nbc; ++i)
 		{
@@ -65,7 +66,7 @@ namespace PVTPackage
 		}
 
 		//Compute Phase State
-		out_variables.set_PhaseState();
+		out_variables->set_PhaseState();
 
 
 	}

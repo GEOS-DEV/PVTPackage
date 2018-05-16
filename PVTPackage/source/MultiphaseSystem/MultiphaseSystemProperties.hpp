@@ -5,9 +5,9 @@
 
 namespace PVTPackage
 {
-	struct PhaseSplitModelOutputVariables
+	struct MultiphaseSystemProperties
 	{
-		PhaseSplitModelOutputVariables() : PhaseSplitModel(nullptr), PhaseState(PHASE_STATE::UNKNOWN)
+		MultiphaseSystemProperties() :  PhaseState(PHASE_STATE::UNKNOWN)
 		{
 		}
 
@@ -17,7 +17,6 @@ namespace PVTPackage
 			PhaseState = PhaseStateMap.at({ MoleFraction[PHASE_TYPE::OIL] > 0., MoleFraction[PHASE_TYPE::GAS] > 0. , MoleFraction[PHASE_TYPE::LIQUID_WATER_RICH] > 0. });
 		}
 
-		const CubicEoSPhase* PhaseSplitModel;
 		PHASE_STATE PhaseState;
 		std::unordered_map<PHASE_TYPE, std::vector<double>> MoleComposition;
 		std::unordered_map<PHASE_TYPE, double> MoleFraction;
