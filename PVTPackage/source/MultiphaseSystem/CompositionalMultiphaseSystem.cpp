@@ -1,7 +1,7 @@
 #include "MultiphaseSystem/CompositionalMultiphaseSystem.hpp"
 #include "MultiphaseSystem/PhaseSplitModel/CompositionalFlash.hpp"
 #include "MultiphaseSystem/PhaseSplitModel/TrivialFlash.hpp"
-#include "PhaseModel/CubicEosPhaseProperties.hpp"
+#include "PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
 
 namespace PVTPackage
 {
@@ -21,7 +21,7 @@ namespace PVTPackage
 		//Create Phases Properties
 		for (size_t i = 0; i != phase_types.size(); ++i)
 		{
-			m_PhasesProperties[phase_types[i]] = new CubicEoSPhaseProperties();
+			m_PhasesProperties[phase_types[i]] = new PhaseProperties();
 		}
 
 		//Create Flash pointer

@@ -6,6 +6,7 @@
 #include <vector>
 #include <type_traits>
 #include <numeric>
+#include "Assert.hpp"
 
 namespace math
 {
@@ -128,9 +129,117 @@ std::vector<T> ScalarMultiply(std::vector<T>& in, T scalar)
 	return out;
 }
 
+template<typename T>
+std::vector<T> Interpolation1 (std::vector<T>& xin, std::vector<T>& yin, std::vector<T> xout)
+{
+	//return yout
+	
+	ASSERT(xin.size() == yin.size(), "Size mistmatch");
+
+	std::vector<T> yout(xout.size());
+
+	for (size_t n = 0;n != xout.size(); ++n)
+	{
+		T x = xout[n];
+		ASSERT(xin[0] <= x, "Input x out of range, cannot extrapolate");
+		//LOGWARNING(xin[xin.size() - 1] >= x, "Input x out of range, extrapolation");
+
+		//Search for interval
+		size_t i_minus=0, i_plus=0;
+		FindSurrondingIndex(xin, x, i_minus, i_plus);
+
+		if (i_minus==i_plus)
+		{
+			yout[n] = yin[i_minus];
+		}
+		else
+		{
+			//yout[n] = yin[i_minus] * (1 - (x - xin[i_minus]) / (xin[i_plus] - xin[i_minus])) + yin[i_plus] * ((x - xin[i_minus]) / (xin[i_plus] - xin[i_minus]));
+			yout[n] = yin[i_minus] * (xin[i_plus] - x) / (xin[i_plus] - xin[i_minus]) + yin[i_plus] * ((x - xin[i_minus]) / (xin[i_plus] - xin[i_minus]));
+		}
+
+
+	}
+
+	return yout;
+
+}
+
+template<typename T>
+void FindSurrondingIndex(std::vector<T>& x, T xval, size_t& iminus, size_t& iplus)
+{
+	//Search for interval
+	iminus = 0; iplus = 0;
+	for (size_t i = 0; i != x.size(); ++i)
+	{
+		if (x[i] == xval)
+		{
+			iminus = i;
+			iplus = i;
+			break;
+		}
+
+		if (x[i] >= xval)
+		{
+			iminus = i - 1;
+			iplus = i;
+			break;
+		}
+
+		if (i == x.size() - 1)
+		{
+			iminus = x.size() - 2;
+			iplus = x.size() - 1;
+		}
+	}
+
+}
 
 
 
+template<typename T>
+T LinearInterpolation(T dminus, T dplus, T xminus, T xplus)
+{
+	T f = dminus / (dminus + dplus);
+	return f*xminus + (1-f)*xplus;
+}
+
+
+template<typename T>
+T LinearInterpolation(T x1, T y1, T x2, T y2, T x3)
+{
+	return LinearInterpolation(x3-x1, x2-x3, y1, y2);
+}
+
+
+template<typename T>
+T LinearExtrapolation(T x1, T y1, T x2, T y2, T x3)
+{
+	return (y2 - y1) / (x2 - x1) * (x3-x2) + y2;
+}
+
+
+template<typename T>
+T LogInterpolation(T dminus, T dplus, T xminus, T xplus)
+{
+	T f = log(dminus) / (log(dminus) + log(dplus));
+	T lnx = f*xminus + (1 - f)*xplus;
+	return exp(lnx);
+}
+
+template<typename T>
+std::vector<T> linspace(T a, T b, size_t num)
+{
+	// create a vector of length num
+	std::vector<T> v(num);
+
+	// now assign the values to the vector
+	for (size_t i = 0; i != num; i++)
+	{
+		v[i] = a + i * ((b - a) / (num-1));
+	}
+	return v;
+}
 
 
 }

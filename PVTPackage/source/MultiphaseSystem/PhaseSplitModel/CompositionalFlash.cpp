@@ -1,5 +1,6 @@
 #include "MultiphaseSystem/PhaseSplitModel/CompositionalFlash.hpp"
 #include "MultiphaseSystem/ComponentProperties.hpp"
+#include  "MultiphaseSystem/PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
 
 namespace PVTPackage
 {

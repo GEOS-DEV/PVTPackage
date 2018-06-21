@@ -1,7 +1,8 @@
 #pragma once
-#include "MultiphaseSystem/PhaseModel/CubicEoSPhaseModel.hpp"
 #include <unordered_map>
 #include "MultiphaseSystem/PVTEnums.hpp"
+#include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
+#include "MultiphaseSystem/ComponentProperties.hpp"
 
 
 namespace PVTPackage
