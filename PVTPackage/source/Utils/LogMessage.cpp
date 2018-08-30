@@ -18,10 +18,10 @@ LogMessage::LogMessage()
 {
   m_message_level = VerbosityLevelLogFile::INFO;
   m_message << "";
-};
+}
 
 LogMessage::LogMessage(VerbosityLevelLogFile lvl)
 {
   m_message_level = lvl;
   m_message << "";
-};
+}
