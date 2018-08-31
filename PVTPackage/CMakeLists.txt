@@ -8,7 +8,7 @@ file(GLOB_RECURSE PROJECT_SRC ${PROJECT_SRC_DIR}/*.cpp)
 file(GLOB_RECURSE PROJECT_HDR ${PROJECT_SRC_DIR}/*.hpp)
 
 foreach(src IN LISTS PROJECT_HDR PROJECT_SRC)
-    file(RELATIVE_PATH rel_scr ${PROJECT_DIR} ${src})
+    file(RELATIVE_PATH rel_scr ${CMAKE_CURRENT_LIST_DIR} ${src})
 	get_filename_component(fname "${rel_scr}" NAME)
 	string(REPLACE "src/" "" src_grp "${rel_scr}")
 	string(REPLACE "${fname}" "" src_grp "${src_grp}")

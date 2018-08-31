@@ -1,11 +1,11 @@
 #Definitions
 cmake_minimum_required (VERSION 3.1)
 
+project(PVTPackage LANGUAGES CXX C)
+
 include(cmake/blt/SetupBLT.cmake)
 
 include(cmake/PVTPackage.cmake)
-
-project("PVTPackage" LANGUAGES CXX C)
 
 #Path
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
