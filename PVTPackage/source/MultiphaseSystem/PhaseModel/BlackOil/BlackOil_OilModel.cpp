@@ -1,4 +1,4 @@
-#include "BlackOil_OillModel.hpp"
+#include "BlackOil_OilModel.hpp"
 #include <algorithm>
 #include "Utils/math.hpp"
 #include "BlackOil_Utils.hpp"

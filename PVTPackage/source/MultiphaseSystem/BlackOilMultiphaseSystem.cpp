@@ -1,8 +1,8 @@
 #include "MultiphaseSystem/BlackOilMultiphaseSystem.hpp"
 #include <unordered_map>
-#include "PhaseModel/BackOil/BlackOil_GaslModel.hpp"
-#include "PhaseModel/BackOil/BlackOil_OillModel.hpp"
-#include "PhaseModel/BackOil/BlackOil_WaterlModel.hpp"
+#include "PhaseModel/BlackOil/BlackOil_GasModel.hpp"
+#include "PhaseModel/BlackOil/BlackOil_OilModel.hpp"
+#include "PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
 
 namespace PVTPackage
 {
