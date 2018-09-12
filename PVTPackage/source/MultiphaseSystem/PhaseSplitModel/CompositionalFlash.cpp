@@ -11,13 +11,17 @@ namespace PVTPackage
 
 	CompositionalFlash::CompositionalFlash(std::unordered_map<PHASE_TYPE, PhaseModel*>& phase_models)
 	{
+	  ASSERT(!phase_models.empty(), "CompositionalFlash: phase model list is empty");
+
+    auto phase1 = dynamic_cast<CubicEoSPhaseModel*>(phase_models.begin()->second);
+	  ASSERT(phase1 != nullptr, "CompositionalFlash: invalid phase model type");
+
 		//Check components properties are the same
-		for (auto it = phase_models.begin(); it != std::prev(phase_models.end()); ++it)
+		for (auto it = phase_models.begin(); it != phase_models.end(); ++it)
 		{
-			auto phase1 = dynamic_cast<CubicEoSPhaseModel*>(it->second);
-			auto phase2 = dynamic_cast<CubicEoSPhaseModel*>(std::next(it)->second);
-			ASSERT(phase1->get_ComponentsProperties() == phase2->get_ComponentsProperties(),"Different component properties in flash");
-			
+			auto phase = dynamic_cast<CubicEoSPhaseModel*>(it->second);
+      ASSERT(phase != nullptr, "CompositionalFlash: invalid phase model type");
+			ASSERT(phase->get_ComponentsProperties() == phase1->get_ComponentsProperties(), "Different component properties in flash");
 		}
 
 		//If so define attribute to be used as global properties for flash calculations
