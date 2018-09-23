@@ -37,8 +37,6 @@ private:
 
   std::stringstream m_message;
 
-  static LogMessage* s_instance;
-
   LogMessage();
   explicit LogMessage(VerbosityLevelLogFile lvl);
 

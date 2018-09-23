@@ -1,8 +1,6 @@
 // Header include
 #include "Utils/LogMessage.hpp"
 
-LogMessage* LogMessage::s_instance = nullptr;
-
 LogMessage* LogMessage::instance()
 {
   return instance(VerbosityLevelLogFile::INFO);
