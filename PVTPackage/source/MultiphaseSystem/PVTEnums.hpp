@@ -10,6 +10,11 @@ namespace PVTPackage
 	enum class PHASE_TYPE { LIQUID_WATER_RICH = 2, OIL = 1, GAS = 0, UNKNOWN = -1 };
 	enum class PHASE_STATE { GAS = 6, OIL = 5, WATER = 4, OIL_GAS = 3, GAS_WATER = 2, OIL_WATER = 1, OIL_GAS_WATER = 0, UNKNOWN = -1 };
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wexit-time-destructors"
+#endif
+
 	//Phase State
 	const std::unordered_map<std::vector<bool>, PHASE_STATE> PhaseStateMap =
 	{
@@ -21,5 +26,9 @@ namespace PVTPackage
 		{ { 1,0,0 } ,PHASE_STATE::OIL },
 		{ { 0,1,0 } ,PHASE_STATE::GAS },
 	};
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 }
