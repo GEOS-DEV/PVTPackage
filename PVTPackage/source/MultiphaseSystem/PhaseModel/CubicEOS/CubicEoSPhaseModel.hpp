@@ -23,6 +23,8 @@ namespace PVTPackage
 			Init();
 		}
 
+		~CubicEoSPhaseModel() override = default;
+
 		const ComponentProperties& get_ComponentsProperties() 
 		{
 			return m_ComponentsProperties;

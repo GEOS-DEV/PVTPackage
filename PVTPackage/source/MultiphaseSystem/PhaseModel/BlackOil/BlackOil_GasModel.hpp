@@ -16,6 +16,8 @@ namespace PVTPackage
 
 		BlackOil_GasModel(std::vector<std::vector<double>> PVTG, double surface_density, double mw);
 
+		~BlackOil_GasModel() override = default;
+
 		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties* props_out){};
 
 	protected:
