@@ -45,19 +45,19 @@ public:
 
 	static void tic(Counter & counter_)
 	{
-		gettimeofday(&tmp, 0);
+		gettimeofday(&tmp, nullptr);
 		counter_ -= (tmp.tv_sec * 1000000 + tmp.tv_usec);
 	}
 
 	static void toc(Counter & counter_)
 	{
-		gettimeofday(&tmp, 0);
+		gettimeofday(&tmp, nullptr);
 		counter_ += (tmp.tv_sec * 1000000 + tmp.tv_usec);
 	}
 	
 	static void toctic(Counter & tocCounter_, Counter & ticCounter_)
 	{
-		gettimeofday(&tmp, 0);
+		gettimeofday(&tmp, nullptr);
 		tocCounter_ += (tmp.tv_sec * 1000000 + tmp.tv_usec);
 		ticCounter_ -= (tmp.tv_sec * 1000000 + tmp.tv_usec);
 	}

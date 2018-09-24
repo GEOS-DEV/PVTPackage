@@ -18,7 +18,7 @@ namespace PVTPackage
 
 		~BlackOil_OilModel() override = default;
 
-		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties* props_out){};
+		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties* props_out) override {}
 
 	protected:
 

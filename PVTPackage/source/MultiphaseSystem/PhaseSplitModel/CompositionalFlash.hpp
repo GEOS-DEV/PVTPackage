@@ -12,7 +12,8 @@ namespace PVTPackage
 	class CompositionalFlash
 	{
 	public:
-		virtual ~CompositionalFlash();
+
+		virtual ~CompositionalFlash() = default;
 
 		CompositionalFlash(std::unordered_map<PHASE_TYPE, PhaseModel*>& phase_models);
 

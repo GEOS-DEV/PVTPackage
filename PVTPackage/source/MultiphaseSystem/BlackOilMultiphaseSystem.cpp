@@ -14,7 +14,7 @@ namespace PVTPackage
 	{
 		//Phase to index mapping
 		std::unordered_map<PHASE_TYPE, int> phase_to_index;
-		for (size_t i = 0; i != phase_types.size(); ++i)
+		for (int i = 0; i < static_cast<int>(phase_types.size()); ++i)
 		{
 			phase_to_index[phase_types[i]] = i;
 		}
