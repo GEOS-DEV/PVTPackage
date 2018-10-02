@@ -1,8 +1,8 @@
 #include "MultiphaseSystem/BlackOilMultiphaseSystem.hpp"
 #include <unordered_map>
-#include "PhaseModel/BackOil/BlackOil_GaslModel.hpp"
-#include "PhaseModel/BackOil/BlackOil_OillModel.hpp"
-#include "PhaseModel/BackOil/BlackOil_WaterlModel.hpp"
+#include "PhaseModel/BlackOil/BlackOil_GasModel.hpp"
+#include "PhaseModel/BlackOil/BlackOil_OilModel.hpp"
+#include "PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
 
 namespace PVTPackage
 {
@@ -14,7 +14,7 @@ namespace PVTPackage
 	{
 		//Phase to index mapping
 		std::unordered_map<PHASE_TYPE, int> phase_to_index;
-		for (size_t i = 0; i != phase_types.size(); ++i)
+		for (int i = 0; i < static_cast<int>(phase_types.size()); ++i)
 		{
 			phase_to_index[phase_types[i]] = static_cast<int>(i);
 		}

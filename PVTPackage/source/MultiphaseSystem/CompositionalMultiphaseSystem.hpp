@@ -13,7 +13,7 @@ namespace PVTPackage
 		                       std::vector<EOS_TYPE> eos_types, COMPOSITIONAL_FLASH_TYPE flash_type,
 		                       ComponentProperties comp_properties);
 
-		~CompositionalMultiphaseSystem();
+		~CompositionalMultiphaseSystem() override;
 
 		void Update(double pressure, double temperature, std::vector<double> feed) override;
 

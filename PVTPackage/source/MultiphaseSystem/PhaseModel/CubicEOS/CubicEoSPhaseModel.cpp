@@ -146,7 +146,7 @@ namespace PVTPackage
 			v_corrected = v_corrected + composition[i] * ((Vs[i][1]) * Temperature + Vs[i][1]);
 		}
 
-		if (v_corrected != 0)
+		if (std::fabs(v_corrected) > 0.0)
 		{
 			mole_density = 1.0 / v_corrected;
 		}
@@ -230,14 +230,14 @@ namespace PVTPackage
 		double a3 = m0 / m3;
 
 		double Q = (a1 * a1 - 3 * a2) / 9;
-		double R = (2 * a1 * a1 * a1 - 9 * a1 * a2 + 27 * a3) / 54;
+		double r = (2 * a1 * a1 * a1 - 9 * a1 * a2 + 27 * a3) / 54;
 		double Qcubed = Q * Q * Q;
-		double d = Qcubed - R * R;
+		double d = Qcubed - r * r;
 
 		/* Three real roots */
 		if (d >= 0)
 		{
-			double theta = acos(R / sqrt(Qcubed));
+			double theta = acos(r / sqrt(Qcubed));
 			double sqrtQ = sqrt(Q);
 			x1 = -2 * sqrtQ * cos(theta / 3) - a1 / 3;
 			x2 = -2 * sqrtQ * cos((theta + 2 * PI) / 3) - a1 / 3;
@@ -248,8 +248,8 @@ namespace PVTPackage
 		/* One real root */
 		else
 		{
-			double e = pow(sqrt(-d) + fabs(R), 1. / 3.);
-			if (R > 0)
+			double e = pow(sqrt(-d) + fabs(r), 1. / 3.);
+			if (r > 0)
 				e = -e;
 			x1 = (e + Q / e) - a1 / 3.;
 			return{ x1 };

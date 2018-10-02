@@ -2,6 +2,7 @@
 #include "Utils/Assert.hpp"
 #include "MultiphaseSystem/PVTEnums.hpp"
 #include <vector>
+#include <cmath>
 #include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
 #include "MultiphaseSystem/ComponentProperties.hpp"
 
@@ -22,12 +23,14 @@ namespace PVTPackage
 			Init();
 		}
 
+		~CubicEoSPhaseModel() override = default;
+
 		const ComponentProperties& get_ComponentsProperties() 
 		{
 			return m_ComponentsProperties;
 		}
 
-		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties* props_out);
+		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties* props_out) override;
 
 	protected:
 
@@ -36,7 +39,7 @@ namespace PVTPackage
 
 		//Constants
 		const double R = 8.3144621;
-		const double PI = acos(-1);
+		const double PI = std::acos(-1);
 
 		//Phase Type
 		PHASE_TYPE m_PhaseType;

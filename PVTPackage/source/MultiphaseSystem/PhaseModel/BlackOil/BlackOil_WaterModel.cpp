@@ -1,4 +1,4 @@
-#include "BlackOil_WaterlModel.hpp"
+#include "BlackOil_WaterModel.hpp"
 
 namespace PVTPackage
 {

@@ -6,6 +6,7 @@
 #include <vector>
 #include <type_traits>
 #include <numeric>
+#include <cmath>
 #include "Assert.hpp"
 
 namespace math
@@ -130,10 +131,41 @@ std::vector<T> ScalarMultiply(std::vector<T>& in, T scalar)
 }
 
 template<typename T>
+void FindSurrondingIndex(std::vector<T>& x, T xval, size_t& iminus, size_t& iplus)
+{
+	constexpr double eps = 1e-16;
+	//Search for interval
+	iminus = 0; iplus = 0;
+	for (size_t i = 0; i != x.size(); ++i)
+	{
+		if (std::fabs(x[i] - xval) < eps * std::fabs(xval))
+		{
+			iminus = i;
+			iplus = i;
+			break;
+		}
+
+		if (x[i] > xval)
+		{
+			iminus = i - 1;
+			iplus = i;
+			break;
+		}
+
+		if (i == x.size() - 1)
+		{
+			iminus = x.size() - 2;
+			iplus = x.size() - 1;
+		}
+	}
+
+}
+
+template<typename T>
 std::vector<T> Interpolation1 (std::vector<T>& xin, std::vector<T>& yin, std::vector<T> xout)
 {
 	//return yout
-	
+
 	ASSERT(xin.size() == yin.size(), "Size mistmatch");
 
 	std::vector<T> yout(xout.size());
@@ -162,36 +194,6 @@ std::vector<T> Interpolation1 (std::vector<T>& xin, std::vector<T>& yin, std::ve
 	}
 
 	return yout;
-
-}
-
-template<typename T>
-void FindSurrondingIndex(std::vector<T>& x, T xval, size_t& iminus, size_t& iplus)
-{
-	//Search for interval
-	iminus = 0; iplus = 0;
-	for (size_t i = 0; i != x.size(); ++i)
-	{
-		if (x[i] == xval)
-		{
-			iminus = i;
-			iplus = i;
-			break;
-		}
-
-		if (x[i] >= xval)
-		{
-			iminus = i - 1;
-			iplus = i;
-			break;
-		}
-
-		if (i == x.size() - 1)
-		{
-			iminus = x.size() - 2;
-			iplus = x.size() - 1;
-		}
-	}
 
 }
 
