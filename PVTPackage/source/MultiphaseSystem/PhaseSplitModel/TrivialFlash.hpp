@@ -13,6 +13,8 @@ namespace PVTPackage
 		{
 		}
 
+		~TrivialFlash() override = default;
+
 		void ComputeEquilibrium(double pressure, double temperature, std::vector<double> feed, MultiphaseSystemProperties* out_variables) override;
 
 	protected:

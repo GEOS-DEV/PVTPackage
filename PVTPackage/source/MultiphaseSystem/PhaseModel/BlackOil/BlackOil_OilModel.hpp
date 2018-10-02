@@ -16,7 +16,9 @@ namespace PVTPackage
 
 		BlackOil_OilModel(std::vector<std::vector<double>> PVTO, double oil_surface_mass_density, double oil_surface_mw, double gas_surface_mass_density, double gas_surface_mw);
 
-		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties* props_out){};
+		~BlackOil_OilModel() override = default;
+
+		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties* props_out) override {}
 
 	protected:
 

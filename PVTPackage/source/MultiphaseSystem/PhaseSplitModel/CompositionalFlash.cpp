@@ -4,10 +4,6 @@
 
 namespace PVTPackage
 {
-	CompositionalFlash::~CompositionalFlash()
-	{
-		
-	}
 
 	CompositionalFlash::CompositionalFlash(std::unordered_map<PHASE_TYPE, PhaseModel*>& phase_models)
 	{

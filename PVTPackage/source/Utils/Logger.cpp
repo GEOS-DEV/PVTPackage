@@ -4,11 +4,16 @@
 #define LEVEL_LOG_FILE "DEBUG"
 #define LEVEL_LOG_SCREEN "ALL"
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wexit-time-destructors"
+#pragma clang diagnostic ignored "-Wglobal-constructors"
+#endif
+
 //Default values
 std::string Logger::m_level_logfile = "INFO";
 std::string Logger::m_file_name = "simulator.log";
 std::string Logger::m_level_screen = "BRIEF";
-
 
 Logger* Logger::instance()
 {
@@ -16,6 +21,9 @@ Logger* Logger::instance()
   return &s_instance;
 }
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 void Logger::init(std::string LevelLogFile, std::string file_name, std::string LevelScreen)
 {
@@ -49,6 +57,10 @@ Logger::Logger(std::string LevelLogFile, std::string file_name, std::string Leve
 
 }
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+#endif
 
 void Logger::LogERROR(std::string msg)
 {
@@ -60,6 +72,10 @@ void Logger::LogERROR(std::string msg)
   abort();
 
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 void Logger::LogWARNING(std::string msg)
 {

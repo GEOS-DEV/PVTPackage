@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "Utils/math.hpp"
 #include "BlackOil_Utils.hpp"
-#include "BlackOil_GaslModel.hpp"
+#include "BlackOil_GasModel.hpp"
 
 namespace PVTPackage
 {

@@ -1,15 +1,16 @@
-#include "BlackOil_OillModel.hpp"
+#include "BlackOil_OilModel.hpp"
 #include <algorithm>
 #include "Utils/math.hpp"
 #include "BlackOil_Utils.hpp"
 #include <algorithm>    // std::max
+#include <complex>
 
 namespace PVTPackage
 {
 	
 	BlackOil_OilModel::BlackOil_OilModel(std::vector<std::vector<double>> PVTO, double oil_surface_mass_density, double oil_surface_mw, double gas_surface_mass_density, double gas_surface_mw)
-						:	m_SurfaceOilMolecularWeight(oil_surface_mw),m_SurfaceOilMassDensity(0),m_SurfaceOilMoleDensity(0),
-							m_SurfaceGasMolecularWeight(gas_surface_mw), m_SurfaceGasMassDensity(0), m_SurfaceGasMoleDensity(0)
+						:	m_SurfaceOilMassDensity(0), m_SurfaceOilMoleDensity(0), m_SurfaceOilMolecularWeight(oil_surface_mw),
+							m_SurfaceGasMassDensity(0), m_SurfaceGasMoleDensity(0), m_SurfaceGasMolecularWeight(gas_surface_mw)
 	{
 
 		//--Fill table
@@ -168,7 +169,7 @@ namespace PVTPackage
 			const auto& Bousat = m_PVTO.UndersaturatedBo[i];
 			const auto& Viscusat = m_PVTO.UndersaturatedViscosity[i];
 
-			if (dPext!=0)
+			if (std::fabs(dPext) > 0)
 			{
 				auto branch_size = m_PVTO.UndersaturatedPressure[i].size();
 				auto Bo = math::LinearExtrapolation(Pusat[branch_size - 2], Bousat[branch_size - 2], Pusat[branch_size - 1], Bousat[branch_size - 1], m_PVTO.MaxRelativePressure);
@@ -208,8 +209,8 @@ namespace PVTPackage
 					lower_branch_index = upper_branch_index;
 				}
 
-				auto dRs_up = abs(m_PVTO.Rs[upper_branch_index] - m_PVTO.Rs[i_current]);
-				auto dRs_dn = abs(m_PVTO.Rs[i_current] - m_PVTO.Rs[lower_branch_index]);
+				auto dRs_up = std::fabs(m_PVTO.Rs[upper_branch_index] - m_PVTO.Rs[i_current]);
+				auto dRs_dn = std::fabs(m_PVTO.Rs[i_current] - m_PVTO.Rs[lower_branch_index]);
 
 				//Generate merge of pressures
 				std::vector<double> p_target;
@@ -354,8 +355,8 @@ namespace PVTPackage
 
 		auto Prel = P - Pbub;
 
-		auto dRs_up = abs(m_PVTO.Rs[i_upper_branch] - Rs);
-		auto dRs_dn = abs(Rs - m_PVTO.Rs[i_lower_branch]);
+		auto dRs_up = std::abs(m_PVTO.Rs[i_upper_branch] - Rs);
+		auto dRs_dn = std::abs(Rs - m_PVTO.Rs[i_lower_branch]);
 
 		auto& Pup = m_PVTO.UndersaturatedPressure[i_upper_branch];
 		auto& Pdn = m_PVTO.UndersaturatedPressure[i_lower_branch];
