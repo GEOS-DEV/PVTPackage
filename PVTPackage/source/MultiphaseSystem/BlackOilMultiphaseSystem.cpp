@@ -9,7 +9,7 @@ namespace PVTPackage
 
 	BlackOilMultiphaseSystem::BlackOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
 		std::vector<std::vector<double>> PVTO, std::vector<double> PVTW, std::vector<std::vector<double>> PVTG,
-		std::vector<double> DENSITY, std::vector<double> MW) : MultiphaseSystem(phase_types.size(), phase_types.size()),
+		std::vector<double> DENSITY, std::vector<double> MW) : MultiphaseSystem(phase_types.size(), phase_types),
 		                                                       m_BlackOilFlash(nullptr)
 	{
 		//Phase to index mapping
@@ -25,15 +25,15 @@ namespace PVTPackage
 		{
 			if (phase_types[i] == PHASE_TYPE::OIL)
 			{
-				m_PhaseModels[PHASE_TYPE::OIL] = new BlackOil_OilModel(PVTO, DENSITY[i], MW[i], DENSITY[phase_to_index[PHASE_TYPE::GAS]], MW[phase_to_index[PHASE_TYPE::GAS]]);
+				m_MultiphaseProperties.PhaseModels[PHASE_TYPE::OIL] = new BlackOil_OilModel(PVTO, DENSITY[i], MW[i], DENSITY[phase_to_index[PHASE_TYPE::GAS]], MW[phase_to_index[PHASE_TYPE::GAS]]);
 			}
 			else if (phase_types[i] == PHASE_TYPE::GAS)
 			{
-				m_PhaseModels[PHASE_TYPE::GAS] = new BlackOil_GasModel(PVTG, DENSITY[i], MW[i]);
+				m_MultiphaseProperties.PhaseModels[PHASE_TYPE::GAS] = new BlackOil_GasModel(PVTG, DENSITY[i], MW[i]);
 			}
 			else if (phase_types[i] == PHASE_TYPE::LIQUID_WATER_RICH)
 			{
-				m_PhaseModels[PHASE_TYPE::LIQUID_WATER_RICH] = new BlackOil_WaterModel(PVTW, DENSITY[i], MW[i]);
+				m_MultiphaseProperties.PhaseModels[PHASE_TYPE::LIQUID_WATER_RICH] = new BlackOil_WaterModel(PVTW, DENSITY[i], MW[i]);
 			}
 			else
 			{
@@ -46,7 +46,9 @@ namespace PVTPackage
 
 
 		//Check if both oil and gas are defined
-		ASSERT((m_PhaseModels.find(PHASE_TYPE::OIL) != m_PhaseModels.end()) && (m_PhaseModels.find(PHASE_TYPE::GAS) != m_PhaseModels.end()), "Both oil and gas phase must be defined for BO model");
+		ASSERT((	m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::OIL) != m_MultiphaseProperties.PhaseModels.end()) 
+				&& (m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::GAS) != m_MultiphaseProperties.PhaseModels.end()), 
+				"Both oil and gas phase must be defined for BO model");
 
 		//Create Flash pointer
 

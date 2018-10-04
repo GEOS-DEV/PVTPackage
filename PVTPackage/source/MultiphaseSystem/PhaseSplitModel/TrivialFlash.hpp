@@ -8,14 +8,14 @@ namespace PVTPackage
 	{
 	public:
 
-		TrivialFlash(std::unordered_map<PHASE_TYPE, PhaseModel*>& phase_models)
-			: CompositionalFlash(phase_models)
+		TrivialFlash(const ComponentProperties& component_properties)
+			: CompositionalFlash(component_properties)
 		{
 		}
 
 		~TrivialFlash() override = default;
 
-		void ComputeEquilibrium(double pressure, double temperature, std::vector<double> feed, MultiphaseSystemProperties* out_variables) override;
+		void ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
 
 	protected:
 

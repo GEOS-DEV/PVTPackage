@@ -6,7 +6,7 @@
 //#include <cstdlib>
 //#include <vld.h> //Visual leak detector
 
-int main(int argc, const char * argv[]) 
+int main() 
 {
 
 	using namespace PVTPackage;
@@ -22,7 +22,7 @@ int main(int argc, const char * argv[])
 	auto PVTSystem = CompositionalMultiphaseSystem({ PHASE_TYPE::OIL,PHASE_TYPE::GAS,PHASE_TYPE::LIQUID_WATER_RICH }, { EOS_TYPE::PENG_ROBINSON,EOS_TYPE::PENG_ROBINSON,EOS_TYPE::PENG_ROBINSON }, COMPOSITIONAL_FLASH_TYPE::TRIVIAL, CompProps);
 
 	//Domain
-	const size_t NBlocks = 1e5;
+	const size_t NBlocks = static_cast<size_t>(1e1);
 	std::vector<double> Pressure(NBlocks), Temperature(NBlocks);
 	std::vector<std::vector<double>> Feed(NBlocks,std::vector<double>(nbc,0.25));
 	srand(0);

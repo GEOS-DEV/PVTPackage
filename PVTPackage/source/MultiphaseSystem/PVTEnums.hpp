@@ -9,6 +9,7 @@ namespace PVTPackage
 	enum class EOS_TYPE { REDLICH_KWONG_SOAVE = 1, PENG_ROBINSON = 0, UNKNOWN = -1 };
 	enum class PHASE_TYPE { LIQUID_WATER_RICH = 2, OIL = 1, GAS = 0, UNKNOWN = -1 };
 	enum class PHASE_STATE { GAS = 6, OIL = 5, WATER = 4, OIL_GAS = 3, GAS_WATER = 2, OIL_WATER = 1, OIL_GAS_WATER = 0, UNKNOWN = -1 };
+	enum class STATE_VARIABLE {TEMPERATURE,PRESSURE,FEED};
 
 #ifdef __clang__
 #pragma clang diagnostic push

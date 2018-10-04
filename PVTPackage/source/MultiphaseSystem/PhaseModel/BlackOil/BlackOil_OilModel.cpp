@@ -263,8 +263,6 @@ namespace PVTPackage
 					m_PVTO.UndersaturatedViscosity[i_current].push_back(m_PVTO.UndersaturatedViscosity[i_current][i - 1] + Visc_slope * (p_target[i] - p_target[i - 1]));
 				}
 
-				auto ii = 1;
-
 			}
 
 			upper_branch_index = i_current;

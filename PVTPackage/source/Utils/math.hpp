@@ -162,6 +162,19 @@ void FindSurrondingIndex(std::vector<T>& x, T xval, size_t& iminus, size_t& iplu
 }
 
 template<typename T>
+std::vector<T> Normalize(const std::vector<T>& xin)
+{
+	std::vector<T> xout = xin;
+	auto sum = sum_array(xin);
+	for (size_t n = 0; n != xout.size(); ++n)
+	{
+		xout[n] = xout[n] / sum;
+	}
+	return xout;
+}
+
+
+template<typename T>
 std::vector<T> Interpolation1 (std::vector<T>& xin, std::vector<T>& yin, std::vector<T> xout)
 {
 	//return yout

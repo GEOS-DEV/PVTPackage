@@ -15,20 +15,21 @@ namespace PVTPackage
 
 		virtual ~CompositionalFlash() = default;
 
-		CompositionalFlash(std::unordered_map<PHASE_TYPE, PhaseModel*>& phase_models);
+		CompositionalFlash(const ComponentProperties& component_properties);
 
-		virtual void ComputeEquilibrium(double pressure, double temperature, std::vector<double> feed, MultiphaseSystemProperties* out_variables)=0;
+		void ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables);
+
+		virtual void ComputeEquilibrium(MultiphaseSystemProperties& out_variables)=0;
 
 	protected:
-		std::unordered_map<PHASE_TYPE, PhaseModel*> m_PhaseModels;
 
-		//Component properties
-		const ComponentProperties* m_ComponentsProperties;
+		const ComponentProperties& m_ComponentsProperties;
 
 		//Wilson K-values
 		std::vector<double> ComputeWilsonGasOilKvalue(double Pressure, double Temperature) const;
 		std::vector<double> ComputeWaterGasKvalue(double Pressure, double Temperature) const;
 		std::vector<double> ComputeWaterOilKvalue(double Pressure, double Temperature) const;
 
+		void ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables);
 	};
 }

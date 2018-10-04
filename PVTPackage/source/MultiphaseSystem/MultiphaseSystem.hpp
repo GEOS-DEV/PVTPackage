@@ -15,9 +15,9 @@ namespace PVTPackage
 	public:
 		virtual ~MultiphaseSystem() = default;
 
-		MultiphaseSystem(size_t nc, size_t np) :
-			m_NComponents(nc),
-			m_NMaxPhases(np)
+		MultiphaseSystem(size_t nc, std::vector<PHASE_TYPE> phase_types) :
+			 m_MultiphaseProperties(phase_types,nc)
+
 		{
 		}
 
@@ -31,24 +31,13 @@ namespace PVTPackage
 
 		const PhaseProperties* get_PhaseProperties(PHASE_TYPE phase_type)
 		{
-			return m_PhasesProperties.at(phase_type);
+			return m_MultiphaseProperties.PhasesProperties.at(phase_type);
 		}
 
 	protected:
 
-		//Dimensions
-		size_t m_NComponents;
-		size_t m_NMaxPhases;
-
-		//PhaseModels
-		std::unordered_map<PHASE_TYPE, PhaseModel*> m_PhaseModels;
-
-		//Properties -- OUTPUT
-		//--Multiphase (Phase fractions, compositions...)
+		//Properties
 		MultiphaseSystemProperties m_MultiphaseProperties;
-
-		//--Phase
-		std::unordered_map<PHASE_TYPE, PhaseProperties*> m_PhasesProperties;
 
 	};
 

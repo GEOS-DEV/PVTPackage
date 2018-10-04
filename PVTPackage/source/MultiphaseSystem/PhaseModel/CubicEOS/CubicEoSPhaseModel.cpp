@@ -17,11 +17,11 @@ namespace PVTPackage
 		auto mol_dens = ComputeMoleDensity_(Pressure, Temperature, composition, Z);
 		auto mw = ComputeMolecularWeight(composition);
 		auto mass_dens = ComputeMassDensity_(mol_dens, mw);
-		props_out->CompressibilityFactor = Z;
-		props_out->MoleDensity = mol_dens;
-		props_out->MolecularWeight = mw;
-		props_out->MassDensity = mass_dens;
-		props_out->LnFugacityCoefficients = ln_phi;
+		props_out->CompressibilityFactor.value = Z;
+		props_out->MoleDensity.value = mol_dens;
+		props_out->MolecularWeight.value = mw;
+		props_out->MassDensity.value = mass_dens;
+		props_out->LnFugacityCoefficients.value = ln_phi;
 	}
 
 
