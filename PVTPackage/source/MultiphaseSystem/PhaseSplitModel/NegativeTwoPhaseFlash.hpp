@@ -5,26 +5,25 @@
 namespace PVTPackage
 {
 
-	class TrivialFlash final : public CompositionalFlash
+	class NegativeTwoPhaseFlash final : public CompositionalFlash
 	{
 	public:
 
-		TrivialFlash(const ComponentProperties& component_properties)
+		NegativeTwoPhaseFlash(const ComponentProperties& component_properties)
 			: CompositionalFlash(component_properties)
 		{
 		}
+
+		~NegativeTwoPhaseFlash() override = default;
 
 		void set_PhaseState(MultiphaseSystemProperties& out_variables) override
 		{
 
 			out_variables.PhaseState = PhaseStateMap.at
 			({ out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value > 0.,
-				out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0. ,
-				out_variables.PhaseMoleFraction.at(PHASE_TYPE::LIQUID_WATER_RICH).value > 0.
+				out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0.,0 
 				});
 		}
-
-		~TrivialFlash() override = default;
 
 		void ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
 

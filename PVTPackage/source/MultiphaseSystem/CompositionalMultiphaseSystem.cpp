@@ -2,6 +2,7 @@
 #include "MultiphaseSystem/PhaseSplitModel/CompositionalFlash.hpp"
 #include "MultiphaseSystem/PhaseSplitModel/TrivialFlash.hpp"
 #include "PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
+#include "PhaseSplitModel/NegativeTwoPhaseFlash.hpp"
 
 namespace PVTPackage
 {
@@ -18,11 +19,6 @@ namespace PVTPackage
 			m_MultiphaseProperties.PhaseModels[phase_types[i]] = new CubicEoSPhaseModel(comp_properties, eos_types[i], phase_types[i]);
 		}
 
-		//Create Phases Properties
-		for (size_t i = 0; i != phase_types.size(); ++i)
-		{
-			m_MultiphaseProperties.PhasesProperties[phase_types[i]] = new PhaseProperties(comp_properties.NComponents);
-		}
 
 		//Create Flash pointer
 		switch (flash_type)
@@ -32,6 +28,11 @@ namespace PVTPackage
 				m_CompositionalFlash = new TrivialFlash(comp_properties);
 				break;
 			}
+		case COMPOSITIONAL_FLASH_TYPE::NEGATIVE_OIL_GAS:
+		{
+			m_CompositionalFlash = new NegativeTwoPhaseFlash(comp_properties);
+			break;
+		}
 		case COMPOSITIONAL_FLASH_TYPE::FREE_WATER_FLASH:
 			break;
 		default:

@@ -32,6 +32,127 @@ namespace PVTPackage
 
 	}
 
+	double CompositionalFlash::SolveRachfordRiceEquation(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index)
+	{
+		double gas_phase_mole_fraction=0;
+
+		//Numerical Parameters //TODO: move them outside the function
+		double SSI_tolerance=1e-8;
+		int max_SSI_iterations = 200;
+		double Newton_tolerance = 1e-12;
+		int max_Newton_iterations = 30;
+		double epsilon = std::numeric_limits<double>::epsilon();
+
+		//Min and Max Kvalues for non-zero composition
+		double max_K=0, min_K=1/epsilon;
+		for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
+		{
+			if (Kvalues[*it] > max_K)
+				max_K = Kvalues[*it];
+			if (Kvalues[*it] < min_K)
+				min_K = Kvalues[*it];
+		}
+
+		//Check for trivial solutions. This corresponds to bad Kvalues //TODO:to be fixed
+		if (max_K < 1.0)
+		{
+			return gas_phase_mole_fraction = 0.0;
+		}
+		if (min_K > 1.0)
+		{
+			return gas_phase_mole_fraction = 1.0;
+		}
+
+		//Solver
+			//Find solution window
+		double x_min = 1.0 / (1 - max_K);
+		double x_max = 1.0 / (1 - min_K);
+		double sqrt_epsilon = sqrt(epsilon);
+		x_min = x_min + sqrt_epsilon * (abs(x_min) + sqrt_epsilon);
+		x_max = x_max - sqrt_epsilon * (abs(x_max) + sqrt_epsilon);
+
+		double current_error = 1 / epsilon;
+
+		//SSI loop
+		double func_x_min =0, func_x_mid =0, func_x_max =0;
+		int SSI_iteration=0;
+		while ((current_error > SSI_tolerance)&&(SSI_iteration<max_SSI_iterations))
+		{
+			double x_mid = 0.5*(x_min + x_max);
+			func_x_min = 0, func_x_mid = 0, func_x_max = 0;
+			for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
+			{
+				func_x_min = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_min);
+				func_x_mid = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_mid);
+				func_x_max = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_max);
+			}
+
+			ASSERT(!isnan(func_x_min), "Rachford-Rice solver returns NaN");
+			ASSERT(!isnan(func_x_mid), "Rachford-Rice solver returns NaN");
+			ASSERT(!isnan(func_x_max), "Rachford-Rice solver returns NaN");
+
+			if ((func_x_min < 0) && (func_x_max < 0))
+			{
+				return gas_phase_mole_fraction = 0.0;
+			}
+
+			if ((func_x_min > 1) && (func_x_max > 1))
+			{
+				return gas_phase_mole_fraction = 1.0;
+			}
+
+			if (func_x_min*func_x_mid <0.0)
+			{
+				x_max = x_mid;
+			}
+
+			if (func_x_max*func_x_mid < 0.0)
+			{
+				x_min = x_mid;
+			}
+
+			current_error = std::min(abs(func_x_max - func_x_min),abs(x_max - x_min));
+
+			SSI_iteration++;
+			ASSERT(!(SSI_iteration == max_SSI_iterations), "Rachford-Rice SSI reaches max number of iterations");
+		}
+		gas_phase_mole_fraction = 0.5*(func_x_max + func_x_min);
+
+		//Newton loop
+		int Newton_iteration = 0;
+		double Newton_value = gas_phase_mole_fraction;
+		while ((current_error > Newton_tolerance)&&(Newton_iteration<max_Newton_iterations))
+		{
+			double delta_Newton = -RachfordRiceFunction(Kvalues, feed, non_zero_index, Newton_value) / dRachfordRiceFunction_dx(Kvalues, feed, non_zero_index, Newton_value);
+			current_error = abs(delta_Newton) / abs(Newton_value);
+			Newton_value = Newton_value + delta_Newton;
+			Newton_iteration++;
+			ASSERT(!(Newton_iteration == max_Newton_iterations), "Rachford-Rice Newton reaches max number of iterations");
+		}
+		return gas_phase_mole_fraction = Newton_value;
+
+	}
+
+	double CompositionalFlash::RachfordRiceFunction(const std::vector<double>& Kvalues, const std::vector<double>& feed,const std::list<size_t>& non_zero_index, double x)
+	{
+		double val = 0;
+		for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
+		{
+			val = val + feed[*it] * (Kvalues[*it] - 1.0) / (1.0 + x * (Kvalues[*it] - 1.0));
+		}
+		return val;
+	}
+
+	double CompositionalFlash::dRachfordRiceFunction_dx(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index, double x)
+	{
+		double val = 0;
+		for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
+		{
+			val = val - feed[*it] * (Kvalues[*it] - 1.0)*(Kvalues[*it] - 1.0) / ((1.0 + x * (Kvalues[*it] - 1.0))*(1.0 + x * (Kvalues[*it] - 1.0)));
+		}
+		return val;
+	}
+
 	std::vector<double> CompositionalFlash::ComputeWilsonGasOilKvalue(double Pressure, double Temperature) const
 	{
 		const auto nbc = m_ComponentsProperties.NComponents;
@@ -106,8 +227,6 @@ namespace PVTPackage
 			props_eps.Feed = save_feed;
 			out_variables.UpdateDerivative_dz_FiniteDifference(i,props_eps, epsilon);
 		}
-
-		auto gg = 2;
 
 	}
 

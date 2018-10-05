@@ -14,7 +14,17 @@ namespace PVTPackage
 		{
 		}
 
-		void UpdateDerivative_dP_FiniteDifference(PhaseProperties& props_eps, double epsilon)
+		PhaseProperties():MolecularWeight(0), CompressibilityFactor(0), MoleComposition(0, 0), LnFugacityCoefficients(0, 0),
+			MoleDensity(0),
+			MassDensity(0), Viscosity(0),
+			MassEnthalpy(0), Compressibility(0)
+		{
+			
+			auto df = 2; //TODO: don't know why I need this default constructor. Nothing goes through it but compiler crashes
+
+		}
+
+		void UpdateDerivative_dP_FiniteDifference(const PhaseProperties& props_eps, double epsilon)
 		{
 			CompressibilityFactor.dP = (props_eps.CompressibilityFactor.value - CompressibilityFactor.value) / epsilon;
 			MoleDensity.dP = (props_eps.MoleDensity.value - MoleDensity.value) / epsilon;

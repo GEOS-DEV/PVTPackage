@@ -8,7 +8,6 @@
 
 namespace PVTPackage
 {
-	struct PhaseProperties;
 
 	class BlackOil_WaterModel final : public PhaseModel
 	{
@@ -18,7 +17,7 @@ namespace PVTPackage
 
 		~BlackOil_WaterModel() override = default;
 
-		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties* props_out) override {}
+		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties& props_out) override {}
 
 	protected:
 

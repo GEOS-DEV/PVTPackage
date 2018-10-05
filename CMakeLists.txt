@@ -13,8 +13,6 @@ if (NOT EXISTS ${PROJECT_SOURCE_DIR}/blt/SetupBLT.cmake)
 endif()
 
 include(blt/SetupBLT.cmake)
-#include(cmake/blt/SetupBLT.cmake)
-
 include(cmake/PVTPackage.cmake)
 
 #Path

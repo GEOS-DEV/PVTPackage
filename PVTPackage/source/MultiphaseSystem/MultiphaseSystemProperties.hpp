@@ -15,21 +15,18 @@ namespace PVTPackage
 																								Pressure(0),
 																								Feed(std::vector<double>(ncomponents,0)),
 																								PhaseState(PHASE_STATE::UNKNOWN),
-																								PhaseTypes(std::move(phase_types))
+																								PhaseTypes(phase_types)
 		{
 			for (auto& it : PhaseTypes)
 			{
 				PhaseMoleFraction.insert(std::pair<PHASE_TYPE, ScalarPropertyAndDerivatives<double>>(it, ScalarPropertyAndDerivatives<double>(ncomponents)));
 			}
-		}
 
-		//--Vector of Phase composition (mol/mol) of 'phase' 
-		void set_PhaseState()
-		{
-			PhaseState = PhaseStateMap.at	({	PhaseMoleFraction.at(PHASE_TYPE::OIL).value > 0., 
-												PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0. ,
-												PhaseMoleFraction.at(PHASE_TYPE::LIQUID_WATER_RICH).value > 0.
-											});
+			//Create Phases Properties
+			for (size_t i = 0; i != phase_types.size(); ++i)
+			{
+				PhasesProperties.insert(std::pair<PHASE_TYPE, PhaseProperties>(phase_types[i], PhaseProperties(ncomponents)));
+			}
 		}
 
 		void UpdateDerivative_dP_FiniteDifference(const MultiphaseSystemProperties& props_eps, double epsilon)
@@ -37,7 +34,7 @@ namespace PVTPackage
 			for (auto phase : PhaseTypes)
 			{
 				PhaseMoleFraction.at(phase).dP = (props_eps.PhaseMoleFraction.at(phase).value - PhaseMoleFraction.at(phase).value) / epsilon;
-				PhasesProperties.at(phase)->UpdateDerivative_dP_FiniteDifference(*(props_eps.PhasesProperties.at(phase)), epsilon);
+				PhasesProperties.at(phase).UpdateDerivative_dP_FiniteDifference(props_eps.PhasesProperties.at(phase), epsilon);
 			}
 
 
@@ -49,7 +46,7 @@ namespace PVTPackage
 			for (auto phase : PhaseTypes)
 			{
 				PhaseMoleFraction.at(phase).dT = (props_eps.PhaseMoleFraction.at(phase).value - PhaseMoleFraction.at(phase).value) / epsilon;
-				PhasesProperties.at(phase)->UpdateDerivative_dT_FiniteDifference(*(props_eps.PhasesProperties.at(phase)), epsilon);
+				PhasesProperties.at(phase).UpdateDerivative_dT_FiniteDifference(props_eps.PhasesProperties.at(phase), epsilon);
 			}
 		}
 
@@ -58,7 +55,7 @@ namespace PVTPackage
 			for (auto phase : PhaseTypes)
 			{
 				PhaseMoleFraction.at(phase).dz[i] = (props_eps.PhaseMoleFraction.at(phase).value - PhaseMoleFraction.at(phase).value) / epsilon;
-				PhasesProperties.at(phase)->UpdateDerivative_dz_FiniteDifference(i,*(props_eps.PhasesProperties.at(phase)), epsilon);
+				PhasesProperties.at(phase).UpdateDerivative_dz_FiniteDifference(i,props_eps.PhasesProperties.at(phase), epsilon);
 			}
 		}
 
@@ -81,7 +78,7 @@ namespace PVTPackage
 		std::unordered_map <PHASE_TYPE, ScalarPropertyAndDerivatives<double>> PhaseMoleFraction;
 		
 		//Phases properties
-		std::unordered_map<PHASE_TYPE, PhaseProperties*> PhasesProperties;
+		std::unordered_map<PHASE_TYPE, PhaseProperties> PhasesProperties;
 
 	};
 

@@ -18,7 +18,7 @@ int main()
 	auto Mw = { 28e-3,134e-3,275e-3,18e-3 };
 	auto nbc = Pc.size();
 	const ComponentProperties CompProps(nbc, Labels, Mw, Tc, Pc, Omega);
-	auto PVTSystem = CompositionalMultiphaseSystem({ PHASE_TYPE::OIL,PHASE_TYPE::GAS,PHASE_TYPE::LIQUID_WATER_RICH }, { EOS_TYPE::PENG_ROBINSON,EOS_TYPE::PENG_ROBINSON,EOS_TYPE::PENG_ROBINSON }, COMPOSITIONAL_FLASH_TYPE::TRIVIAL, CompProps);
+	auto PVTSystem = CompositionalMultiphaseSystem({ PHASE_TYPE::OIL,PHASE_TYPE::GAS }, { EOS_TYPE::PENG_ROBINSON,EOS_TYPE::PENG_ROBINSON }, COMPOSITIONAL_FLASH_TYPE::NEGATIVE_OIL_GAS, CompProps);
 
 	//Domain
 	const size_t NBlocks = static_cast<size_t>(1e1);

@@ -18,9 +18,9 @@ namespace PVTPackage
 
 		const auto nbc = m_ComponentsProperties.NComponents;
 
-		auto& gas_comp = out_variables.PhasesProperties.at(PHASE_TYPE::GAS)->MoleComposition.value = std::vector<double>(nbc,0);
-		auto& oil_comp = out_variables.PhasesProperties.at(PHASE_TYPE::OIL)->MoleComposition.value = std::vector<double>(nbc,0);
-		auto& water_comp = out_variables.PhasesProperties.at(PHASE_TYPE::LIQUID_WATER_RICH)->MoleComposition.value = std::vector<double>(nbc,0);
+		auto& gas_comp = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).MoleComposition.value = std::vector<double>(nbc,0);
+		auto& oil_comp = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).MoleComposition.value = std::vector<double>(nbc,0);
+		auto& water_comp = out_variables.PhasesProperties.at(PHASE_TYPE::LIQUID_WATER_RICH).MoleComposition.value = std::vector<double>(nbc,0);
 
 		auto KGasOil = ComputeWilsonGasOilKvalue(pressure, temperature);
 		auto KWaterGas = ComputeWaterGasKvalue(pressure, temperature);
@@ -71,15 +71,17 @@ namespace PVTPackage
 			water_comp[i] = water_comp[i] / Vw;
 		}
 
-		//Compute Phase State
-		out_variables.set_PhaseState();
+
 
 		//Phase Properties
 		for (auto& m_PhaseModel : out_variables.PhaseModels)
 		{
-			auto& comp = out_variables.PhasesProperties.at(m_PhaseModel.first)->MoleComposition.value;
+			auto& comp = out_variables.PhasesProperties.at(m_PhaseModel.first).MoleComposition.value;
 			m_PhaseModel.second->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties[m_PhaseModel.first]);
 		}
+
+		//Compute Phase State
+		set_PhaseState(out_variables);
 
 
 	}
