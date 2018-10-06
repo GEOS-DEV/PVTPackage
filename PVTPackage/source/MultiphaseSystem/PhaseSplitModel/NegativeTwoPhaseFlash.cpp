@@ -14,7 +14,7 @@ namespace PVTPackage
 		const auto& temperature = out_variables.Temperature;
 		const auto& feed = out_variables.Feed;
 
-		ASSERT(math::sum_array(feed) == 1, "Feed sum must be 1");
+		ASSERT(std::fabs(math::sum_array(feed) - 1.0) < 1e-12, "Feed sum must be 1");
 
 		const auto nbc = m_ComponentsProperties.NComponents;
 
