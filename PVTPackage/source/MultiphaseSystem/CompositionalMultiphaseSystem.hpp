@@ -10,21 +10,19 @@ namespace PVTPackage
 	public:
 
 		CompositionalMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
-		                       std::vector<EOS_TYPE> eos_types, COMPOSITIONAL_FLASH_TYPE flash_type,
-		                       ComponentProperties comp_properties);
+			std::vector<EOS_TYPE> eos_types, COMPOSITIONAL_FLASH_TYPE flash_type,
+			const ComponentProperties& comp_properties);
 
-		~CompositionalMultiphaseSystem();
+
+		~CompositionalMultiphaseSystem() override;
 
 		void Update(double pressure, double temperature, std::vector<double> feed) override;
-
-		//void Flash(double pressure, double temperature, std::vector<double> feed, PhaseSplitModelOutputVariables& out_variables) override;
 
 	protected:
 
 		//Flash pointer
 		CompositionalFlash* m_CompositionalFlash;
-
-		
+	
 	};
 
 }

@@ -3,30 +3,37 @@
 #include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
 #include <vector>
 #include <numeric>
+#include "Utils/math.hpp"
 
 namespace PVTPackage
 {
-	void TrivialFlash::ComputeEquilibrium(double pressure, double temperature, std::vector<double> feed, MultiphaseSystemProperties* out_variables)
+	void TrivialFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
 	{
 
-		const auto nbc = m_ComponentsProperties->NComponents;
+		const auto& pressure = out_variables.Pressure;
+		const auto& temperature = out_variables.Temperature;
+		const auto& feed = out_variables.Feed;
 
-		auto& gas_comp = out_variables->MoleComposition[PHASE_TYPE::GAS] = std::vector<double>(nbc);
-		auto& oil_comp = out_variables->MoleComposition[PHASE_TYPE::OIL] = std::vector<double>(nbc);
-		auto& water_comp = out_variables->MoleComposition[PHASE_TYPE::LIQUID_WATER_RICH] = std::vector<double>(nbc);
+		ASSERT(math::sum_array(feed) == 1, "Feed sum must be 1");
+
+		const auto nbc = m_ComponentsProperties.NComponents;
+
+		auto& gas_comp = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).MoleComposition.value = std::vector<double>(nbc,0);
+		auto& oil_comp = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).MoleComposition.value = std::vector<double>(nbc,0);
+		auto& water_comp = out_variables.PhasesProperties.at(PHASE_TYPE::LIQUID_WATER_RICH).MoleComposition.value = std::vector<double>(nbc,0);
 
 		auto KGasOil = ComputeWilsonGasOilKvalue(pressure, temperature);
 		auto KWaterGas = ComputeWaterGasKvalue(pressure, temperature);
 		auto KWaterOil = ComputeWaterOilKvalue(pressure, temperature);
 
 		//Trivial split
-		auto& Vo = out_variables->MoleFraction[PHASE_TYPE::OIL] = 0;
-		auto& Vg = out_variables->MoleFraction[PHASE_TYPE::GAS] = 0;
-		auto& Vw = out_variables->MoleFraction[PHASE_TYPE::LIQUID_WATER_RICH] = 0;
+		auto& Vo = out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value = 0;
+		auto& Vg = out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value = 0;
+		auto& Vw = out_variables.PhaseMoleFraction.at(PHASE_TYPE::LIQUID_WATER_RICH).value = 0;
 
 		for (size_t i = 0; i != nbc; ++i)
 		{
-			if (i != m_ComponentsProperties->WaterIndex)
+			if (i != m_ComponentsProperties.WaterIndex)
 			{
 				//gas-oil
 				if (KGasOil[i] > 1)
@@ -56,7 +63,6 @@ namespace PVTPackage
 			}
 		}
 
-		
 		//gas_comp = gas_comp / Vg;
 		for (size_t i = 0; i != nbc; ++i)
 		{
@@ -65,8 +71,17 @@ namespace PVTPackage
 			water_comp[i] = water_comp[i] / Vw;
 		}
 
+
+
+		//Phase Properties
+		for (auto& m_PhaseModel : out_variables.PhaseModels)
+		{
+			auto& comp = out_variables.PhasesProperties.at(m_PhaseModel.first).MoleComposition.value;
+			m_PhaseModel.second->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties[m_PhaseModel.first]);
+		}
+
 		//Compute Phase State
-		out_variables->set_PhaseState();
+		set_PhaseState(out_variables);
 
 
 	}

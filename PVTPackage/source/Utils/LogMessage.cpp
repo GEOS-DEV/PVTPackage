@@ -1,18 +1,26 @@
 // Header include
 #include "Utils/LogMessage.hpp"
 
-LogMessage* LogMessage::s_instance = nullptr;
-
 LogMessage* LogMessage::instance()
 {
   return instance(VerbosityLevelLogFile::INFO);
 }
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wexit-time-destructors"
+#pragma clang diagnostic ignored "-Wglobal-constructors"
+#endif
 
 LogMessage* LogMessage::instance(VerbosityLevelLogFile lvl)
 {
   static LogMessage s_instance(lvl);
   return &s_instance;
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 LogMessage::LogMessage()
 {

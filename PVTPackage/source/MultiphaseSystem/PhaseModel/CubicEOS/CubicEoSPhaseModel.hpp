@@ -9,8 +9,6 @@
 
 namespace PVTPackage
 {
-	struct CubicEoSPhaseProperties;
-
 	class CubicEoSPhaseModel final : public PhaseModel
 	{
 	public:
@@ -23,12 +21,14 @@ namespace PVTPackage
 			Init();
 		}
 
+		~CubicEoSPhaseModel() override = default;
+
 		const ComponentProperties& get_ComponentsProperties() 
 		{
 			return m_ComponentsProperties;
 		}
 
-		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties* props_out);
+		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties& props_out) override;
 
 	protected:
 

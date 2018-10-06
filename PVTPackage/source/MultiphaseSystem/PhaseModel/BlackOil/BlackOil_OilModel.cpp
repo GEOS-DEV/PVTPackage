@@ -209,8 +209,8 @@ namespace PVTPackage
 					lower_branch_index = upper_branch_index;
 				}
 
-				auto dRs_up = abs(m_PVTO.Rs[upper_branch_index] - m_PVTO.Rs[i_current]);
-				auto dRs_dn = abs(m_PVTO.Rs[i_current] - m_PVTO.Rs[lower_branch_index]);
+				auto dRs_up = std::fabs(m_PVTO.Rs[upper_branch_index] - m_PVTO.Rs[i_current]);
+				auto dRs_dn = std::fabs(m_PVTO.Rs[i_current] - m_PVTO.Rs[lower_branch_index]);
 
 				//Generate merge of pressures
 				std::vector<double> p_target;
@@ -262,8 +262,6 @@ namespace PVTPackage
 					auto Visc_slope = (1 / dRs_up * Visc_slope_up + 1 / dRs_dn * Visc_slope_dn) / (1 / dRs_up + 1 / dRs_dn);
 					m_PVTO.UndersaturatedViscosity[i_current].push_back(m_PVTO.UndersaturatedViscosity[i_current][i - 1] + Visc_slope * (p_target[i] - p_target[i - 1]));
 				}
-
-				auto ii = 1;
 
 			}
 

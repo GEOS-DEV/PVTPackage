@@ -1,3 +1,18 @@
-#include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
+#include "PhaseModel.hpp"
 
 
+namespace PVTPackage
+{
+
+PhaseModel::PhaseModel()
+{
+
+}
+
+PhaseModel::~PhaseModel()
+{
+
+}
+
+
+}

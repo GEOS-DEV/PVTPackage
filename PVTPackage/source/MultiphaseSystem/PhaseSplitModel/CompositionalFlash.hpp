@@ -12,22 +12,28 @@ namespace PVTPackage
 	class CompositionalFlash
 	{
 	public:
-		virtual ~CompositionalFlash();
 
-		CompositionalFlash(std::unordered_map<PHASE_TYPE, PhaseModel*>& phase_models);
+		virtual ~CompositionalFlash() = default;
 
-		virtual void ComputeEquilibrium(double pressure, double temperature, std::vector<double> feed, MultiphaseSystemProperties* out_variables)=0;
+		CompositionalFlash(const ComponentProperties& component_properties);
+
+		void ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables);
+		double SolveRachfordRiceEquation(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index);
+		double RachfordRiceFunction(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index, double x);
+		double dRachfordRiceFunction_dx(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index, double x);
+
+		virtual void set_PhaseState(MultiphaseSystemProperties& out_variables) = 0;
+		virtual void ComputeEquilibrium(MultiphaseSystemProperties& out_variables)=0;
 
 	protected:
-		std::unordered_map<PHASE_TYPE, PhaseModel*> m_PhaseModels;
 
-		//Component properties
-		const ComponentProperties* m_ComponentsProperties;
+		const ComponentProperties& m_ComponentsProperties;
 
 		//Wilson K-values
 		std::vector<double> ComputeWilsonGasOilKvalue(double Pressure, double Temperature) const;
 		std::vector<double> ComputeWaterGasKvalue(double Pressure, double Temperature) const;
 		std::vector<double> ComputeWaterOilKvalue(double Pressure, double Temperature) const;
 
+		void ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables);
 	};
 }

@@ -6,6 +6,7 @@
 #include <vector>
 #include <type_traits>
 #include <numeric>
+#include <cmath>
 #include "Assert.hpp"
 
 namespace math
@@ -132,18 +133,19 @@ std::vector<T> ScalarMultiply(std::vector<T>& in, T scalar)
 template<typename T>
 void FindSurrondingIndex(std::vector<T>& x, T xval, size_t& iminus, size_t& iplus)
 {
+	constexpr double eps = 1e-16;
 	//Search for interval
 	iminus = 0; iplus = 0;
 	for (size_t i = 0; i != x.size(); ++i)
 	{
-		if (x[i] == xval)
+		if (std::fabs(x[i] - xval) < eps * std::fabs(xval))
 		{
 			iminus = i;
 			iplus = i;
 			break;
 		}
 
-		if (x[i] >= xval)
+		if (x[i] > xval)
 		{
 			iminus = i - 1;
 			iplus = i;
@@ -158,6 +160,19 @@ void FindSurrondingIndex(std::vector<T>& x, T xval, size_t& iminus, size_t& iplu
 	}
 
 }
+
+template<typename T>
+std::vector<T> Normalize(const std::vector<T>& xin)
+{
+	std::vector<T> xout = xin;
+	auto sum = sum_array(xin);
+	for (size_t n = 0; n != xout.size(); ++n)
+	{
+		xout[n] = xout[n] / sum;
+	}
+	return xout;
+}
+
 
 template<typename T>
 std::vector<T> Interpolation1 (std::vector<T>& xin, std::vector<T>& yin, std::vector<T> xout)

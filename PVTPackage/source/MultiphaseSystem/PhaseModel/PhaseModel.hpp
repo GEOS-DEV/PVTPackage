@@ -9,10 +9,11 @@ namespace PVTPackage
 	{
 	public:
 
-		PhaseModel()
-		{
-		}
-		virtual void ComputeAllProperties (double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties* props_out)=0;
+		PhaseModel();
+
+		virtual ~PhaseModel();
+
+		virtual void ComputeAllProperties (double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties& props_out)=0;
 
 	};
 }
