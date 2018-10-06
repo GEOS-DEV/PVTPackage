@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include <list>
 #include "MultiphaseSystem/PVTEnums.hpp"
 #include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
 #include "MultiphaseSystem/ComponentProperties.hpp"

@@ -68,8 +68,8 @@ namespace PVTPackage
 		double x_min = 1.0 / (1 - max_K);
 		double x_max = 1.0 / (1 - min_K);
 		double sqrt_epsilon = sqrt(epsilon);
-		x_min = x_min + sqrt_epsilon * (abs(x_min) + sqrt_epsilon);
-		x_max = x_max - sqrt_epsilon * (abs(x_max) + sqrt_epsilon);
+		x_min = x_min + sqrt_epsilon * (std::fabs(x_min) + sqrt_epsilon);
+		x_max = x_max - sqrt_epsilon * (std::fabs(x_max) + sqrt_epsilon);
 
 		double current_error = 1 / epsilon;
 
@@ -79,7 +79,7 @@ namespace PVTPackage
 		while ((current_error > SSI_tolerance)&&(SSI_iteration<max_SSI_iterations))
 		{
 			double x_mid = 0.5*(x_min + x_max);
-			func_x_min = 0, func_x_mid = 0, func_x_max = 0;
+			func_x_min = 0; func_x_mid = 0; func_x_max = 0;
 			for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
 			{
 				func_x_min = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_min);
@@ -87,9 +87,9 @@ namespace PVTPackage
 				func_x_max = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_max);
 			}
 
-			ASSERT(!isnan(func_x_min), "Rachford-Rice solver returns NaN");
-			ASSERT(!isnan(func_x_mid), "Rachford-Rice solver returns NaN");
-			ASSERT(!isnan(func_x_max), "Rachford-Rice solver returns NaN");
+			ASSERT(!std::isnan(func_x_min), "Rachford-Rice solver returns NaN");
+			ASSERT(!std::isnan(func_x_mid), "Rachford-Rice solver returns NaN");
+			ASSERT(!std::isnan(func_x_max), "Rachford-Rice solver returns NaN");
 
 			if ((func_x_min < 0) && (func_x_max < 0))
 			{
@@ -111,7 +111,7 @@ namespace PVTPackage
 				x_min = x_mid;
 			}
 
-			current_error = std::min(abs(func_x_max - func_x_min),abs(x_max - x_min));
+			current_error = std::min(std::fabs(func_x_max - func_x_min),std::fabs(x_max - x_min));
 
 			SSI_iteration++;
 			ASSERT(!(SSI_iteration == max_SSI_iterations), "Rachford-Rice SSI reaches max number of iterations");
@@ -124,7 +124,7 @@ namespace PVTPackage
 		while ((current_error > Newton_tolerance)&&(Newton_iteration<max_Newton_iterations))
 		{
 			double delta_Newton = -RachfordRiceFunction(Kvalues, feed, non_zero_index, Newton_value) / dRachfordRiceFunction_dx(Kvalues, feed, non_zero_index, Newton_value);
-			current_error = abs(delta_Newton) / abs(Newton_value);
+			current_error = std::fabs(delta_Newton) / std::fabs(Newton_value);
 			Newton_value = Newton_value + delta_Newton;
 			Newton_iteration++;
 			ASSERT(!(Newton_iteration == max_Newton_iterations), "Rachford-Rice Newton reaches max number of iterations");
@@ -199,14 +199,14 @@ namespace PVTPackage
 		MultiphaseSystemProperties props_eps = out_variables;
 
 		////Pressure
-		epsilon = sqrtprecision * (abs(pressure) + sqrtprecision);
+		epsilon = sqrtprecision * (std::fabs(pressure) + sqrtprecision);
 		props_eps.Pressure = pressure + epsilon;
 		ComputeEquilibrium(props_eps);
 		props_eps.Pressure = pressure;
 		out_variables.UpdateDerivative_dP_FiniteDifference(props_eps, epsilon);
 
 		////Temperature
-		epsilon = sqrtprecision * (abs(temperature) + sqrtprecision);
+		epsilon = sqrtprecision * (std::fabs(temperature) + sqrtprecision);
 		props_eps.Temperature = temperature + epsilon;
 		ComputeEquilibrium(props_eps);
 		props_eps.Temperature = temperature;
@@ -215,7 +215,7 @@ namespace PVTPackage
 		//Feed
 		for (size_t i=0; i<feed.size();++i)
 		{
-			epsilon = sqrtprecision * (abs(feed[i]) + sqrtprecision);
+			epsilon = sqrtprecision * (std::fabs(feed[i]) + sqrtprecision);
 			if (feed[i] + epsilon > 1)
 			{
 				epsilon = -epsilon;
