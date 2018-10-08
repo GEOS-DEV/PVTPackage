@@ -28,7 +28,7 @@ namespace PVTPackage
 
 	protected:
 
-		const ComponentProperties& m_ComponentsProperties;
+		ComponentProperties m_ComponentsProperties;
 
 		//Wilson K-values
 		std::vector<double> ComputeWilsonGasOilKvalue(double Pressure, double Temperature) const;
