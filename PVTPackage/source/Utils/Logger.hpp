@@ -6,6 +6,7 @@
 #include "Utils/LogMessage.hpp"
 
 // Std library includes
+#include <iomanip>
 #include <fstream>
 #include <chrono>
 #include <iostream>
