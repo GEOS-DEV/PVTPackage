@@ -15,7 +15,7 @@ namespace math
 template <typename Array>
 typename Array::value_type sum_array(const Array& args)
 {
-  return std::accumulate(args.begin(), args.end(), Array::value_type(0), std::plus<typename Array::value_type>());
+  return std::accumulate(args.begin(), args.end(), typename Array::value_type(0), std::plus<typename Array::value_type>());
 }
 
 template <typename... Ts, typename std::common_type<int, Ts...>::type* = nullptr>
