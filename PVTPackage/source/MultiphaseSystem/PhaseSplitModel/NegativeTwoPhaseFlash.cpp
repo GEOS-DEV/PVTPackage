@@ -7,8 +7,11 @@
 
 namespace PVTPackage
 {
-	void NegativeTwoPhaseFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
+	bool NegativeTwoPhaseFlash::ComputeEquilibrium(MultiphaseSystemProperties & out_variables)
 	{
+		// Equilibrium convergence parameters
+		const int max_SSI_iterations = 100;
+		const double fug_epsilon = 1e-6;
 
 		const auto& pressure = out_variables.Pressure;
 		const auto& temperature = out_variables.Temperature;
@@ -18,11 +21,16 @@ namespace PVTPackage
 
 		const auto nbc = m_ComponentsProperties.NComponents;
 
-		auto& gas_comp = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).MoleComposition.value = std::vector<double>(nbc, 0);
-		auto& oil_comp = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).MoleComposition.value = std::vector<double>(nbc, 0);
+		auto& oil_comp = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).MoleComposition.value;
+		auto& gas_comp = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).MoleComposition.value;
 
 		auto& oil_fraction = out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value;
 		auto& gas_fraction = out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value;
+
+		auto& oil_ln_fug = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).LnFugacityCoefficients.value;
+		auto& gas_ln_fug = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).LnFugacityCoefficients.value;
+
+		std::vector<double> fug_ratio(nbc);
 
 		auto KGasOil = ComputeWilsonGasOilKvalue(pressure, temperature);
 
@@ -37,25 +45,57 @@ namespace PVTPackage
 			}
 		}
 
-		//Solve RachfordRice Equation
-		double vapor_fraction = 0;
-		vapor_fraction = SolveRachfordRiceEquation(KGasOil, feed, positive_components);
-		gas_fraction = vapor_fraction;
-		oil_fraction = 1.0 - gas_fraction;
+		gas_comp.assign(nbc, 0.0);
+		oil_comp.assign(nbc, 0.0);
 
-		//Phase Mole Fractions
-		gas_comp = std::vector<double>(nbc, 0);
-		oil_comp = std::vector<double>(nbc, 0);
-		for (auto it= positive_components.begin();it!= positive_components.end();++it)
+		int iter;
+		for (iter = 0; iter < max_SSI_iterations; ++iter)
 		{
-			gas_comp[*it] = feed[*it] / (1.0 + vapor_fraction * (KGasOil[*it] - 1.0));
-			oil_comp[*it] = KGasOil[*it] * gas_comp[*it];
-		}
-		gas_comp = math::Normalize(gas_comp);
-		oil_comp = math::Normalize(oil_comp);
+			// Solve Rachford-Rice Equation
+			const double vapor_fraction = SolveRachfordRiceEquation(KGasOil, feed, positive_components);
+			gas_fraction = vapor_fraction;
+			oil_fraction = 1.0 - gas_fraction;
 
-		//Retrieve physical bounds from negative flash values
-		if (gas_fraction>=1.0)
+			// Assign phase compositions
+			for (auto ic : positive_components)
+			{
+				oil_comp[ic] = feed[ic] / (1.0 + vapor_fraction * (KGasOil[ic] - 1.0));
+				gas_comp[ic] = KGasOil[ic] * oil_comp[ic];
+			}
+      oil_comp = math::Normalize(oil_comp);
+      gas_comp = math::Normalize(gas_comp);
+
+			// Compute phase fugacity
+			// TODO remove redundant computations, only fugacity needed
+			for (auto & m_PhaseModel : out_variables.PhaseModels)
+			{
+				auto & comp = out_variables.PhasesProperties.at(m_PhaseModel.first).MoleComposition.value;
+				m_PhaseModel.second->ComputeAllProperties(pressure, temperature, comp,
+																									out_variables.PhasesProperties[m_PhaseModel.first]);
+			}
+
+			// Compute fugacity ratio and check convergence
+			bool converged = true;
+
+			for (auto ic : positive_components)
+			{
+				fug_ratio[ic] = std::exp(oil_ln_fug[ic] - gas_ln_fug[ic]) * oil_comp[ic] / gas_comp[ic];
+				if (std::fabs(fug_ratio[ic] - 1.0) > fug_epsilon)
+					converged = false;
+			}
+
+			if (converged)
+				break;
+
+			// Update K-values
+      for (auto ic : positive_components)
+      {
+        KGasOil[ic] *= fug_ratio[ic];
+      }
+		}
+
+		// Retrieve physical bounds from negative flash values
+		if (gas_fraction >= 1.0)
 		{
 			gas_fraction = 1.0;
 			gas_comp = feed;
@@ -64,19 +104,22 @@ namespace PVTPackage
 		if (gas_fraction <= 0.0)
 		{
 			gas_fraction = 0.0;
-			oil_fraction = 1.0; 
+			oil_fraction = 1.0;
 			oil_comp = feed;
 		}
 
-		//Phase Properties
-		for (auto& m_PhaseModel : out_variables.PhaseModels)
+		// Compute final phase properties
+		for (auto & m_PhaseModel : out_variables.PhaseModels)
 		{
-			auto& comp = out_variables.PhasesProperties.at(m_PhaseModel.first).MoleComposition.value;
-			m_PhaseModel.second->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties[m_PhaseModel.first]);
+			auto & comp = out_variables.PhasesProperties.at(m_PhaseModel.first).MoleComposition.value;
+			m_PhaseModel.second->ComputeAllProperties(pressure, temperature, comp,
+																								out_variables.PhasesProperties[m_PhaseModel.first]);
 		}
 
-		//Compute Phase State
+		// Compute final phase state
 		set_PhaseState(out_variables);
+
+		return iter != max_SSI_iterations;
 
 	}
 }

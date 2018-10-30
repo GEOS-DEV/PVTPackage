@@ -22,13 +22,15 @@ namespace PVTPackage
 		//m_ComponentsProperties = &dynamic_cast<CubicEoSPhaseModel*>(phase_models.begin()->second)->get_ComponentsProperties();
 	}
 
-	void CompositionalFlash::ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables)
+	bool CompositionalFlash::ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties & out_variables)
 	{
 		//Compute Equilibrium
-		ComputeEquilibrium(out_variables);
+		const bool success = ComputeEquilibrium(out_variables);
 
 		//Finite difference derivatives
 		ComputeFiniteDifferenceDerivatives(out_variables);
+
+		return success;
 
 	}
 
@@ -40,7 +42,7 @@ namespace PVTPackage
 		double SSI_tolerance=1e-8;
 		int max_SSI_iterations = 200;
 		double Newton_tolerance = 1e-12;
-		int max_Newton_iterations = 30;
+		int max_Newton_iterations = 100;
 		double epsilon = std::numeric_limits<double>::epsilon();
 
 		//Min and Max Kvalues for non-zero composition
@@ -114,7 +116,7 @@ namespace PVTPackage
 			current_error = std::min(std::fabs(func_x_max - func_x_min),std::fabs(x_max - x_min));
 
 			SSI_iteration++;
-			ASSERT(!(SSI_iteration == max_SSI_iterations), "Rachford-Rice SSI reaches max number of iterations");
+			ASSERT(SSI_iteration != max_SSI_iterations, "Rachford-Rice SSI reaches max number of iterations");
 		}
 		gas_phase_mole_fraction = 0.5*(func_x_max + func_x_min);
 
@@ -127,7 +129,7 @@ namespace PVTPackage
 			current_error = std::fabs(delta_Newton) / std::fabs(Newton_value);
 			Newton_value = Newton_value + delta_Newton;
 			Newton_iteration++;
-			ASSERT(!(Newton_iteration == max_Newton_iterations), "Rachford-Rice Newton reaches max number of iterations");
+			ASSERT(Newton_iteration != max_Newton_iterations, "Rachford-Rice Newton reaches max number of iterations");
 		}
 		return gas_phase_mole_fraction = Newton_value;
 
@@ -136,9 +138,10 @@ namespace PVTPackage
 	double CompositionalFlash::RachfordRiceFunction(const std::vector<double>& Kvalues, const std::vector<double>& feed,const std::list<size_t>& non_zero_index, double x)
 	{
 		double val = 0;
-		for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
+		for (auto ic : non_zero_index)
 		{
-			val = val + feed[*it] * (Kvalues[*it] - 1.0) / (1.0 + x * (Kvalues[*it] - 1.0));
+			const double K = (Kvalues[ic] - 1.0);
+			val = val + feed[ic] * K / (1.0 + x * K);
 		}
 		return val;
 	}
@@ -146,9 +149,11 @@ namespace PVTPackage
 	double CompositionalFlash::dRachfordRiceFunction_dx(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index, double x)
 	{
 		double val = 0;
-		for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
+		for (auto ic : non_zero_index)
 		{
-			val = val - feed[*it] * (Kvalues[*it] - 1.0)*(Kvalues[*it] - 1.0) / ((1.0 + x * (Kvalues[*it] - 1.0))*(1.0 + x * (Kvalues[*it] - 1.0)));
+			const double K = (Kvalues[ic] - 1.0);
+			const double R = K / (1.0 + x * K);
+			val = val - feed[ic] * R * R;
 		}
 		return val;
 	}
@@ -187,7 +192,7 @@ namespace PVTPackage
 		return std::vector<double>(nbc, 0);
 	}
 
-	void CompositionalFlash::ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables)
+	bool CompositionalFlash::ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties & out_variables)
 	{
 		const auto& pressure = out_variables.Pressure;
 		const auto& temperature = out_variables.Temperature;
@@ -196,19 +201,21 @@ namespace PVTPackage
 		auto  sqrtprecision = sqrt(std::numeric_limits<double>::epsilon());
 		double epsilon = 0;
 
+		bool success = true;
+
 		MultiphaseSystemProperties props_eps = out_variables;
 
 		////Pressure
 		epsilon = sqrtprecision * (std::fabs(pressure) + sqrtprecision);
 		props_eps.Pressure = pressure + epsilon;
-		ComputeEquilibrium(props_eps);
+		success &= ComputeEquilibrium(props_eps);
 		props_eps.Pressure = pressure;
 		out_variables.UpdateDerivative_dP_FiniteDifference(props_eps, epsilon);
 
 		////Temperature
 		epsilon = sqrtprecision * (std::fabs(temperature) + sqrtprecision);
 		props_eps.Temperature = temperature + epsilon;
-		ComputeEquilibrium(props_eps);
+		success &= ComputeEquilibrium(props_eps);
 		props_eps.Temperature = temperature;
 		out_variables.UpdateDerivative_dT_FiniteDifference(props_eps, epsilon);
 
@@ -223,10 +230,12 @@ namespace PVTPackage
 			auto save_feed = feed;
 			props_eps.Feed[i] = feed[i] + epsilon;
 			props_eps.Feed = math::Normalize(props_eps.Feed);
-			ComputeEquilibrium(props_eps);
+			success &= ComputeEquilibrium(props_eps);
 			props_eps.Feed = save_feed;
 			out_variables.UpdateDerivative_dz_FiniteDifference(i,props_eps, epsilon);
 		}
+
+		return success;
 
 	}
 

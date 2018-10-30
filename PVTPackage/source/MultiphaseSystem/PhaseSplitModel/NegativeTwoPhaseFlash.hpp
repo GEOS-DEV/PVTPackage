@@ -25,7 +25,7 @@ namespace PVTPackage
 				});
 		}
 
-		void ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
+		bool ComputeEquilibrium(MultiphaseSystemProperties & out_variables) override;
 
 	protected:
 

@@ -7,7 +7,7 @@
 
 namespace PVTPackage
 {
-	void TrivialFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
+	bool TrivialFlash::ComputeEquilibrium(MultiphaseSystemProperties & out_variables)
 	{
 
 		const auto& pressure = out_variables.Pressure;
@@ -83,7 +83,7 @@ namespace PVTPackage
 		//Compute Phase State
 		set_PhaseState(out_variables);
 
-
+		return true;
 	}
 }
 

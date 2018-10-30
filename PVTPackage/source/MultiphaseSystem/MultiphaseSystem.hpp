@@ -13,13 +13,21 @@ namespace PVTPackage
 	class MultiphaseSystem
 	{
 	public:
+
+		enum class State { NOT_INITIALIZED, SUCCESS, NOT_CONVERGED, FATAL_ERROR, NOT_IMPLEMENTED };
+
 		virtual ~MultiphaseSystem() = default;
 
-		MultiphaseSystem(size_t nc, const std::vector<PHASE_TYPE>& phase_types) : m_MultiphaseProperties(phase_types,nc)
+		MultiphaseSystem(size_t nc, const std::vector<PHASE_TYPE>& phase_types) :
+		m_MultiphaseProperties(phase_types,nc),
+		m_StateIndicator(State::NOT_INITIALIZED)
 		{
 		}
 
-		virtual void Update(double pressure, double temperature, std::vector<double> feed)=0;
+		virtual void Update(double pressure, double temperature, std::vector<double> feed)
+		{
+			m_StateIndicator = State::NOT_IMPLEMENTED;
+		}
 
 		//--Getters
 		const MultiphaseSystemProperties& get_MultiphaseSystemProperties() const
@@ -32,10 +40,18 @@ namespace PVTPackage
 			return m_MultiphaseProperties.PhasesProperties.at(phase_type);
 		}
 
+		State getState()
+		{
+			return m_StateIndicator;
+		}
+
 	protected:
 
 		//Properties
 		MultiphaseSystemProperties m_MultiphaseProperties;
+
+		//Success indicator for system state update
+		State m_StateIndicator;
 
 	};
 

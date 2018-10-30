@@ -52,7 +52,9 @@ namespace PVTPackage
 		m_MultiphaseProperties.Feed = feed;
 
 		//Multiphase Properties
-		m_CompositionalFlash->ComputeEquilibriumAndDerivatives(m_MultiphaseProperties);
+		bool success = m_CompositionalFlash->ComputeEquilibriumAndDerivatives(m_MultiphaseProperties);
+
+		m_StateIndicator =  success ? State::SUCCESS : State::NOT_CONVERGED;
 	}
 
 
