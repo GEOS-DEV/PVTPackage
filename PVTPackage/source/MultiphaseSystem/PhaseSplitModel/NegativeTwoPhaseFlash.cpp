@@ -11,7 +11,7 @@ namespace PVTPackage
 	{
 		// Equilibrium convergence parameters
 		const int max_SSI_iterations = 100;
-		const double fug_epsilon = 1e-6;
+		const double fug_epsilon = 1e-8;
 
 		const auto& pressure = out_variables.Pressure;
 		const auto& temperature = out_variables.Temperature;
