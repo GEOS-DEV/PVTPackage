@@ -116,7 +116,9 @@ namespace PVTPackage
 			current_error = std::min(std::fabs(func_x_max - func_x_min),std::fabs(x_max - x_min));
 
 			SSI_iteration++;
-			ASSERT(SSI_iteration != max_SSI_iterations, "Rachford-Rice SSI reaches max number of iterations");
+
+			if (SSI_iteration == max_SSI_iterations)
+				LOGWARNING("Rachford-Rice SSI reached max number of iterations");
 		}
 		gas_phase_mole_fraction = 0.5*(func_x_max + func_x_min);
 
@@ -129,7 +131,9 @@ namespace PVTPackage
 			current_error = std::fabs(delta_Newton) / std::fabs(Newton_value);
 			Newton_value = Newton_value + delta_Newton;
 			Newton_iteration++;
-			ASSERT(Newton_iteration != max_Newton_iterations, "Rachford-Rice Newton reaches max number of iterations");
+
+			if (Newton_iteration == max_Newton_iterations)
+				LOGWARNING("Rachford-Rice Newton reached max number of iterations");
 		}
 		return gas_phase_mole_fraction = Newton_value;
 
