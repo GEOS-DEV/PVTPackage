@@ -18,8 +18,6 @@ namespace PVTPackage
 														 std::vector<double> MW);
 		~BlackOilMultiphaseSystem();
 
-		void Update(double pressure, double temperature, std::vector<double> feed) override;
-
 		//void Flash(double pressure, double temperature, std::vector<double> feed, PhaseSplitModelOutputVariables& out_variables) override;
 
 	protected:

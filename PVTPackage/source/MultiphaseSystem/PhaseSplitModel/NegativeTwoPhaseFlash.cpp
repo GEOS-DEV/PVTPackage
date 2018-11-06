@@ -1,6 +1,7 @@
 #include "MultiphaseSystem/PhaseSplitModel/NegativeTwoPhaseFlash.hpp"
 #include "MultiphaseSystem/ComponentProperties.hpp"
 #include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
+#include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
 #include <vector>
 #include <numeric>
 #include "Utils/math.hpp"

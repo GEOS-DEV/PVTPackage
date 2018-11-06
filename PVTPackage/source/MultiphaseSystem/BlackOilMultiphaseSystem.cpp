@@ -56,21 +56,9 @@ namespace PVTPackage
 	}
 
 	
-
-
 	BlackOilMultiphaseSystem::~BlackOilMultiphaseSystem()
 	{
 		delete m_BlackOilFlash;
-	}
-
-	void BlackOilMultiphaseSystem::Update(double pressure, double temperature, std::vector<double> feed)
-	{
-		m_MultiphaseProperties.Temperature = temperature;
-		m_MultiphaseProperties.Pressure = pressure;
-		m_MultiphaseProperties.Feed = feed;
-
-		//Multiphase Properties
-		m_BlackOilFlash->ComputeEquilibriumAndDerivatives(m_MultiphaseProperties);
 	}
 
 

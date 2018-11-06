@@ -17,7 +17,6 @@ namespace PVTPackage
 
 		virtual ~BlackOilFlash() = default;
 
-		void ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables);
 		void set_PhaseState(MultiphaseSystemProperties& out_variables);
 		void ComputeEquilibrium(MultiphaseSystemProperties& out_variables);
 

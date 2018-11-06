@@ -9,15 +9,6 @@ namespace PVTPackage
 		
 	}
 
-	void BlackOilFlash::ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables)
-	{
-		//Compute Equilibrium
-		ComputeEquilibrium(out_variables);
-
-		//Finite difference derivatives
-		ComputeFiniteDifferenceDerivatives(out_variables);
-
-	}
 }
 
 
