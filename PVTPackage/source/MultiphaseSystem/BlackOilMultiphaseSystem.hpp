@@ -16,8 +16,9 @@ namespace PVTPackage
 														 std::vector<std::vector<double>> PVTG,
 														 std::vector<double> DENSITY,
 														 std::vector<double> MW);
+		~BlackOilMultiphaseSystem();
 
-		void Update(double pressure, double temperature, std::vector<double> feed) override {}
+		void Update(double pressure, double temperature, std::vector<double> feed) override;
 
 		//void Flash(double pressure, double temperature, std::vector<double> feed, PhaseSplitModelOutputVariables& out_variables) override;
 

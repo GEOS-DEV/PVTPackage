@@ -3,6 +3,7 @@
 #include  "MultiphaseSystem/PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
 #include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
 #include "Utils/math.hpp"
+#include <algorithm>
 
 namespace PVTPackage
 {

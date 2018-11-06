@@ -3,10 +3,20 @@
 
 namespace PVTPackage
 {
-	BlackOilFlash::BlackOilFlash(std::list<PHASE_TYPE> phase_types): m_OilModel(nullptr), m_GasModel(nullptr),
+	BlackOilFlash::BlackOilFlash(): m_OilModel(nullptr), m_GasModel(nullptr),
 	                                                                 m_WaterModel(nullptr)
 	{
 		
+	}
+
+	void BlackOilFlash::ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables)
+	{
+		//Compute Equilibrium
+		ComputeEquilibrium(out_variables);
+
+		//Finite difference derivatives
+		ComputeFiniteDifferenceDerivatives(out_variables);
+
 	}
 }
 

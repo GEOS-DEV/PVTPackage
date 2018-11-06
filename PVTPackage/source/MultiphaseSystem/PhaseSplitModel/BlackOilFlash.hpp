@@ -13,11 +13,13 @@ namespace PVTPackage
 	{
 	public:
 
-		BlackOilFlash(std::list<PHASE_TYPE> phase_types);
+		BlackOilFlash();
 
 		virtual ~BlackOilFlash() = default;
 
-		virtual void ComputeEquilibrium(double pressure, double temperature, std::vector<double> feed, MultiphaseSystemProperties* out_variables)=0;
+		void ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables);
+		void set_PhaseState(MultiphaseSystemProperties& out_variables);
+		void ComputeEquilibrium(MultiphaseSystemProperties& out_variables);
 
 	protected:
 

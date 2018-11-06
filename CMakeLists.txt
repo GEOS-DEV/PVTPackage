@@ -15,6 +15,7 @@ if(NOT is_submodule)
 
     # Check if BLT is available
     if (NOT EXISTS ${PROJECT_SOURCE_DIR}/cmake/blt/SetupBLT.cmake)
+	message(STATUS ${PROJECT_SOURCE_DIR})
         message(FATAL_ERROR
             "The BLT submodule is not present. "
             "Run the following two commands in your git repository: \n"

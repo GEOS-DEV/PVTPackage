@@ -2,7 +2,6 @@
 #include <unordered_map>
 #include "MultiphaseSystem/PVTEnums.hpp"
 #include "PhaseSplitModel/CompositionalFlash.hpp"
-#include <algorithm>
 #include <utility>
 #include "PhaseModel/PhaseProperties.hpp"
 

@@ -51,26 +51,27 @@ namespace PVTPackage
 				"Both oil and gas phase must be defined for BO model");
 
 		//Create Flash pointer
+		m_BlackOilFlash = new BlackOilFlash();
 
 	}
 
 	
 
 
-	//void CompositionalMultiphaseSystem::Update(double pressure, double temperature, std::vector<double> feed)
-	//{
-	//	m_CompositionalFlash->ComputeEquilibrium(pressure, temperature, feed, &m_MultiphaseProperties);
-	//	for (auto it = m_PhaseModels.begin(); it != m_PhaseModels.end(); ++it)
-	//	{
-	//		it->second->ComputeAllProperties(pressure, temperature, feed, m_PhasesProperties[it->first]);
-	//	}
+	BlackOilMultiphaseSystem::~BlackOilMultiphaseSystem()
+	{
+		delete m_BlackOilFlash;
+	}
 
-	//}
+	void BlackOilMultiphaseSystem::Update(double pressure, double temperature, std::vector<double> feed)
+	{
+		m_MultiphaseProperties.Temperature = temperature;
+		m_MultiphaseProperties.Pressure = pressure;
+		m_MultiphaseProperties.Feed = feed;
 
-	///*void CompositionalMultiphaseSystem::Flash(double pressure, double temperature, std::vector<double> feed, PhaseSplitModelOutputVariables& out_variables)
-	//{
-	//	m_CompositionalFlash->ComputeEquilibrium(pressure,temperature,feed, out_variables);
-	//}*/
+		//Multiphase Properties
+		m_BlackOilFlash->ComputeEquilibriumAndDerivatives(m_MultiphaseProperties);
+	}
 
 
 }
