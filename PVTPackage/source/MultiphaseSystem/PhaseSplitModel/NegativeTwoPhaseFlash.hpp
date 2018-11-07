@@ -21,11 +21,12 @@ namespace PVTPackage
 
 			out_variables.PhaseState = PhaseStateMap.at
 			({ out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value > 0.,
-				out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0.,0 
-				});
+				 out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0.,
+				 false
+			 });
 		}
 
-		void ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
+		bool ComputeEquilibrium(MultiphaseSystemProperties & out_variables) override;
 
 	protected:
 

@@ -12,12 +12,12 @@ namespace PVTPackage
 
 		Flash() = default;
 
-		void ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables);
-		virtual void ComputeEquilibrium(MultiphaseSystemProperties& out_variables)=0;
+		bool ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables);
+		virtual bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables) = 0;
 		virtual void set_PhaseState(MultiphaseSystemProperties& out_variables) = 0;
 
 	protected:
 
-		void ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables);
+		bool ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables);
 	};
 }
