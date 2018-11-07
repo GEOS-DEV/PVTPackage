@@ -14,7 +14,7 @@ if(NOT is_submodule)
     project(PVTPackage LANGUAGES CXX C)
 
     # Check if BLT is available
-    if (NOT EXISTS ${PROJECT_SOURCE_DIR}/cmake/blt/SetupBLT.cmake)
+    if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/cmake/blt/SetupBLT.cmake)
         message(FATAL_ERROR
             "The BLT submodule is not present. "
             "Run the following two commands in your git repository: \n"
@@ -23,10 +23,10 @@ if(NOT is_submodule)
     endif()
 
     # Set CMake module path
-    set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 
     # Setup the build system
-    include(blt/cmake/SetupBLT.cmake)
+    include(cmake/blt/SetupBLT.cmake)
     include(cmake/PVTPackage.cmake)
 
     # Options
