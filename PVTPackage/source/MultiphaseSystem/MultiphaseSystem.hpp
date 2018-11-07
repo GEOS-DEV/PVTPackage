@@ -9,6 +9,7 @@ namespace PVTPackage
 
 
 	class PhaseModel;
+	class Flash;
 
 	class MultiphaseSystem
 	{
@@ -19,15 +20,13 @@ namespace PVTPackage
 		virtual ~MultiphaseSystem() = default;
 
 		MultiphaseSystem(size_t nc, const std::vector<PHASE_TYPE>& phase_types) :
-		m_MultiphaseProperties(phase_types,nc),
-		m_StateIndicator(State::NOT_INITIALIZED)
+			m_MultiphaseProperties(phase_types, nc),
+			m_Flash(nullptr),
+      m_StateIndicator(State::NOT_INITIALIZED)
 		{
 		}
 
-		virtual void Update(double pressure, double temperature, std::vector<double> feed)
-		{
-			m_StateIndicator = State::NOT_IMPLEMENTED;
-		}
+		void Update(double pressure, double temperature, std::vector<double> feed);
 
 		//--Getters
 		const MultiphaseSystemProperties& get_MultiphaseSystemProperties() const
@@ -49,6 +48,9 @@ namespace PVTPackage
 
 		//Properties
 		MultiphaseSystemProperties m_MultiphaseProperties;
+
+		//Flash pointer
+		Flash* m_Flash;
 
 		//Success indicator for system state update
 		State m_StateIndicator;

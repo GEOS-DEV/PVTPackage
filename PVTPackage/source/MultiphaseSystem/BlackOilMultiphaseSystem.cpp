@@ -1,28 +1,33 @@
-#include "MultiphaseSystem/BlackOilMultiphaseSystem.hpp"
+#include "BlackOilMultiphaseSystem.hpp"
+
 #include <unordered_map>
 #include "PhaseModel/BlackOil/BlackOil_GasModel.hpp"
 #include "PhaseModel/BlackOil/BlackOil_OilModel.hpp"
 #include "PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
-#include "BlackOilMultiphaseSystem.hpp"
-
 
 namespace PVTPackage
 {
 
 	BlackOilMultiphaseSystem::BlackOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
 		std::vector<std::vector<double>> PVTO, std::vector<double> PVTW, std::vector<std::vector<double>> PVTG,
-		std::vector<double> DENSITY, std::vector<double> MW) : MultiphaseSystem(phase_types.size(), phase_types),
-		                                                       m_BlackOilFlash(nullptr)
+		std::vector<double> DENSITY, std::vector<double> MW)
+		: MultiphaseSystem(phase_types.size(), phase_types)
 	{
 		CreatePhases(phase_types, PVTO, PVTW, PVTG, DENSITY, MW);
+
+		//Create Flash pointer
+		m_Flash = new BlackOilFlash();
 	}
 
 BlackOilMultiphaseSystem::BlackOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
 	std::vector<std::string> table_file_names, std::vector<double> DENSITY, std::vector<double> MW)
-	: MultiphaseSystem(phase_types.size(), phase_types), m_BlackOilFlash(nullptr)
+	: MultiphaseSystem(phase_types.size(), phase_types)
 {
   // TODO read tables
 	//CreatePhases(phase_types, PVTO, PVTW, PVTG, DENSITY, MW);
+
+	//Create Flash pointer
+	m_Flash = new BlackOilFlash();
 }
 
 void BlackOilMultiphaseSystem::CreatePhases(std::vector<PHASE_TYPE> phase_types,
@@ -74,30 +79,17 @@ void BlackOilMultiphaseSystem::CreatePhases(std::vector<PHASE_TYPE> phase_types,
 
 
 	//Check if both oil and gas are defined
-	ASSERT((	m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::OIL) != m_MultiphaseProperties.PhaseModels.end())
-				 && (m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::GAS) != m_MultiphaseProperties.PhaseModels.end()),
+	ASSERT((m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::OIL) != m_MultiphaseProperties.PhaseModels.end())
+			&& (m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::GAS) != m_MultiphaseProperties.PhaseModels.end()),
 				 "Both oil and gas phase must be defined for BO model");
 
-	//Create Flash pointer
-}
+	}
 
-
-
-
-//void BlackOilMultiphaseSystem::Update(double pressure, double temperature, std::vector<double> feed)
-	//{
-	//	m_CompositionalFlash->ComputeEquilibrium(pressure, temperature, feed, &m_MultiphaseProperties);
-	//	for (auto it = m_PhaseModels.begin(); it != m_PhaseModels.end(); ++it)
-	//	{
-	//		it->second->ComputeAllProperties(pressure, temperature, feed, m_PhasesProperties[it->first]);
-	//	}
-
-	//}
-
-	///*void CompositionalMultiphaseSystem::Flash(double pressure, double temperature, std::vector<double> feed, PhaseSplitModelOutputVariables& out_variables)
-	//{
-	//	m_CompositionalFlash->ComputeEquilibrium(pressure,temperature,feed, out_variables);
-	//}*/
+	
+	BlackOilMultiphaseSystem::~BlackOilMultiphaseSystem()
+	{
+		delete m_Flash;
+	}
 
 
 }

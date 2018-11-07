@@ -1,6 +1,8 @@
 #pragma once
-#include <unordered_map>
+
+#include "Flash.hpp"
 #include "MultiphaseSystem/PVTEnums.hpp"
+#include <unordered_map>
 #include <list>
 
 
@@ -9,15 +11,16 @@ namespace PVTPackage
 	struct MultiphaseSystemProperties;
 	class PhaseModel;
 
-	class BlackOilFlash
+	class BlackOilFlash : public Flash
 	{
 	public:
 
-		BlackOilFlash(std::list<PHASE_TYPE> phase_types);
+		BlackOilFlash();
 
-		virtual ~BlackOilFlash() = default;
+		~BlackOilFlash() override = default;
 
-		virtual void ComputeEquilibrium(double pressure, double temperature, std::vector<double> feed, MultiphaseSystemProperties* out_variables)=0;
+		void set_PhaseState(MultiphaseSystemProperties& out_variables) override;
+		bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
 
 	protected:
 

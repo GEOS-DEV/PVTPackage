@@ -9,8 +9,7 @@ namespace PVTPackage
 	CompositionalMultiphaseSystem::CompositionalMultiphaseSystem( std::vector<PHASE_TYPE> phase_types, std::vector<EOS_TYPE> eos_types,
 	                                               COMPOSITIONAL_FLASH_TYPE flash_type,
 	                                               const ComponentProperties& comp_properties):
-		MultiphaseSystem(comp_properties.NComponents, phase_types),
-		m_CompositionalFlash(nullptr)
+		MultiphaseSystem(comp_properties.NComponents, phase_types)
 	{
 		
 		//Create Phase Models
@@ -25,12 +24,12 @@ namespace PVTPackage
 		{
 		case COMPOSITIONAL_FLASH_TYPE::TRIVIAL:
 			{
-				m_CompositionalFlash = new TrivialFlash(comp_properties);
+				m_Flash = new TrivialFlash(comp_properties);
 				break;
 			}
 		case COMPOSITIONAL_FLASH_TYPE::NEGATIVE_OIL_GAS:
 		{
-			m_CompositionalFlash = new NegativeTwoPhaseFlash(comp_properties);
+			m_Flash = new NegativeTwoPhaseFlash(comp_properties);
 			break;
 		}
 		case COMPOSITIONAL_FLASH_TYPE::FREE_WATER_FLASH:
@@ -42,20 +41,10 @@ namespace PVTPackage
 
 	CompositionalMultiphaseSystem::~CompositionalMultiphaseSystem()
 	{
-		delete m_CompositionalFlash;
+		delete m_Flash;
 	}
 
-	void CompositionalMultiphaseSystem::Update(double pressure, double temperature, std::vector<double> feed)
-	{
-		m_MultiphaseProperties.Temperature = temperature;
-		m_MultiphaseProperties.Pressure = pressure;
-		m_MultiphaseProperties.Feed = feed;
 
-		//Multiphase Properties
-		bool success = m_CompositionalFlash->ComputeEquilibriumAndDerivatives(m_MultiphaseProperties);
-
-		m_StateIndicator =  success ? State::SUCCESS : State::NOT_CONVERGED;
-	}
 
 
 

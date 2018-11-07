@@ -1,7 +1,5 @@
 #include "MultiphaseSystem/ComponentProperties.hpp"
-#include "MultiphaseSystem/CompositionalMultiphaseSystem.hpp"
 #include <chrono>
-#include "MultiphaseSystem/FlashVariables.hpp"
 #include <vector>
 #include "MultiphaseSystem/BlackOilMultiphaseSystem.hpp"
 //#include <cstdlib>
@@ -89,23 +87,35 @@ int main(int argc, const char * argv[])
 	double GasMw = 16e-3;
 
 	/// ------------------------------  END BO RAW DATASET
-
-
 	auto PVTSystem = BlackOilMultiphaseSystem({ PHASE_TYPE::OIL,PHASE_TYPE::GAS,PHASE_TYPE::LIQUID_WATER_RICH }, PVTO, PVTW, PVTG, { SurfaceOilDensity ,SurfaceWaterDensity ,SurfaceGasDensity }, { OilMw ,WaterMw ,GasMw });
 
+	//Domain
+	const size_t NBlocks = static_cast<size_t>(1e1);
+	std::vector<double> Pressure(NBlocks), Temperature(NBlocks);
+	std::vector<std::vector<double>> Feed(NBlocks, std::vector<double>(3, 0.25));
+	srand(0);
+	for (size_t nb = 0; nb != NBlocks; ++nb)
+	{
+		Pressure[nb] = 1e5; //rand() % 200000 + 100000;
+		Temperature[nb] = 300;//rand() % 400 + 300;
+	}
 
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 	start = std::chrono::system_clock::now();
 
+
+	for (size_t nb = 0; nb != NBlocks; ++nb)
+	{
+		PVTSystem.Update(Pressure[nb], Temperature[nb], Feed[nb]);
+	}
+
 	end = std::chrono::system_clock::now();
+
+	auto PhaseRepartitionProperties = PVTSystem.get_MultiphaseSystemProperties();
+	auto OilProperties = PVTSystem.get_PhaseProperties(PHASE_TYPE::OIL);
 
 	double elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>
 		(end - start).count();
-
-
-	/////
-
-
 
 	std::cout << "elapsed time: " << elapsed_seconds / 1000 << "s\n";
 

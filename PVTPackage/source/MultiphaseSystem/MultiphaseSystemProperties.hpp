@@ -2,12 +2,12 @@
 #include <unordered_map>
 #include "MultiphaseSystem/PVTEnums.hpp"
 #include "PhaseSplitModel/CompositionalFlash.hpp"
-#include <algorithm>
 #include <utility>
 #include "PhaseModel/PhaseProperties.hpp"
 
 namespace PVTPackage
 {
+	class PhaseModel;
 
 	struct MultiphaseSystemProperties
 	{
@@ -36,9 +36,6 @@ namespace PVTPackage
 				PhaseMoleFraction.at(phase).dP = (props_eps.PhaseMoleFraction.at(phase).value - PhaseMoleFraction.at(phase).value) / epsilon;
 				PhasesProperties.at(phase).UpdateDerivative_dP_FiniteDifference(props_eps.PhasesProperties.at(phase), epsilon);
 			}
-
-
-
 		}
 
 		void UpdateDerivative_dT_FiniteDifference(const MultiphaseSystemProperties& props_eps, double epsilon)

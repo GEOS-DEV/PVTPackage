@@ -16,12 +16,11 @@ namespace PVTPackage
 
 		~CompositionalMultiphaseSystem() override;
 
-		void Update(double pressure, double temperature, std::vector<double> feed) override;
 
 	protected:
 
-		//Flash pointer
-		CompositionalFlash* m_CompositionalFlash;
+		////Flash pointer
+		//CompositionalFlash* m_CompositionalFlash;
 	
 	};
 

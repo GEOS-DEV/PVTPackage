@@ -3,11 +3,21 @@
 
 namespace PVTPackage
 {
-	BlackOilFlash::BlackOilFlash(std::list<PHASE_TYPE> phase_types): m_OilModel(nullptr), m_GasModel(nullptr),
-	                                                                 m_WaterModel(nullptr)
+	BlackOilFlash::BlackOilFlash(): m_OilModel(nullptr), m_GasModel(nullptr), m_WaterModel(nullptr)
 	{
 		
 	}
+
+  void BlackOilFlash::set_PhaseState(MultiphaseSystemProperties & out_variables)
+  {
+
+  }
+
+  bool BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties & out_variables)
+  {
+    return false;
+  }
+
 }
 
 

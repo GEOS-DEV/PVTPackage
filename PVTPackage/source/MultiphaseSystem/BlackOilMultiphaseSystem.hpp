@@ -22,7 +22,7 @@ namespace PVTPackage
 														 std::vector<double> DENSITY,
 														 std::vector<double> MW);
 
-		void Update(double pressure, double temperature, std::vector<double> feed) override {}
+    ~BlackOilMultiphaseSystem() override;
 
 		//void Flash(double pressure, double temperature, std::vector<double> feed, PhaseSplitModelOutputVariables& out_variables) override;
 
@@ -36,7 +36,7 @@ namespace PVTPackage
 											std::vector<double> MW);
 
 		//Flash pointer
-		BlackOilFlash* m_BlackOilFlash;
+		//BlackOilFlash* m_BlackOilFlash;
 
 		
 	};
