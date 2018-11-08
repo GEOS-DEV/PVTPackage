@@ -26,6 +26,7 @@ namespace PVTPackage
 
 		void UpdateDerivative_dP_FiniteDifference(const PhaseProperties& props_eps, double epsilon)
 		{
+			MolecularWeight.dP = (props_eps.MolecularWeight.value - MolecularWeight.value) / epsilon;
 			CompressibilityFactor.dP = (props_eps.CompressibilityFactor.value - CompressibilityFactor.value) / epsilon;
 			MoleDensity.dP = (props_eps.MoleDensity.value - MoleDensity.value) / epsilon;
 			MassDensity.dP = (props_eps.MassDensity.value - MassDensity.value) / epsilon;
@@ -38,6 +39,7 @@ namespace PVTPackage
 
 		void UpdateDerivative_dT_FiniteDifference(const PhaseProperties& props_eps, double epsilon)
 		{
+			MolecularWeight.dT = (props_eps.MolecularWeight.value - MolecularWeight.value) / epsilon;
 			CompressibilityFactor.dT = (props_eps.CompressibilityFactor.value - CompressibilityFactor.value) / epsilon;
 			MoleDensity.dT = (props_eps.MoleDensity.value - MoleDensity.value) / epsilon;
 			MassDensity.dT = (props_eps.MassDensity.value - MassDensity.value) / epsilon;
@@ -50,14 +52,15 @@ namespace PVTPackage
 
 		void UpdateDerivative_dz_FiniteDifference(size_t icomponent, const PhaseProperties& props_eps, double epsilon)
 		{
-				CompressibilityFactor.dz[icomponent] = (props_eps.CompressibilityFactor.value - CompressibilityFactor.value) / epsilon;
-				MoleDensity.dz[icomponent] = (props_eps.MoleDensity.value - MoleDensity.value) / epsilon;
-				MassDensity.dz[icomponent] = (props_eps.MassDensity.value - MassDensity.value) / epsilon;
-				for (size_t i = 0; i < MoleComposition.value.size(); ++i)
-				{
-					MoleComposition.dz[i][icomponent] = (props_eps.MoleComposition.value[i] - MoleComposition.value[i]) / epsilon;
-					LnFugacityCoefficients.dz[i][icomponent] = (props_eps.LnFugacityCoefficients.value[i] - LnFugacityCoefficients.value[i]) / epsilon;
-				}
+			MolecularWeight.dz[icomponent] = (props_eps.MolecularWeight.value - MolecularWeight.value) / epsilon;
+			CompressibilityFactor.dz[icomponent] = (props_eps.CompressibilityFactor.value - CompressibilityFactor.value) / epsilon;
+			MoleDensity.dz[icomponent] = (props_eps.MoleDensity.value - MoleDensity.value) / epsilon;
+			MassDensity.dz[icomponent] = (props_eps.MassDensity.value - MassDensity.value) / epsilon;
+			for (size_t i = 0; i < MoleComposition.value.size(); ++i)
+			{
+				MoleComposition.dz[i][icomponent] = (props_eps.MoleComposition.value[i] - MoleComposition.value[i]) / epsilon;
+				LnFugacityCoefficients.dz[i][icomponent] = (props_eps.LnFugacityCoefficients.value[i] - LnFugacityCoefficients.value[i]) / epsilon;
+			}
 		}
 
 
