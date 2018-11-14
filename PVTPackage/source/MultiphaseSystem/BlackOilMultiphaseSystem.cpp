@@ -3,14 +3,15 @@
 #include "PhaseModel/BlackOil/BlackOil_GasModel.hpp"
 #include "PhaseModel/BlackOil/BlackOil_OilModel.hpp"
 #include "PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
+#include "Utils/math.hpp"
 
 namespace PVTPackage
 {
 
 	BlackOilMultiphaseSystem::BlackOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
 		std::vector<std::vector<double>> PVTO, std::vector<double> PVTW, std::vector<std::vector<double>> PVTG,
-		std::vector<double> DENSITY, std::vector<double> MW) : MultiphaseSystem(phase_types.size(), phase_types),
-		                                                       m_BlackOilFlash(nullptr)
+		std::vector<double> DENSITY, std::vector<double> MW) : MultiphaseSystem(phase_types.size(), phase_types)
+		                                                     
 	{
 		//Phase to index mapping
 		std::unordered_map<PHASE_TYPE, int> phase_to_index;
@@ -19,13 +20,12 @@ namespace PVTPackage
 			phase_to_index[phase_types[i]] = static_cast<int>(i);
 		}
 
-
 		//Create Phase Models
 		for (size_t i = 0; i != phase_types.size(); ++i)
 		{
 			if (phase_types[i] == PHASE_TYPE::OIL)
 			{
-				m_MultiphaseProperties.PhaseModels[PHASE_TYPE::OIL] = new BlackOil_OilModel(PVTO, DENSITY[i], MW[i], DENSITY[phase_to_index[PHASE_TYPE::GAS]], MW[phase_to_index[PHASE_TYPE::GAS]]);
+				m_MultiphaseProperties.PhaseModels[PHASE_TYPE::OIL] = new BlackOil_OilModel(PVTO, DENSITY[i], MW[i]);
 			}
 			else if (phase_types[i] == PHASE_TYPE::GAS)
 			{
@@ -51,17 +51,17 @@ namespace PVTPackage
 				"Both oil and gas phase must be defined for BO model");
 
 		//Create Flash pointer
-		m_BlackOilFlash = new BlackOilFlash();
+		m_Flash = new BlackOilFlash();
 
 	}
 
 	
 	BlackOilMultiphaseSystem::~BlackOilMultiphaseSystem()
 	{
-		delete m_BlackOilFlash;
+		delete m_Flash;
 	}
 
-
+	
 }
 
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
 #include <map>
+#include "PVTGdata.hpp"
 
 
 namespace PVTPackage
@@ -14,19 +15,47 @@ namespace PVTPackage
 	{
 	public:
 
-		BlackOil_GasModel(std::vector<std::vector<double>> PVTG, double surface_density, double mw);
-
+		BlackOil_GasModel(std::vector<std::vector<double>> PVTG, double gas_surface_mass_density, double gas_surface_mw);
 		~BlackOil_GasModel() override = default;
 
-		void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties& props_out) override {}
+		//Getter
+		double GetSurfaceGasMassDensity() { return m_SurfaceGasMassDensity; }
+		double GetSurfaceGasMoleDensity() { return m_SurfaceGasMoleDensity; }
+		double GetSurfaceGasMolecularWeight() { return m_SurfaceGasMolecularWeight; }
+
+		//
+		double ComputeRv(double Pdew);
+		void ComputeSaturatedProperties(double Pdew, std::vector<double> composition, PhaseProperties& props_out);
+		void ComputeUnderSaturatedProperties(double Rv, double P, std::vector<double> composition, PhaseProperties& props_out);
+
 
 	protected:
 
-		//Table stored as a map, Pb is the key
-		std::vector<double> m_Pdew;
-		std::vector<std::vector<std::vector<double>>> m_PVTGTable;
+		//PVT data
+		PVTGdata m_PVTG;
+
+		//		
+		double m_SurfaceGasMassDensity;
+		double m_SurfaceGasMoleDensity;
+		double m_SurfaceGasMolecularWeight;
+
+
+		//
+		double ComputePdew(double Rv);
+		void ComputeSaturatedProperties(double Rv, double& Bg, double& visc) const;
+		//void ComputeUndersaturatedSaturatedProperties(double Rs, double P, double& Bo, double& visc);
+		double ComputeMassDensity(double Rv, double Bg, double surface_oil_density) const;
+		double ComputeMoleDensity(double mass_density, double mw) const;
+
+
+		//Functions
+		void CreateTable(const std::vector<std::vector<double>>& PVT);
+		void ExtendUnderSaturatedProperties();
 		void CheckTableConsistency();
+		void RefineTable(size_t nlevel);
+
 		
+
 
 	};
 

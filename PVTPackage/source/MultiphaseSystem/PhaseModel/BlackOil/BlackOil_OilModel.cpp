@@ -4,13 +4,13 @@
 #include "BlackOil_Utils.hpp"
 #include <algorithm>    // std::max
 #include <complex>
+#include "MultiphaseSystem/PhaseModel/PhaseProperties.hpp"
 
 namespace PVTPackage
 {
 	
-	BlackOil_OilModel::BlackOil_OilModel(std::vector<std::vector<double>> PVTO, double oil_surface_mass_density, double oil_surface_mw, double gas_surface_mass_density, double gas_surface_mw)
-						:	m_SurfaceOilMassDensity(0), m_SurfaceOilMoleDensity(0), m_SurfaceOilMolecularWeight(oil_surface_mw),
-							m_SurfaceGasMassDensity(0), m_SurfaceGasMoleDensity(0), m_SurfaceGasMolecularWeight(gas_surface_mw)
+	BlackOil_OilModel::BlackOil_OilModel(std::vector<std::vector<double>> PVTO, double oil_surface_mass_density, double oil_surface_mw)
+						:	m_SurfaceOilMassDensity(0), m_SurfaceOilMoleDensity(0), m_SurfaceOilMolecularWeight(oil_surface_mw)
 	{
 
 		//--Fill table
@@ -46,7 +46,6 @@ namespace PVTPackage
 		m_SurfaceOilMassDensity = oil_surface_mass_density;
 		m_SurfaceOilMoleDensity = m_SurfaceOilMassDensity / m_SurfaceOilMolecularWeight;
 	}
-
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,6 +325,18 @@ namespace PVTPackage
 		return math::LinearInterpolation(m_PVTO.BubblePressure[i_lower_branch], m_PVTO.Rs[i_lower_branch], m_PVTO.BubblePressure[i_upper_branch], m_PVTO.Rs[i_upper_branch], Pb);
 	}
 
+	void BlackOil_OilModel::ComputeSaturatedProperties(double Pb, std::vector<double> composition, PhaseProperties& props_out)
+	{
+		props_out.MoleComposition.value = composition;
+		props_out.MoleDensity.value = ;
+	}
+
+	void BlackOil_OilModel::ComputeUnderSaturatedProperties(double Rs, double P, std::vector<double>, PhaseProperties& props_out)
+	{
+
+
+	}
+
 	void BlackOil_OilModel::ComputeSaturatedProperties(double Rs, double& Bo, double& visc) const
 	{
 
@@ -378,9 +389,9 @@ namespace PVTPackage
 
 	}
 
-	double BlackOil_OilModel::ComputeMassDensity(double Rs, double Bo) const
+	double BlackOil_OilModel::ComputeMassDensity(double Rs, double Bo, double surface_gas_density ) const
 	{
-		return 1 / Bo*(m_SurfaceOilMassDensity + m_SurfaceGasMassDensity * Rs);
+		return 1. / Bo*(m_SurfaceOilMassDensity + surface_gas_density * Rs);
 	}
 
 	double BlackOil_OilModel::ComputeMoleDensity(double mass_density, double mw) const

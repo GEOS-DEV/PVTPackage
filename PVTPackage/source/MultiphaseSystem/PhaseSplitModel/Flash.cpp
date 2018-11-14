@@ -16,6 +16,15 @@ namespace PVTPackage
 		ComputeFiniteDifferenceDerivatives(out_variables);
 	}
 
+	void Flash::set_PhaseState(MultiphaseSystemProperties& out_variables)
+	{
+
+		out_variables.PhaseState = PhaseStateMap.at
+		({ out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value > 0.,
+			out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0.,0
+			});
+	}
+
 	void Flash::ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables)
 	{
 		const auto& pressure = out_variables.Pressure;

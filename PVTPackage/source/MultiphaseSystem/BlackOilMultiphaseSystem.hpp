@@ -22,9 +22,6 @@ namespace PVTPackage
 
 	protected:
 
-		//Flash pointer
-		BlackOilFlash* m_BlackOilFlash;
-
 		
 	};
 

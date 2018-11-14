@@ -5,9 +5,21 @@
 #include <vector>
 #include <numeric>
 #include "Utils/math.hpp"
+#include "MultiphaseSystem/PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
 
 namespace PVTPackage
 {
+
+	void TrivialFlash::set_PhaseState(MultiphaseSystemProperties& out_variables)
+	{
+
+		out_variables.PhaseState = PhaseStateMap.at
+		({ out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value > 0.,
+			out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0. ,
+			out_variables.PhaseMoleFraction.at(PHASE_TYPE::LIQUID_WATER_RICH).value > 0.
+			});
+	}
+
 	void TrivialFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
 	{
 
@@ -75,10 +87,12 @@ namespace PVTPackage
 
 
 		//Phase Properties
-		for (auto& m_PhaseModel : out_variables.PhaseModels)
+		for (auto it = out_variables.PhaseModels.begin(); it != out_variables.PhaseModels.end(); ++it)
 		{
-			auto& comp = out_variables.PhasesProperties.at(m_PhaseModel.first).MoleComposition.value;
-			m_PhaseModel.second->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties[m_PhaseModel.first]);
+			auto phase_type = (*it).first;
+			auto eos_phase_model = static_cast<CubicEoSPhaseModel*>((*it).second);
+			auto& comp = out_variables.PhasesProperties.at(phase_type).MoleComposition.value;
+			eos_phase_model->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase_type));
 		}
 
 		//Compute Phase State

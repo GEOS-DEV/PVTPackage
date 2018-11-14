@@ -1,20 +1,35 @@
 function plot_BO()
 close all;
 
-M = dlmread('E:\GithubRepository\PVTPackage\build\examples\BlackOil\PVTO.txt');
-Rs = M(:,1);
-Pbub = M(:,2);
-Bo = M(:,3);
-visc = M(:,4);
+Mo = dlmread('E:\GithubRepository\PVTPackage\build\examples\BlackOil\PVTO.txt');
+Mg = dlmread('E:\GithubRepository\PVTPackage\build\examples\BlackOil\PVTG.txt');
 
+Rs = Mo(:,1);
+Pbub = Mo(:,2);
+Bo = Mo(:,3);
+visco_o = Mo(:,4);
+
+Pdew = Mg(:,1);
+Rv = Mg(:,2);
+Bg = Mg(:,3);
+visco_g = Mg(:,4);
 
 hold on
-
 yyaxis left
 plot(Pbub,Bo,'+');
 yyaxis right
-plot(Pbub,visc,'o');
+plot(Pbub,visco_o,'o');
 hold off
+
+figure();
+
+hold on
+yyaxis left
+plot(Pdew,Bg,'+');
+%yyaxis right
+%plot(Rv,visco_g,'o');
+hold off
+
 
 % figure();
 % 
