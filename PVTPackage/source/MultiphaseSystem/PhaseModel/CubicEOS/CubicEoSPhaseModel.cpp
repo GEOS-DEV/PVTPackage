@@ -71,18 +71,40 @@ namespace PVTPackage
 		double compressibility;
 
 
-		if ((m_PhaseType == PHASE_TYPE::LIQUID_WATER_RICH) || (m_PhaseType == PHASE_TYPE::OIL))
+//		if ((m_PhaseType == PHASE_TYPE::LIQUID_WATER_RICH) || (m_PhaseType == PHASE_TYPE::OIL))
+//		{
+//			compressibility = *(std::min_element(sols.begin(), sols.end()));
+//		}
+//		else if (m_PhaseType == PHASE_TYPE::GAS)
+//		{
+//			compressibility = *(std::max_element(sols.begin(), sols.end()));
+//		}
+//		else
+//		{
+//			LOGERROR("Undetermined phase type for compressibility calculation");
+//			compressibility = -1;
+//		}
+
+		if (sols.size() == 1)
 		{
-			compressibility = *(std::min_element(sols.begin(), sols.end()));
-		}
-		else if (m_PhaseType == PHASE_TYPE::GAS)
-		{
-			compressibility = *(std::max_element(sols.begin(), sols.end()));
+			compressibility = sols[0];
 		}
 		else
 		{
-			LOGERROR("Undetermined phase type for compressibility calculation");
-			compressibility = -1;
+			// Choose the root according to Gibbs' free energy minimization
+			const double Zmin = *std::min_element(sols.begin(), sols.end());
+			const double Zmax = *std::max_element(sols.begin(), sols.end());
+
+			auto ln_fug_min = ComputeLnFugacitiesCoefficients(Pressure, Temperature, composition, Zmin, mix_coeffs);
+			auto ln_fug_max = ComputeLnFugacitiesCoefficients(Pressure, Temperature, composition, Zmax, mix_coeffs);
+
+			double dG = 0.0;
+			for (size_t ic = 0; ic < m_ComponentsProperties.NComponents; ++ic)
+			{
+				dG += composition[ic] * (ln_fug_min[ic] - ln_fug_max[ic]);
+			}
+
+			compressibility = (dG < 0) ? Zmin : Zmax;
 		}
 
 		return compressibility;
@@ -117,13 +139,16 @@ namespace PVTPackage
 		}
 
 		//E
-		double E = (Z + m_Delta1*mix_coeffs.BMixture) / (Z + m_Delta2*mix_coeffs.BMixture);
+		const double E = log((Z + m_Delta1*mix_coeffs.BMixture) / (Z + m_Delta2*mix_coeffs.BMixture));
+		const double F = log(Z - mix_coeffs.BMixture);
+		const double G = 1.0 / ((m_Delta1 - m_Delta2)*mix_coeffs.BMixture);
+		const double A = mix_coeffs.AMixture;
 
 		//Ln phi
 		for (size_t i = 0; i < nbc; ++i)
 		{
-			ln_fugacity_coeffs[i] = (Z - 1)*mix_coeffs.BPure[i] / mix_coeffs.BMixture - log(Z - mix_coeffs.BMixture)
-				- 1 / ((m_Delta1 - m_Delta2)*mix_coeffs.BMixture) * (2 * ki[i] - mix_coeffs.AMixture + mix_coeffs.BPure[i] / mix_coeffs.BMixture) * log(E);
+		  const double B = mix_coeffs.BPure[i] / mix_coeffs.BMixture;
+			ln_fugacity_coeffs[i] = (Z - 1) * B - F - G * (2 * ki[i] - A * B) * E;
 		}
 
 		return ln_fugacity_coeffs;

@@ -14,10 +14,15 @@ namespace PVTPackage
 	class MultiphaseSystem
 	{
 	public:
+
+		enum class State { NOT_INITIALIZED, SUCCESS, NOT_CONVERGED, FATAL_ERROR, NOT_IMPLEMENTED };
+
 		virtual ~MultiphaseSystem() = default;
 
 		MultiphaseSystem(size_t nc, const std::vector<PHASE_TYPE>& phase_types) :
-			m_MultiphaseProperties(phase_types, nc), m_Flash(nullptr)
+			m_MultiphaseProperties(phase_types, nc),
+			m_Flash(nullptr),
+      m_StateIndicator(State::NOT_INITIALIZED)
 		{
 		}
 
@@ -34,6 +39,11 @@ namespace PVTPackage
 			return m_MultiphaseProperties.PhasesProperties.at(phase_type);
 		}
 
+		State getState()
+		{
+			return m_StateIndicator;
+		}
+
 	protected:
 
 		//Properties
@@ -41,6 +51,9 @@ namespace PVTPackage
 
 		//Flash pointer
 		Flash* m_Flash;
+
+		//Success indicator for system state update
+		State m_StateIndicator;
 
 	};
 

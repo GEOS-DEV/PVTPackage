@@ -75,12 +75,12 @@ namespace PVTPackage
 		 else if (V>1) //Only gas or undersaturated gas
 		 {
 			 //gas
-			 gas_phase_model->ComputeUndersaturatedProperties(Rv, pressure, {zg,zo}, out_variables.PhasesProperties.at(PHASE_TYPE::GAS));
+			 gas_phase_model->ComputeUnderSaturatedProperties(Rv, pressure, {zg,zo}, out_variables.PhasesProperties.at(PHASE_TYPE::GAS));
 		 }
 		 else //Only oil or undersaturated oil
 		 {
 			 //oil
-			 oil_phase_model->ComputeUndersaturatedProperties(Rs, pressure, { zg,zo }, out_variables.PhasesProperties.at(PHASE_TYPE::OIL));
+			 oil_phase_model->ComputeUnderSaturatedProperties(Rs, pressure, { zg,zo }, out_variables.PhasesProperties.at(PHASE_TYPE::OIL));
 		 }
 
 

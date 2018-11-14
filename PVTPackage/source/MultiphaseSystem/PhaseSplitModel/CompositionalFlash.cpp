@@ -92,7 +92,9 @@ namespace PVTPackage
 			current_error = std::min(std::fabs(func_x_max - func_x_min),std::fabs(x_max - x_min));
 
 			SSI_iteration++;
-			ASSERT(!(SSI_iteration == max_SSI_iterations), "Rachford-Rice SSI reaches max number of iterations");
+
+			if (SSI_iteration == max_SSI_iterations)
+				LOGWARNING("Rachford-Rice SSI reached max number of iterations");
 		}
 		gas_phase_mole_fraction = 0.5*(func_x_max + func_x_min);
 
@@ -105,7 +107,9 @@ namespace PVTPackage
 			current_error = std::fabs(delta_Newton) / std::fabs(Newton_value);
 			Newton_value = Newton_value + delta_Newton;
 			Newton_iteration++;
-			ASSERT(!(Newton_iteration == max_Newton_iterations), "Rachford-Rice Newton reaches max number of iterations");
+
+			if (Newton_iteration == max_Newton_iterations)
+				LOGWARNING("Rachford-Rice Newton reached max number of iterations");
 		}
 		return gas_phase_mole_fraction = Newton_value;
 
@@ -114,9 +118,10 @@ namespace PVTPackage
 	double CompositionalFlash::RachfordRiceFunction(const std::vector<double>& Kvalues, const std::vector<double>& feed,const std::list<size_t>& non_zero_index, double x)
 	{
 		double val = 0;
-		for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
+		for (auto ic : non_zero_index)
 		{
-			val = val + feed[*it] * (Kvalues[*it] - 1.0) / (1.0 + x * (Kvalues[*it] - 1.0));
+			const double K = (Kvalues[ic] - 1.0);
+			val = val + feed[ic] * K / (1.0 + x * K);
 		}
 		return val;
 	}
@@ -124,9 +129,11 @@ namespace PVTPackage
 	double CompositionalFlash::dRachfordRiceFunction_dx(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index, double x)
 	{
 		double val = 0;
-		for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
+		for (auto ic : non_zero_index)
 		{
-			val = val - feed[*it] * (Kvalues[*it] - 1.0)*(Kvalues[*it] - 1.0) / ((1.0 + x * (Kvalues[*it] - 1.0))*(1.0 + x * (Kvalues[*it] - 1.0)));
+			const double K = (Kvalues[ic] - 1.0);
+			const double R = K / (1.0 + x * K);
+			val = val - feed[ic] * R * R;
 		}
 		return val;
 	}

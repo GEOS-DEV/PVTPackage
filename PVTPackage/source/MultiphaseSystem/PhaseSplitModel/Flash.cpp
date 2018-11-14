@@ -7,15 +7,18 @@ namespace PVTPackage
 {
 
 
-	void Flash::ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables)
+	bool Flash::ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables)
 	{
 		//Compute Equilibrium
-		ComputeEquilibrium(out_variables);
+		bool success = ComputeEquilibrium(out_variables);
 
 		//Finite difference derivatives
-		ComputeFiniteDifferenceDerivatives(out_variables);
+		success &= ComputeFiniteDifferenceDerivatives(out_variables);
+
+		return success;
 	}
 
+<<<<<<< HEAD
 	void Flash::set_PhaseState(MultiphaseSystemProperties& out_variables)
 	{
 
@@ -26,6 +29,9 @@ namespace PVTPackage
 	}
 
 	void Flash::ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables)
+=======
+	bool Flash::ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables)
+>>>>>>> 489cf64f5560b9a2d2f0f4030fb7292341915c23
 	{
 		const auto& pressure = out_variables.Pressure;
 		const auto& temperature = out_variables.Temperature;
@@ -36,17 +42,19 @@ namespace PVTPackage
 
 		MultiphaseSystemProperties props_eps = out_variables;
 
+		bool success = true;
+
 		////Pressure
 		epsilon = sqrtprecision * (std::fabs(pressure) + sqrtprecision);
 		props_eps.Pressure = pressure + epsilon;
-		ComputeEquilibrium(props_eps);
+		success &= ComputeEquilibrium(props_eps);
 		props_eps.Pressure = pressure;
 		out_variables.UpdateDerivative_dP_FiniteDifference(props_eps, epsilon);
 
 		////Temperature
 		epsilon = sqrtprecision * (std::fabs(temperature) + sqrtprecision);
 		props_eps.Temperature = temperature + epsilon;
-		ComputeEquilibrium(props_eps);
+		success &= ComputeEquilibrium(props_eps);
 		props_eps.Temperature = temperature;
 		out_variables.UpdateDerivative_dT_FiniteDifference(props_eps, epsilon);
 
@@ -61,11 +69,12 @@ namespace PVTPackage
 			auto save_feed = feed;
 			props_eps.Feed[i] = feed[i] + epsilon;
 			props_eps.Feed = math::Normalize(props_eps.Feed);
-			ComputeEquilibrium(props_eps);
+			success &= ComputeEquilibrium(props_eps);
 			props_eps.Feed = save_feed;
 			out_variables.UpdateDerivative_dz_FiniteDifference(i, props_eps, epsilon);
 		}
 
+		return success;
 	}
 
 }

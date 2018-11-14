@@ -18,7 +18,7 @@ namespace PVTPackage
 
 		~TrivialFlash() override = default;
 
-		void ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
+		bool ComputeEquilibrium(MultiphaseSystemProperties & out_variables) override;
 
 	protected:
 

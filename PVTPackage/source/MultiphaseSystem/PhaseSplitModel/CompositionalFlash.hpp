@@ -9,23 +9,35 @@ namespace PVTPackage
 {
 	struct MultiphaseSystemProperties;
 
-	class CompositionalFlash :public Flash
+	class CompositionalFlash : public Flash
 	{
 	public:
 
-		virtual ~CompositionalFlash() = default;
+		~CompositionalFlash() override = default;
 
-		CompositionalFlash(const ComponentProperties& component_properties) :m_ComponentsProperties(component_properties) {}
+		explicit CompositionalFlash(const ComponentProperties& component_properties)
+		: m_ComponentsProperties(component_properties) {}
 
+<<<<<<< HEAD
 		double SolveRachfordRiceEquation(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index);
 		double RachfordRiceFunction(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index, double x);
 		double dRachfordRiceFunction_dx(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index, double x);
 		virtual void ComputeEquilibrium(MultiphaseSystemProperties& out_variables)=0;
 		virtual void set_PhaseState(MultiphaseSystemProperties& out_variables) = 0;
+=======
+		double SolveRachfordRiceEquation(const std::vector<double>& Kvalues, const std::vector<double>& feed,
+			const std::list<size_t>& non_zero_index);
+
+		double RachfordRiceFunction(const std::vector<double>& Kvalues, const std::vector<double>& feed,
+			const std::list<size_t>& non_zero_index, double x);
+
+		double dRachfordRiceFunction_dx(const std::vector<double>& Kvalues, const std::vector<double>& feed,
+			const std::list<size_t>& non_zero_index, double x);
+>>>>>>> 489cf64f5560b9a2d2f0f4030fb7292341915c23
 
 	protected:
 
-		const ComponentProperties& m_ComponentsProperties;
+		ComponentProperties m_ComponentsProperties;
 
 		//Wilson K-values
 		std::vector<double> ComputeWilsonGasOilKvalue(double Pressure, double Temperature) const;
