@@ -25,8 +25,8 @@ namespace PVTPackage
 
 		//Compute
 		double ComputeRs(double Pb);
-		void ComputeSaturatedProperties(double Pb, std::vector<double> composition, PhaseProperties& props_out);
-		void ComputeUnderSaturatedProperties(double Rs, double P, std::vector<double> composition, PhaseProperties& props_out);
+		void ComputeSaturatedProperties(double Pb, std::vector<double> composition, double gas_mole_surface_density, double gas_mass_surface_density, PhaseProperties& props_out);
+		void ComputeUnderSaturatedProperties(double P, std::vector<double> composition, double gas_mole_surface_density, double gas_mass_surface_density, PhaseProperties& props_out);
 		
 
 
@@ -43,10 +43,10 @@ namespace PVTPackage
 
 		//
 		double ComputePb(double Rs);
-		void ComputeSaturatedProperties(double Rs, double& Bo, double& visc) const;
-		void ComputeUndersaturatedSaturatedProperties(double Rs, double P, double& Bo, double& visc);
-		double ComputeMassDensity(double Rs, double Bo, double surface_gas_density) const;
-		double ComputeMoleDensity(double mass_density, double mw) const;
+		void ComputeSaturatedBoVisc(double Rs, double& Bo, double& visc) const;
+		void ComputeUndersaturatedBoVisc(double Rs, double P, double& Bo, double& visc);
+		double ComputeMoleDensity(double Rs, double Bo, double surface_gas_mole_density) const;
+		double ComputeMassDensity(double Rs, double Bo, double surface_gas_mass_density) const;
 
 
 		//Functions

@@ -90,7 +90,7 @@ int main(int argc, const char * argv[])
 	//Domain
 	const size_t NBlocks = static_cast<size_t>(1e1);
 	std::vector<double> Pressure(NBlocks), Temperature(NBlocks);
-	std::vector<std::vector<double>> Feed(NBlocks, std::vector<double>(3, 0.25));
+	std::vector<std::vector<double>> Feed(NBlocks, {0.99,0.01,0});
 	srand(0);
 	for (size_t nb = 0; nb != NBlocks; ++nb)
 	{

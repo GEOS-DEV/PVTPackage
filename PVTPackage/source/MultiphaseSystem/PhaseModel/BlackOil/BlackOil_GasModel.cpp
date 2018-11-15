@@ -2,6 +2,7 @@
 #include "Utils/math.hpp"
 #include "BlackOil_Utils.hpp"
 #include "BlackOil_GasModel.hpp"
+#include "MultiphaseSystem/PhaseModel/PhaseProperties.hpp"
 
 namespace PVTPackage
 {
@@ -230,16 +231,29 @@ namespace PVTPackage
 		return math::LinearInterpolation(m_PVTG.DewPressure[i_lower_branch], m_PVTG.Rv[i_lower_branch], m_PVTG.DewPressure[i_upper_branch], m_PVTG.Rv[i_upper_branch], Pdew);
 	}
 
-	void BlackOil_GasModel::ComputeSaturatedProperties(double Pdew, std::vector<double> composition,
-		PhaseProperties& props_out)
+	void BlackOil_GasModel::ComputeSaturatedProperties(double Pdew, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out)
 	{
+		props_out.MoleComposition.value = composition;
+		auto Rv = ComputeRv(Pdew);
+		double Bg, Visc;
+		ComputeSaturatedBgVisc(Rv, Bg, Visc);
+		props_out.MoleDensity.value = ComputeMassDensity(Rv, Bg, oil_mole_surface_density);
+		props_out.MassDensity.value = ComputeMassDensity(Rv, Bg, oil_mass_surface_density);
+		props_out.MolecularWeight.value = props_out.MassDensity.value / props_out.MoleDensity.value;
 	}
 
-	void BlackOil_GasModel::ComputeUnderSaturatedProperties(double Rv, double P, std::vector<double>, PhaseProperties& props_out)
+	void BlackOil_GasModel::ComputeUnderSaturatedProperties(double P, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out)
 	{
+		props_out.MoleComposition.value = composition;
+		auto Rv = composition[0] / composition[1] * m_SurfaceGasMoleDensity/oil_mole_surface_density;
+		double Bg, Visc;
+		ComputeUndersaturatedBgVisc(Rv, P, Bg, Visc);
+		props_out.MoleDensity.value = ComputeMassDensity(Rv, Bg, oil_mole_surface_density);
+		props_out.MassDensity.value = ComputeMassDensity(Rv, Bg, oil_mass_surface_density);
+		props_out.MolecularWeight.value = props_out.MassDensity.value / props_out.MoleDensity.value;
 	}
 
-	void BlackOil_GasModel::ComputeSaturatedProperties(double Rv, double& Bg, double& visc) const
+	void BlackOil_GasModel::ComputeSaturatedBgVisc(double Rv, double& Bg, double& visc) const
 	{
 		size_t i_lower_branch, i_upper_branch;
 		auto Rs_vec = m_PVTG.Rv;
@@ -251,13 +265,19 @@ namespace PVTPackage
 
 	}
 
-	double BlackOil_GasModel::ComputeMassDensity(double Rv, double Bg, double surface_oil_density) const
+	void BlackOil_GasModel::ComputeUndersaturatedBgVisc(double Rv, double P, double& Bg, double& visc)
 	{
-		return 1. / Bg * (m_SurfaceGasMassDensity + surface_oil_density * Rv);
+
+		//TODO
 	}
 
-	double BlackOil_GasModel::ComputeMoleDensity(double mass_density, double mw) const
+	double BlackOil_GasModel::ComputeMoleDensity(double Rv, double Bg, double surface_oil_mole_density) const
 	{
-		return mass_density / mw;
+		return 1. / Bg * (m_SurfaceGasMoleDensity + surface_oil_mole_density * Rv);
+	}
+
+	double BlackOil_GasModel::ComputeMassDensity(double Rv, double Bg, double surface_oil_mass_density) const
+	{
+		return 1. / Bg * (m_SurfaceGasMassDensity + surface_oil_mass_density * Rv);
 	}
 }

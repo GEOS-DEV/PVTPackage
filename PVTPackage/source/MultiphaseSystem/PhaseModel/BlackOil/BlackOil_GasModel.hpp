@@ -25,8 +25,8 @@ namespace PVTPackage
 
 		//
 		double ComputeRv(double Pdew);
-		void ComputeSaturatedProperties(double Pdew, std::vector<double> composition, PhaseProperties& props_out);
-		void ComputeUnderSaturatedProperties(double Rv, double P, std::vector<double> composition, PhaseProperties& props_out);
+		void ComputeSaturatedProperties(double Pdew, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out);
+		void ComputeUnderSaturatedProperties(double P, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out);
 
 
 	protected:
@@ -42,10 +42,11 @@ namespace PVTPackage
 
 		//
 		double ComputePdew(double Rv);
-		void ComputeSaturatedProperties(double Rv, double& Bg, double& visc) const;
-		//void ComputeUndersaturatedSaturatedProperties(double Rs, double P, double& Bo, double& visc);
-		double ComputeMassDensity(double Rv, double Bg, double surface_oil_density) const;
-		double ComputeMoleDensity(double mass_density, double mw) const;
+		void ComputeSaturatedBgVisc(double Rv, double& Bg, double& visc) const;
+		void ComputeUndersaturatedBgVisc(double Rv, double P, double& Bg, double& visc);
+
+		double ComputeMoleDensity(double Rv, double Bg, double surface_oil_mole_density) const;
+		double ComputeMassDensity(double Rv, double Bg, double surface_oil_mass_density) const;
 
 
 		//Functions
