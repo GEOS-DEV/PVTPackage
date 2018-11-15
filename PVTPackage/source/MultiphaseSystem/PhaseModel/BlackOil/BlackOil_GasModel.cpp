@@ -137,6 +137,27 @@ namespace PVTPackage
 			i_sat++;
 		}
 
+
+
+		//Add 1atm value if does not exist yet
+		if (m_PVTG.Rv[0] != 0)
+		{
+			auto Pref = 101325.0;
+			auto visc = math::LogExtrapolation(m_PVTG.DewPressure[1], m_PVTG.SaturatedViscosity[1], m_PVTG.DewPressure[0], m_PVTG.SaturatedViscosity[0], Pref);
+
+			m_PVTG.Rv.insert(m_PVTG.Rv.begin(), 0.);
+			m_PVTG.DewPressure.insert(m_PVTG.DewPressure.begin(), Pref);
+			m_PVTG.SaturatedBg.insert(m_PVTG.SaturatedBg.begin(),1.0);
+			m_PVTG.SaturatedViscosity.insert(m_PVTG.SaturatedViscosity.begin(), visc);
+			m_PVTG.NSaturatedPoints++;
+
+			m_PVTG.UndersaturatedRv.insert(m_PVTG.UndersaturatedRv.begin(), { 0 });
+			m_PVTG.UndersaturatedBg.insert(m_PVTG.UndersaturatedBg.begin(), { 1.0 });
+			m_PVTG.UndersaturatedViscosity.insert(m_PVTG.UndersaturatedViscosity.begin(), { visc });
+
+		}
+
+
 		m_PVTG.MaxRelativeRv = 0;
 		m_PVTG.MinRelativeRv = 1e8;
 
@@ -147,6 +168,10 @@ namespace PVTPackage
 			m_PVTG.MaxRelativeRv = std::max(maxP, m_PVTG.MaxRelativeRv);
 			m_PVTG.MinRelativeRv = std::min(maxP, m_PVTG.MinRelativeRv);
 		}
+
+		//
+		max_Pressure = *(std::max_element(m_PVTG.DewPressure.begin(), m_PVTG.DewPressure.end()));
+		min_Pressure = *(std::min_element(m_PVTG.DewPressure.begin(), m_PVTG.DewPressure.end()));
 	}
 
 	void BlackOil_GasModel::ExtendUnderSaturatedProperties()
@@ -226,6 +251,7 @@ namespace PVTPackage
 
 	double BlackOil_GasModel::ComputeRv(double Pdew)
 	{
+		ASSERT(Pdew<max_Pressure&Pdew>min_Pressure, "Pressure out of table range");
 		size_t i_lower_branch, i_upper_branch;
 		math::FindSurrondingIndex(m_PVTG.DewPressure, Pdew, i_lower_branch, i_upper_branch);
 		return math::LinearInterpolation(m_PVTG.DewPressure[i_lower_branch], m_PVTG.Rv[i_lower_branch], m_PVTG.DewPressure[i_upper_branch], m_PVTG.Rv[i_upper_branch], Pdew);
@@ -233,6 +259,7 @@ namespace PVTPackage
 
 	void BlackOil_GasModel::ComputeSaturatedProperties(double Pdew, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out)
 	{
+		ASSERT(Pdew<max_Pressure&Pdew>min_Pressure, "Pressure out of table range");
 		props_out.MoleComposition.value = composition;
 		auto Rv = ComputeRv(Pdew);
 		double Bg, Visc;
@@ -244,6 +271,7 @@ namespace PVTPackage
 
 	void BlackOil_GasModel::ComputeUnderSaturatedProperties(double P, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out)
 	{
+		ASSERT(P<max_Pressure&P>min_Pressure, "Pressure out of table range");
 		props_out.MoleComposition.value = composition;
 		auto Rv = composition[0] / composition[1] * m_SurfaceGasMoleDensity/oil_mole_surface_density;
 		double Bg, Visc;

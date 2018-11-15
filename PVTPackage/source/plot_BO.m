@@ -18,17 +18,21 @@ hold on
 yyaxis left
 plot(Pbub,Bo,'+');
 yyaxis right
-plot(Pbub,visco_o,'o');
+plot(Pbub,Rs,'o');
 hold off
 
-figure();
+figure()
+plot(Pbub(1:100:end),Rs(1:100:end),'o');
 
-hold on
-yyaxis left
-plot(Pdew,Bg,'+');
-%yyaxis right
-%plot(Rv,visco_g,'o');
-hold off
+
+% figure();
+% 
+% hold on
+% yyaxis left
+% plot(Pdew,Bg,'+');
+% yyaxis right
+% plot(Pdew,visco_g,'o');
+% hold off
 
 
 % figure();

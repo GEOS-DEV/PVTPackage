@@ -34,6 +34,12 @@ namespace PVTPackage
 		//PVT data
 		PVTGdata m_PVTG;
 
+
+		//
+		double min_Pressure;
+		double max_Pressure;
+
+
 		//		
 		double m_SurfaceGasMassDensity;
 		double m_SurfaceGasMoleDensity;

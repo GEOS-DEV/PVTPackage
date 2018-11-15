@@ -23,7 +23,6 @@ namespace PVTPackage
 	}
 
 
-
 	bool BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
 	{
 
@@ -46,8 +45,6 @@ namespace PVTPackage
 		auto& oil_ln_fug = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).LnFugacityCoefficients.value;
 		auto& gas_ln_fug = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).LnFugacityCoefficients.value;
 
-
-
 		//Oil
 		 const auto& oil_surface_mole_density =  oil_phase_model->GetSurfaceOilMoleDensity();
 		 const auto& oil_surface_mass_density = oil_phase_model->GetSurfaceOilMassDensity();
@@ -58,17 +55,12 @@ namespace PVTPackage
 		 const auto& gas_surface_mass_density = gas_phase_model->GetSurfaceGasMassDensity();
 		 auto Rv_sat = gas_phase_model->ComputeRv(pressure);
 		 
-		 ////Phase state
-		 //auto oil_undersaturated = ((zg / gas_surface_mole_density - Rs * zo / oil_surface_mole_density) < 0);
-		 //auto gas_undersaturated = ((zo / oil_surface_mole_density - Rv * zg / gas_surface_mole_density) < 0);
-
 		 //Phase State - Negative flash type
 		 auto Ko = Rv_sat * (oil_surface_mole_density + gas_surface_mole_density * Rs_sat) / (gas_surface_mole_density + oil_surface_mole_density * Rv_sat);
 		 auto Kg = (oil_surface_mole_density + gas_surface_mole_density * Rs_sat) / (Rs_sat * (gas_surface_mole_density + oil_surface_mole_density * Rv_sat));
 		 auto V = zo / (1 - Kg) + zg / (1 - Ko);
 		 if (V < 1 & V>0)  //Two-phase or both oil and gas saturated
 		 {
-
 			 //Phase Fractions
 			 oil_fraction = 1. - V;
 			 gas_fraction = V;

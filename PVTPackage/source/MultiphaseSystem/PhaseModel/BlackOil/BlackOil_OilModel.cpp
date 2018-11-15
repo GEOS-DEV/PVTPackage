@@ -92,8 +92,6 @@ namespace PVTPackage
 	void BlackOil_OilModel::CreateTable(const std::vector<std::vector<double>>& PVT)
 	{
 
-		//TODO: add extrem values to avoid extrapolation
-
 		//Count number of Saturated points
 		size_t nb_sat=0;
 		for (size_t i = 0; i < PVT.size(); ++i)
@@ -146,6 +144,25 @@ namespace PVTPackage
 			i_sat++;
 		}
 
+
+		//Add 1atm value if does not exist yet
+		if (m_PVTO.Rs[0] != 0)
+		{
+			auto Pref = 101325.0;
+			auto visc = math::LogExtrapolation(m_PVTO.BubblePressure[1],m_PVTO.SaturatedViscosity[1], m_PVTO.BubblePressure[0], m_PVTO.SaturatedViscosity[0], Pref);
+
+			m_PVTO.Rs.insert(m_PVTO.Rs.begin(), 0.);
+			m_PVTO.BubblePressure.insert(m_PVTO.BubblePressure.begin(), Pref);
+			m_PVTO.SaturatedBo.insert(m_PVTO.SaturatedBo.begin(), 1.0);
+			m_PVTO.SaturatedViscosity.insert(m_PVTO.SaturatedViscosity.begin(), visc);
+			m_PVTO.NSaturatedPoints++;
+
+			m_PVTO.UndersaturatedPressure.insert(m_PVTO.UndersaturatedPressure.begin(),{ 0 });
+			m_PVTO.UndersaturatedBo.insert(m_PVTO.UndersaturatedBo.begin(),{ 1.0 });
+			m_PVTO.UndersaturatedViscosity.insert(m_PVTO.UndersaturatedViscosity.begin(),{ visc });
+
+		}
+
 		m_PVTO.MaxRelativePressure = 0;
 		m_PVTO.MinRelativePressure = 1e8;
 
@@ -156,6 +173,12 @@ namespace PVTPackage
 			m_PVTO.MaxRelativePressure = std::max(maxP, m_PVTO.MaxRelativePressure);
 			m_PVTO.MinRelativePressure = std::min(maxP, m_PVTO.MinRelativePressure);
 		}
+
+		//
+		max_Pressure = *(std::max_element(m_PVTO.BubblePressure.begin(), m_PVTO.BubblePressure.end()));
+		min_Pressure = *(std::min_element(m_PVTO.BubblePressure.begin(), m_PVTO.BubblePressure.end()));
+
+
 	}
 
 	void BlackOil_OilModel::ExtendUnderSaturatedProperties()
@@ -322,6 +345,7 @@ namespace PVTPackage
 
 	double BlackOil_OilModel::ComputeRs(double Pb)
 	{
+		ASSERT(Pb<max_Pressure&Pb>min_Pressure, "Pressure out of table range");
 		size_t i_lower_branch, i_upper_branch;
 		math::FindSurrondingIndex(m_PVTO.BubblePressure, Pb, i_lower_branch, i_upper_branch);
 		return math::LinearInterpolation(m_PVTO.BubblePressure[i_lower_branch], m_PVTO.Rs[i_lower_branch], m_PVTO.BubblePressure[i_upper_branch], m_PVTO.Rs[i_upper_branch], Pb);
@@ -329,6 +353,7 @@ namespace PVTPackage
 
 	void BlackOil_OilModel::ComputeSaturatedProperties(double Pb, std::vector<double> composition, double gas_mole_surface_density, double gas_mass_surface_density, PhaseProperties& props_out)
 	{
+		ASSERT(Pb<max_Pressure&Pb>min_Pressure, "Pressure out of table range");
 		props_out.MoleComposition.value = composition;
 		auto Rs = ComputeRs(Pb);
 		double Bo, Visc;
@@ -340,6 +365,7 @@ namespace PVTPackage
 
 	void BlackOil_OilModel::ComputeUnderSaturatedProperties(double P, std::vector<double> composition, double gas_mole_surface_density, double gas_mass_surface_density, PhaseProperties& props_out)
 	{
+		ASSERT(P<max_Pressure&P>min_Pressure, "Pressure out of table range");
 		props_out.MoleComposition.value = composition;
 		auto Rs = (composition[1] / gas_mole_surface_density) /  (composition[0] / m_SurfaceOilMoleDensity) ;
 		double Bo, Visc;
@@ -366,7 +392,7 @@ namespace PVTPackage
 
 	void BlackOil_OilModel::ComputeUndersaturatedBoVisc(double Rs, double P, double& Bo, double& visc)
 	{
-		
+		ASSERT(P<max_Pressure&P>min_Pressure, "Pressure out of table range");
 		size_t i_lower_branch, i_upper_branch;
 		auto& Rs_vec = m_PVTO.Rs;
 		math::FindSurrondingIndex(Rs_vec, Rs, i_lower_branch, i_upper_branch);

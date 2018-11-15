@@ -211,6 +211,11 @@ std::vector<T> Interpolation1 (std::vector<T>& xin, std::vector<T>& yin, std::ve
 }
 
 
+template<typename T>
+T LinearInterpolation(T x1, T y1, T x2, T y2, T x3)
+{
+	return LinearInterpolation(x3 - x1, x2 - x3, y1, y2);
+}
 
 template<typename T>
 T LinearInterpolation(T dminus, T dplus, T xminus, T xplus)
@@ -221,9 +226,18 @@ T LinearInterpolation(T dminus, T dplus, T xminus, T xplus)
 
 
 template<typename T>
-T LinearInterpolation(T x1, T y1, T x2, T y2, T x3)
+T LogInterpolation(T x1, T y1, T x2, T y2, T x3)
 {
-	return LinearInterpolation(x3-x1, x2-x3, y1, y2);
+	return LogInterpolation(x3 - x1, x2 - x3, y1, y2);
+}
+
+
+template<typename T>
+T LogInterpolation(T dminus, T dplus, T xminus, T xplus)
+{
+	T f = log(dminus) / (log(dminus) + log(dplus));
+	T lnx = f * xminus + (1 - f)*xplus;
+	return exp(lnx);
 }
 
 
@@ -233,14 +247,14 @@ T LinearExtrapolation(T x1, T y1, T x2, T y2, T x3)
 	return (y2 - y1) / (x2 - x1) * (x3-x2) + y2;
 }
 
-
 template<typename T>
-T LogInterpolation(T dminus, T dplus, T xminus, T xplus)
+T LogExtrapolation(T x1, T y1, T x2, T y2, T x3)
 {
-	T f = log(dminus) / (log(dminus) + log(dplus));
-	T lnx = f*xminus + (1 - f)*xplus;
-	return exp(lnx);
+	T lny = (log(y2) - log(y1)) / (log(x2) - log(x1)) * (log(x3) - log(x2)) + log(y2);
+	return exp(lny);
 }
+
+
 
 template<typename T>
 std::vector<T> linspace(T a, T b, size_t num)

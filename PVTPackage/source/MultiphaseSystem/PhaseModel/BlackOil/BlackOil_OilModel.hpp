@@ -37,6 +37,10 @@ namespace PVTPackage
 		PVTOdata m_PVTO;
 
 		//
+		double min_Pressure;
+		double max_Pressure;
+
+		//
 		double m_SurfaceOilMassDensity;
 		double m_SurfaceOilMoleDensity;
 		double m_SurfaceOilMolecularWeight;
