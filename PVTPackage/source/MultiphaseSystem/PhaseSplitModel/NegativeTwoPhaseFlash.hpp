@@ -16,10 +16,7 @@ namespace PVTPackage
 
 		~NegativeTwoPhaseFlash() override = default;
 
-<<<<<<< HEAD
-		void set_PhaseState(MultiphaseSystemProperties& out_variables) override;
-		void ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
-=======
+
 		void set_PhaseState(MultiphaseSystemProperties& out_variables) override
 		{
 
@@ -31,7 +28,6 @@ namespace PVTPackage
 		}
 
 		bool ComputeEquilibrium(MultiphaseSystemProperties & out_variables) override;
->>>>>>> 489cf64f5560b9a2d2f0f4030fb7292341915c23
 
 	protected:
 

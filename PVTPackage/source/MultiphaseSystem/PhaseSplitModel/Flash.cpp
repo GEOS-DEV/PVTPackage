@@ -18,7 +18,6 @@ namespace PVTPackage
 		return success;
 	}
 
-<<<<<<< HEAD
 	void Flash::set_PhaseState(MultiphaseSystemProperties& out_variables)
 	{
 
@@ -28,10 +27,7 @@ namespace PVTPackage
 			});
 	}
 
-	void Flash::ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables)
-=======
 	bool Flash::ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables)
->>>>>>> 489cf64f5560b9a2d2f0f4030fb7292341915c23
 	{
 		const auto& pressure = out_variables.Pressure;
 		const auto& temperature = out_variables.Temperature;

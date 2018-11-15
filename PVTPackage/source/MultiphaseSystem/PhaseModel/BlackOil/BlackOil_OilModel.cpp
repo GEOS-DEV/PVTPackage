@@ -328,7 +328,7 @@ namespace PVTPackage
 	void BlackOil_OilModel::ComputeSaturatedProperties(double Pb, std::vector<double> composition, PhaseProperties& props_out)
 	{
 		props_out.MoleComposition.value = composition;
-		props_out.MoleDensity.value = ;
+		//props_out.MoleDensity.value = ;
 	}
 
 	void BlackOil_OilModel::ComputeUnderSaturatedProperties(double Rs, double P, std::vector<double>, PhaseProperties& props_out)

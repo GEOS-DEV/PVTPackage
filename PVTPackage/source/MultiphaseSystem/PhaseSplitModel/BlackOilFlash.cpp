@@ -24,7 +24,7 @@ namespace PVTPackage
 
 
 
-	void BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
+	bool BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
 	{
 
 		const auto& pressure = out_variables.Pressure;
@@ -89,7 +89,7 @@ namespace PVTPackage
 		
 
 		
-		
+		 return true;
 
 
 

@@ -9,22 +9,8 @@
 
 namespace PVTPackage
 {
-<<<<<<< HEAD
 
-	void NegativeTwoPhaseFlash::set_PhaseState(MultiphaseSystemProperties& out_variables)
-	{
-
-		out_variables.PhaseState = PhaseStateMap.at
-		({ out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value > 0.,
-			out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0.,
-			false
-			});
-	}
-
-	void NegativeTwoPhaseFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
-=======
 	bool NegativeTwoPhaseFlash::ComputeEquilibrium(MultiphaseSystemProperties & out_variables)
->>>>>>> 489cf64f5560b9a2d2f0f4030fb7292341915c23
 	{
 		// Equilibrium convergence parameters
 		const int max_SSI_iterations = 100;
@@ -79,17 +65,18 @@ namespace PVTPackage
 				oil_comp[ic] = feed[ic] / (1.0 + vapor_fraction * (KGasOil[ic] - 1.0));
 				gas_comp[ic] = KGasOil[ic] * oil_comp[ic];
 			}
-      oil_comp = math::Normalize(oil_comp);
-      gas_comp = math::Normalize(gas_comp);
+			oil_comp = math::Normalize(oil_comp);
+			gas_comp = math::Normalize(gas_comp);
 
 			// Compute phase fugacity
-			// TODO remove redundant computations, only fugacity needed
-			for (auto & m_PhaseModel : out_variables.PhaseModels)
+			for (auto it = out_variables.PhaseModels.begin(); it != out_variables.PhaseModels.end(); ++it)
 			{
-				auto & comp = out_variables.PhasesProperties.at(m_PhaseModel.first).MoleComposition.value;
-				m_PhaseModel.second->ComputeAllProperties(pressure, temperature, comp,
-																									out_variables.PhasesProperties[m_PhaseModel.first]);
+				auto phase_type = (*it).first;
+				auto eos_phase_model = static_cast<CubicEoSPhaseModel*>((*it).second);
+				auto& comp = out_variables.PhasesProperties.at(phase_type).MoleComposition.value;
+				eos_phase_model->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase_type));
 			}
+
 
 			// Compute fugacity ratio and check convergence
 			bool converged = true;
@@ -105,10 +92,10 @@ namespace PVTPackage
 				break;
 
 			// Update K-values
-      for (auto ic : positive_components)
-      {
-        KGasOil[ic] *= fug_ratio[ic];
-      }
+			for (auto ic : positive_components)
+			{
+				KGasOil[ic] *= fug_ratio[ic];
+			}
 		}
 
 		// Retrieve physical bounds from negative flash values
@@ -125,22 +112,13 @@ namespace PVTPackage
 			oil_comp = feed;
 		}
 
-<<<<<<< HEAD
 		//Phase Properties
-		for (auto it= out_variables.PhaseModels.begin();it!= out_variables.PhaseModels.end();++it)
+		for (auto it = out_variables.PhaseModels.begin(); it != out_variables.PhaseModels.end(); ++it)
 		{
 			auto phase_type = (*it).first;
 			auto eos_phase_model = static_cast<CubicEoSPhaseModel*>((*it).second);
 			auto& comp = out_variables.PhasesProperties.at(phase_type).MoleComposition.value;
 			eos_phase_model->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase_type));
-=======
-		// Compute final phase properties
-		for (auto & m_PhaseModel : out_variables.PhaseModels)
-		{
-			auto & comp = out_variables.PhasesProperties.at(m_PhaseModel.first).MoleComposition.value;
-			m_PhaseModel.second->ComputeAllProperties(pressure, temperature, comp,
-																								out_variables.PhasesProperties[m_PhaseModel.first]);
->>>>>>> 489cf64f5560b9a2d2f0f4030fb7292341915c23
 		}
 
 		// Compute final phase state
