@@ -21,7 +21,7 @@ namespace PVTPackage
 		{
 			
 			auto df = 2; //TODO: don't know why I need this default constructor. Nothing goes through it but compiler crashes
-
+			df++;
 		}
 
 		void UpdateDerivative_dP_FiniteDifference(const PhaseProperties& props_eps, double epsilon)

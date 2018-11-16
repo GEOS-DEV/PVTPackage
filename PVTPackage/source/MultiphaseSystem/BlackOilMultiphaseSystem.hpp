@@ -10,8 +10,8 @@ namespace PVTPackage
 
 		BlackOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
 			std::vector<std::vector<double>> PVTO,
-			std::vector<double> PVTW,
 			std::vector<std::vector<double>> PVTG,
+			std::vector<double> PVTW,
 			std::vector<double> DENSITY,
 			std::vector<double> MW);
 

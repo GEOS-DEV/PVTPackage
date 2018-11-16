@@ -19,9 +19,9 @@ namespace PVTPackage
 		~BlackOil_OilModel() override = default;
 
 		//Getter
-		double GetSurfaceOilMassDensity() { return m_SurfaceOilMassDensity; }
-		double GetSurfaceOilMoleDensity() { return m_SurfaceOilMoleDensity; }
-		double GetSurfaceOilMolecularWeight() { return m_SurfaceOilMolecularWeight; }
+		double GetSurfaceMassDensity() { return m_SurfaceMassDensity; }
+		double GetSurfaceMoleDensity() { return m_SurfaceMoleDensity; }
+		double GetSurfaceMolecularWeight() { return m_SurfaceMolecularWeight; }
 
 		//Compute
 		double ComputeRs(double Pb);
@@ -41,9 +41,9 @@ namespace PVTPackage
 		double max_Pressure;
 
 		//
-		double m_SurfaceOilMassDensity;
-		double m_SurfaceOilMoleDensity;
-		double m_SurfaceOilMolecularWeight;
+		double m_SurfaceMassDensity;
+		double m_SurfaceMoleDensity;
+		double m_SurfaceMolecularWeight;
 
 		//
 		double ComputePb(double Rs);

@@ -23,7 +23,7 @@ namespace PVTPackage
 
 		//Linspace - This is optional and can be removed
 		double maxval = *std::max_element(refine_x.begin(), refine_x.end());
-		refine_x = math::linspace(0.0, maxval, 100);
+		refine_x = math::linspace(0.0, maxval, nlevel);
 
 		for (size_t i = 0; i<table.size(); ++i)
 		{
