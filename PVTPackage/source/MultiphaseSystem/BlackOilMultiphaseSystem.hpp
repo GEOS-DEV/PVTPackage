@@ -1,7 +1,5 @@
 #pragma once
 #include "MultiphaseSystem/MultiphaseSystem.hpp"
-#include "MultiphaseSystem/ComponentProperties.hpp"
-#include "MultiphaseSystem/PhaseSplitModel/CompositionalFlash.hpp"
 #include "PhaseSplitModel/BlackOilFlash.hpp"
 
 namespace PVTPackage
@@ -24,7 +22,6 @@ namespace PVTPackage
 
 		~BlackOilMultiphaseSystem() override;
 
-		//void Flash(double pressure, double temperature, std::vector<double> feed, PhaseSplitModelOutputVariables& out_variables) override;
 
 	protected:
 
@@ -34,9 +31,6 @@ namespace PVTPackage
 			std::vector<std::vector<double>> PVTG,
 			std::vector<double> DENSITY,
 			std::vector<double> MW);
-
-		//Flash pointer
-		//BlackOilFlash* m_BlackOilFlash;
 
 
 	};

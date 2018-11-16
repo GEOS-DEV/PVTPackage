@@ -25,6 +25,7 @@ namespace PVTPackage
 		virtual void set_PhaseState(MultiphaseSystemProperties& out_variables) = 0;
 
 
+
 	protected:
 
 		ComponentProperties m_ComponentsProperties;

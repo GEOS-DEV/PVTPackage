@@ -9,8 +9,7 @@
 
 namespace PVTPackage
 {
-
-	void TrivialFlash::set_PhaseState(MultiphaseSystemProperties& out_variables)
+	void TrivialFlash::set_PhaseState(MultiphaseSystemProperties & out_variables)
 	{
 
 		out_variables.PhaseState = PhaseStateMap.at

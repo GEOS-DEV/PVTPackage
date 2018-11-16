@@ -13,7 +13,6 @@ namespace PVTPackage
 
 		Flash() = default;
 
-
 		bool ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables);
 		virtual bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables) = 0;
 		virtual void set_PhaseState(MultiphaseSystemProperties& out_variables) = 0;

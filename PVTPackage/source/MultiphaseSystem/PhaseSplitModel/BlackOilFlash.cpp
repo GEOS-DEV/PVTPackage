@@ -6,8 +6,7 @@
 
 namespace PVTPackage
 {
-	BlackOilFlash::BlackOilFlash(): m_OilModel(nullptr), m_GasModel(nullptr),
-	                                                                 m_WaterModel(nullptr)
+	BlackOilFlash::BlackOilFlash(): m_OilModel(nullptr), m_GasModel(nullptr), m_WaterModel(nullptr)
 	{
 		
 	}
@@ -21,7 +20,6 @@ namespace PVTPackage
 			out_variables.PhaseMoleFraction.at(PHASE_TYPE::LIQUID_WATER_RICH).value > 0.
 			});
 	}
-
 
 	bool BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
 	{

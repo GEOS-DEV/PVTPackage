@@ -9,7 +9,6 @@
 
 namespace PVTPackage
 {
-
 	bool NegativeTwoPhaseFlash::ComputeEquilibrium(MultiphaseSystemProperties & out_variables)
 	{
 		// Equilibrium convergence parameters
@@ -65,6 +64,7 @@ namespace PVTPackage
 				oil_comp[ic] = feed[ic] / (1.0 + vapor_fraction * (KGasOil[ic] - 1.0));
 				gas_comp[ic] = KGasOil[ic] * oil_comp[ic];
 			}
+
 			oil_comp = math::Normalize(oil_comp);
 			gas_comp = math::Normalize(gas_comp);
 
@@ -76,7 +76,6 @@ namespace PVTPackage
 				auto& comp = out_variables.PhasesProperties.at(phase_type).MoleComposition.value;
 				eos_phase_model->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase_type));
 			}
-
 
 			// Compute fugacity ratio and check convergence
 			bool converged = true;
@@ -96,37 +95,37 @@ namespace PVTPackage
 			{
 				KGasOil[ic] *= fug_ratio[ic];
 			}
+
+
+			// Retrieve physical bounds from negative flash values
+			if (gas_fraction >= 1.0)
+			{
+				gas_fraction = 1.0;
+				gas_comp = feed;
+				oil_fraction = 0.0;
+			}
+			if (gas_fraction <= 0.0)
+			{
+				gas_fraction = 0.0;
+				oil_fraction = 1.0;
+				oil_comp = feed;
+			}
+
+			//Phase Properties
+			for (auto it = out_variables.PhaseModels.begin(); it != out_variables.PhaseModels.end(); ++it)
+			{
+				auto phase_type = (*it).first;
+				auto eos_phase_model = static_cast<CubicEoSPhaseModel*>((*it).second);
+				auto& comp = out_variables.PhasesProperties.at(phase_type).MoleComposition.value;
+				eos_phase_model->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase_type));
+			}
+
+			// Compute final phase state
+			set_PhaseState(out_variables);
+
+			return iter != max_SSI_iterations;
+
 		}
-
-		// Retrieve physical bounds from negative flash values
-		if (gas_fraction >= 1.0)
-		{
-			gas_fraction = 1.0;
-			gas_comp = feed;
-			oil_fraction = 0.0;
-		}
-		if (gas_fraction <= 0.0)
-		{
-			gas_fraction = 0.0;
-			oil_fraction = 1.0;
-			oil_comp = feed;
-		}
-
-		//Phase Properties
-		for (auto it = out_variables.PhaseModels.begin(); it != out_variables.PhaseModels.end(); ++it)
-		{
-			auto phase_type = (*it).first;
-			auto eos_phase_model = static_cast<CubicEoSPhaseModel*>((*it).second);
-			auto& comp = out_variables.PhasesProperties.at(phase_type).MoleComposition.value;
-			eos_phase_model->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase_type));
-		}
-
-		// Compute final phase state
-		set_PhaseState(out_variables);
-
-		return iter != max_SSI_iterations;
-
 	}
 }
-
 
