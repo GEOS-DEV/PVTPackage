@@ -9,7 +9,7 @@ namespace PVTPackage
 {
 
 	BlackOilMultiphaseSystem::BlackOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
-		std::vector<std::vector<double>> PVTO, std::vector<double> PVTW, std::vector<std::vector<double>> PVTG,
+		std::vector<std::vector<double>> PVTO, std::vector<std::vector<double>> PVTG, std::vector<double> PVTW,
 		std::vector<double> DENSITY, std::vector<double> MW)
 		: MultiphaseSystem(phase_types.size(), phase_types)
 	{
@@ -24,7 +24,7 @@ namespace PVTPackage
 		: MultiphaseSystem(phase_types.size(), phase_types)
 	{
 		// TODO read tables
-		  //CreatePhases(phase_types, PVTO, PVTW, PVTG, DENSITY, MW);
+		  //CreatePhases(phase_types, PVTO, PVTG, PVTW, DENSITY, MW);
 
 		  //Create Flash pointer
 		m_Flash = new BlackOilFlash();

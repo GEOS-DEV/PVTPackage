@@ -221,7 +221,7 @@ template<typename T>
 T LinearInterpolation(T dminus, T dplus, T xminus, T xplus)
 {
 	T f = dminus / (dminus + dplus);
-	return f*xminus + (1-f)*xplus;
+	return f* xplus + (1-f)*xminus;
 }
 
 
@@ -236,7 +236,7 @@ template<typename T>
 T LogInterpolation(T dminus, T dplus, T xminus, T xplus)
 {
 	T f = log(dminus) / (log(dminus) + log(dplus));
-	T lnx = f * xminus + (1 - f)*xplus;
+	T lnx = f * xplus + (1 - f)*xminus;
 	return exp(lnx);
 }
 

@@ -19,9 +19,9 @@ namespace PVTPackage
 		~BlackOil_GasModel() override = default;
 
 		//Getter
-		double GetSurfaceGasMassDensity() { return m_SurfaceGasMassDensity; }
-		double GetSurfaceGasMoleDensity() { return m_SurfaceGasMoleDensity; }
-		double GetSurfaceGasMolecularWeight() { return m_SurfaceGasMolecularWeight; }
+		double GetSurfaceMassDensity() { return m_SurfaceMassDensity; }
+		double GetSurfaceMoleDensity() { return m_SurfaceMoleDensity; }
+		double GetSurfaceMolecularWeight() { return m_SurfaceMolecularWeight; }
 
 		//
 		double ComputeRv(double Pdew);
@@ -41,9 +41,9 @@ namespace PVTPackage
 
 
 		//		
-		double m_SurfaceGasMassDensity;
-		double m_SurfaceGasMoleDensity;
-		double m_SurfaceGasMolecularWeight;
+		double m_SurfaceMassDensity;
+		double m_SurfaceMoleDensity;
+		double m_SurfaceMolecularWeight;
 
 
 		//

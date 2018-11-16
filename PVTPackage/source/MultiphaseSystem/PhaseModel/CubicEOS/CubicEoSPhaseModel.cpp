@@ -13,7 +13,7 @@ namespace PVTPackage
 	{
 		auto mix_coeffs = ComputeMixtureCoefficients(Pressure, Temperature, composition);
 		auto Z = ComputeCompressibilityFactor(Pressure, Temperature, composition, mix_coeffs);
-		auto ln_phi = ComputeLnFugacitiesCoefficients(Pressure, Temperature, composition, Z, mix_coeffs);
+		auto ln_phi = ComputeLnFugacitiesCoefficients(composition, Z, mix_coeffs);
 		auto mol_dens = ComputeMoleDensity_(Pressure, Temperature, composition, Z);
 		auto mw = ComputeMolecularWeight(composition);
 		auto mass_dens = ComputeMassDensity_(mol_dens, mw);
@@ -95,8 +95,8 @@ namespace PVTPackage
 			const double Zmin = *std::min_element(sols.begin(), sols.end());
 			const double Zmax = *std::max_element(sols.begin(), sols.end());
 
-			auto ln_fug_min = ComputeLnFugacitiesCoefficients(Pressure, Temperature, composition, Zmin, mix_coeffs);
-			auto ln_fug_max = ComputeLnFugacitiesCoefficients(Pressure, Temperature, composition, Zmax, mix_coeffs);
+			auto ln_fug_min = ComputeLnFugacitiesCoefficients(composition, Zmin, mix_coeffs);
+			auto ln_fug_max = ComputeLnFugacitiesCoefficients(composition, Zmax, mix_coeffs);
 
 			double dG = 0.0;
 			for (size_t ic = 0; ic < m_ComponentsProperties.NComponents; ++ic)
@@ -121,7 +121,7 @@ namespace PVTPackage
 	* \param mix_coeffs
 	* \return
 	*/
-	std::vector<double> CubicEoSPhaseModel::ComputeLnFugacitiesCoefficients(double Pressure, double Temperature, std::vector<double>& composition, double Z, CubicEosMixtureCoefficients& mix_coeffs) const
+	std::vector<double> CubicEoSPhaseModel::ComputeLnFugacitiesCoefficients(std::vector<double>& composition, double Z, CubicEosMixtureCoefficients& mix_coeffs) const
 	{
 		auto nbc = m_ComponentsProperties.NComponents;
 

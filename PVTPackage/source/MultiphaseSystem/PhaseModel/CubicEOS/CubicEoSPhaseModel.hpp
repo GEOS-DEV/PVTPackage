@@ -74,7 +74,7 @@ namespace PVTPackage
 		double ComputeMoleDensity_(double Pressure, double Temperature, std::vector<double>& composition, double Z) const;
 		double ComputeMolecularWeight(std::vector<double>& composition) const;
 		double ComputeMassDensity_(double mole_density, double mw) const;
-		std::vector<double> ComputeLnFugacitiesCoefficients( double Pressure, double Temperature, std::vector<double>& composition, double Z, CubicEosMixtureCoefficients& mixture_coefficients) const;
+		std::vector<double> ComputeLnFugacitiesCoefficients( std::vector<double>& composition, double Z, CubicEosMixtureCoefficients& mixture_coefficients) const;
 
 		//
 		std::vector<double> SolveCubicPolynomial(double a, double b, double c, double d) const;

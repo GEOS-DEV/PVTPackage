@@ -35,7 +35,7 @@ int main(int argc, const char * argv[])
 	std::vector<double> PVTW =
 	{
 		//	Pref[bar]	Bw[m3/sm3]	Cp[1/bar]	Visc[cP]
-			306.1,	1.03,	0.000041,	0.3
+			30600000.1,		1.03,		0.00000000041,	0.0003
 	};
 
 	//PVTG
@@ -83,12 +83,12 @@ int main(int argc, const char * argv[])
 	double GasMw = 16e-3;
 
 	/// ------------------------------  END BO RAW DATASET
-	auto PVTSystem = BlackOilMultiphaseSystem({ PHASE_TYPE::OIL,PHASE_TYPE::GAS,PHASE_TYPE::LIQUID_WATER_RICH }, PVTO, PVTW, PVTG, { SurfaceOilDensity ,SurfaceWaterDensity ,SurfaceGasDensity }, { OilMw ,WaterMw ,GasMw });
+	auto PVTSystem = BlackOilMultiphaseSystem({ PHASE_TYPE::OIL,PHASE_TYPE::GAS,PHASE_TYPE::LIQUID_WATER_RICH }, PVTO, PVTG, PVTW, { SurfaceOilDensity, SurfaceGasDensity ,SurfaceWaterDensity  }, { OilMw,GasMw ,WaterMw  });
 
 	//Domain
 	const size_t NBlocks = static_cast<size_t>(1e1);
 	std::vector<double> Pressure(NBlocks), Temperature(NBlocks);
-	std::vector<std::vector<double>> Feed(NBlocks, {0.01,0.9,0});
+	std::vector<std::vector<double>> Feed(NBlocks, {0.7,0.2,0.1});
 	srand(0);
 	for (size_t nb = 0; nb != NBlocks; ++nb)
 	{

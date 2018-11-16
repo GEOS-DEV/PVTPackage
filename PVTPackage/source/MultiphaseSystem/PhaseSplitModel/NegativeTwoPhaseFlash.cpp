@@ -50,8 +50,8 @@ namespace PVTPackage
 		gas_comp.assign(nbc, 0.0);
 		oil_comp.assign(nbc, 0.0);
 
-		int iter;
-		for (iter = 0; iter < max_SSI_iterations; ++iter)
+		int total_nb_iter = 0;
+		for (int iter = 0; iter < max_SSI_iterations; ++iter)
 		{
 			// Solve Rachford-Rice Equation
 			const double vapor_fraction = SolveRachfordRiceEquation(KGasOil, feed, positive_components);
@@ -120,12 +120,13 @@ namespace PVTPackage
 				eos_phase_model->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase_type));
 			}
 
-			// Compute final phase state
-			set_PhaseState(out_variables);
-
-			return iter != max_SSI_iterations;
-
+			total_nb_iter = iter;
 		}
+
+		// Compute final phase state
+		set_PhaseState(out_variables);
+
+		return total_nb_iter != max_SSI_iterations;
 	}
 }
 

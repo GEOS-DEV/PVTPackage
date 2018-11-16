@@ -15,12 +15,6 @@ namespace PVTPackage
 
 
 		~CompositionalMultiphaseSystem() override;
-
-
-	protected:
-
-		////Flash pointer
-		//CompositionalFlash* m_CompositionalFlash;
 	
 	};
 
