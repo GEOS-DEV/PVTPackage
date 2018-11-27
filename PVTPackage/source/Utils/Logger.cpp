@@ -10,6 +10,7 @@
 #pragma clang diagnostic ignored "-Wglobal-constructors"
 #endif
 
+namespace PVTPackage {
 //Default values
 std::string Logger::m_level_logfile = "INFO";
 std::string Logger::m_file_name = "simulator.log";
@@ -152,4 +153,4 @@ std::string Logger::get_time()
   //res << (now.tm_year + 1900) << "-" << (now.tm_mon + 1) << "-" << (now.tm_mday) << "-" << now.tm_hour << ":" << now.tm_min << ":" << now.tm_sec;
   return res.str();
 }
-
+}

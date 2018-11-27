@@ -7,7 +7,7 @@
 #include <sstream>
 #include <vector>
 
-
+namespace PVTPackage {
 namespace StringUtils
 {
 
@@ -103,3 +103,4 @@ namespace StringUtils
 
 
 }
+} // namespace

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef LOGGER_HPP_INCLUDED
-#define LOGGER_HPP_INCLUDED
 
 // Project includes
 #include "Utils/LogMessage.hpp"
@@ -12,14 +10,16 @@
 #include <iomanip>
 
 ////Macros
-#define LOGWARNING(msg) do {Logger::instance()->LogWARNING(msg);} while (0)
-#define LOGERROR(msg) do {Logger::instance()->LogERROR(msg);} while (0)
-#define LOGINFO(msg) do {Logger::instance()->LogINFO(msg);} while (0)
-#define LOGDEBUG(msg) do {Logger::instance()->LogDEBUG(msg);} while (0)
+#define LOGWARNING(msg) do {PVTPackage::Logger::instance()->LogWARNING(msg);} while (0)
+#define LOGERROR(msg) do {PVTPackage::Logger::instance()->LogERROR(msg);} while (0)
+#define LOGINFO(msg) do {PVTPackage::Logger::instance()->LogINFO(msg);} while (0)
+#define LOGDEBUG(msg) do {PVTPackage::Logger::instance()->LogDEBUG(msg);} while (0)
 
 //ADGPRS Native style
-#define LogFatal(msg) do {Logger::instance()->Log((*(LogMessage::instance(VerbosityLevelLogFile::ERROR))<<msg));} while (0)
-#define LogMessage2(lvl) do {*(LogMessage::instance(VerbosityLevelLogFile::lvl));} while (0)
+#define LogFatal(msg) do {PVTPackage::Logger::instance()->Log((*(PVTPackage::LogMessage::instance(VerbosityLevelLogFile::ERROR))<<msg));} while (0)
+#define LogMessage2(lvl) do {PVTPackage::*(PVTPackage::LogMessage::instance(VerbosityLevelLogFile::lvl));} while (0)
+
+namespace PVTPackage {
 
 enum class VerbosityLevelScreen
 {
@@ -122,5 +122,4 @@ void Logger::write_file(Head &&head, Tail &&tail, Tails&&... tails)
   m_logfile << head;
   write_file(std::forward<Tail>(tail), std::forward<Tails>(tails)...);
 }
-
-#endif //LOGGER_HPP_INCLUDED
+}

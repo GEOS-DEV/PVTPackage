@@ -1,6 +1,4 @@
 #pragma once
-#ifndef MATH_HPP_INCLUDED
-#define MATH_HPP_INCLUDED
 
 // Std library includes
 #include <vector>
@@ -210,18 +208,17 @@ std::vector<T> Interpolation1 (std::vector<T>& xin, std::vector<T>& yin, std::ve
 
 }
 
-
-template<typename T>
-T LinearInterpolation(T x1, T y1, T x2, T y2, T x3)
-{
-	return LinearInterpolation(x3 - x1, x2 - x3, y1, y2);
-}
-
 template<typename T>
 T LinearInterpolation(T dminus, T dplus, T xminus, T xplus)
 {
 	T f = dminus / (dminus + dplus);
 	return f* xplus + (1-f)*xminus;
+}
+
+template<typename T>
+T LinearInterpolation(T x1, T y1, T x2, T y2, T x3)
+{
+	return LinearInterpolation(x3 - x1, x2 - x3, y1, y2);
 }
 
 
@@ -272,4 +269,3 @@ std::vector<T> linspace(T a, T b, size_t num)
 
 
 }
-#endif //MATH_HPP_INCLUDED

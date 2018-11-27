@@ -6,6 +6,7 @@
 #include <string>
 
 
+namespace PVTPackage {
 File::File(std::string fileName) :
   m_FullName(fileName),
   m_Directory(""),
@@ -52,3 +53,4 @@ File::File(std::string fileName) :
 File::~File()
 {
 }
+} // namespace

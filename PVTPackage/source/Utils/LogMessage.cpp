@@ -1,6 +1,7 @@
 // Header include
 #include "Utils/LogMessage.hpp"
 
+namespace PVTPackage {
 LogMessage* LogMessage::instance()
 {
   return instance(VerbosityLevelLogFile::INFO);
@@ -32,4 +33,5 @@ LogMessage::LogMessage(VerbosityLevelLogFile lvl)
 {
   m_message_level = lvl;
   m_message << "";
+}
 }
