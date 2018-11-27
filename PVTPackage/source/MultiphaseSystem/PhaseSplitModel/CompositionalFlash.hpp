@@ -21,8 +21,8 @@ namespace PVTPackage
 		double SolveRachfordRiceEquation(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index);
 		double RachfordRiceFunction(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index, double x);
 		double dRachfordRiceFunction_dx(const std::vector<double>& Kvalues, const std::vector<double>& feed, const std::list<size_t>& non_zero_index, double x);
-		virtual bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables)=0;
-		virtual void set_PhaseState(MultiphaseSystemProperties& out_variables) = 0;
+		virtual bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
+		virtual void set_PhaseState(MultiphaseSystemProperties& out_variables) override;
 
 
 
