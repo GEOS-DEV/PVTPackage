@@ -146,7 +146,7 @@ namespace PVTPackage
 
 
 		//Add 1atm value if does not exist yet
-		if (m_PVTO.Rs[0] != 0)
+		if (m_PVTO.Rs[0] != 0.)
 		{
 			auto Pref = 101325.0;
 			auto visc = math::LogExtrapolation(m_PVTO.BubblePressure[1],m_PVTO.SaturatedViscosity[1], m_PVTO.BubblePressure[0], m_PVTO.SaturatedViscosity[0], Pref);

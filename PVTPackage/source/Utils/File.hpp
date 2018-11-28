@@ -1,9 +1,8 @@
 #pragma once
-#ifndef FILE_HPP_INCLUDED
-#define FILE_HPP_INCLUDED
 
 #include <string>
 
+namespace PVTPackage {
 class File
 {
 
@@ -26,5 +25,4 @@ private:
   std::string m_NameWithoutExtension;
 
 };
-
-#endif //FILE_HPP_INCLUDED
+} // namespace

@@ -1,11 +1,9 @@
 #pragma once
-#ifndef LOGMESSAGE_HPP_INCLUDED
-#define LOGMESSAGE_HPP_INCLUDED
 
 // Std library includes
 #include <sstream>
 
-
+namespace PVTPackage {
 enum class VerbosityLevelLogFile
 {
   ERROR, WARNING, DEBUG, INFO
@@ -42,5 +40,4 @@ private:
 
 
 };
-
-#endif //LOGMESSAGE_HPP_INCLUDED
+} // namespace
