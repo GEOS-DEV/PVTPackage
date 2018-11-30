@@ -1,6 +1,7 @@
 #include "BlackOil_OilModel.hpp"
 #include <algorithm>
 #include "Utils/math.hpp"
+#include "Utils/utils.hpp"
 #include "BlackOil_Utils.hpp"
 #include <algorithm>    // std::max
 #include <complex>
@@ -146,7 +147,7 @@ namespace PVTPackage
 
 
 		//Add 1atm value if does not exist yet
-		if (m_PVTO.Rs[0] != 0.)
+		if (!math::isNearlyEqual(m_PVTO.Rs[0],0.))
 		{
 			auto Pref = 101325.0;
 			auto visc = math::LogExtrapolation(m_PVTO.BubblePressure[1],m_PVTO.SaturatedViscosity[1], m_PVTO.BubblePressure[0], m_PVTO.SaturatedViscosity[0], Pref);
