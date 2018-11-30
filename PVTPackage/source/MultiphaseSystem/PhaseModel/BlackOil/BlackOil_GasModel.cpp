@@ -1,6 +1,5 @@
 #include <algorithm>
 #include "Utils/math.hpp"
-#include "Utils/utils.hpp"
 #include "BlackOil_Utils.hpp"
 #include "BlackOil_GasModel.hpp"
 #include "MultiphaseSystem/PhaseModel/PhaseProperties.hpp"

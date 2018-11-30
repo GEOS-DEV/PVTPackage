@@ -1,7 +1,6 @@
 #include "BlackOil_OilModel.hpp"
 #include <algorithm>
 #include "Utils/math.hpp"
-#include "Utils/utils.hpp"
 #include "BlackOil_Utils.hpp"
 #include <algorithm>    // std::max
 #include <complex>
