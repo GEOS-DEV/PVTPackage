@@ -140,7 +140,7 @@ namespace PVTPackage
 
 
 		//Add 1atm value if does not exist yet
-		if (m_PVTG.Rv[0] != 0.)
+		if (!math::isNearlyEqual(m_PVTG.Rv[0],0.))
 		{
 			auto Pref = 101325.0;
 			auto visc = math::LogExtrapolation(m_PVTG.DewPressure[1], m_PVTG.SaturatedViscosity[1], m_PVTG.DewPressure[0], m_PVTG.SaturatedViscosity[0], Pref);

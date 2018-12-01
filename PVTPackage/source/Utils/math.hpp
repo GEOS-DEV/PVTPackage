@@ -81,11 +81,10 @@ bool isPositive(const std::vector<T>& in)
   return res;
 }
 
-
 template<typename T>
-bool isNotEqual(const T& in, T val)
-{
-  return in != val;
+bool isNearlyEqual(T in, T val, int ulp = 1) {
+  // Adapt from https://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
+  return std::abs(in-val) <= std::numeric_limits<T>::epsilon() * std::abs(in+val) * ulp || std::abs(in-val) < std::numeric_limits<T>::min();
 }
 
 template<typename T>
