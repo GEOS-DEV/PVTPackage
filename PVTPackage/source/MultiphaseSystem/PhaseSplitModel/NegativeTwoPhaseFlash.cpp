@@ -96,31 +96,32 @@ namespace PVTPackage
 				KGasOil[ic] *= fug_ratio[ic];
 			}
 
+			total_nb_iter = iter;
+		}
 
-			// Retrieve physical bounds from negative flash values
+		// Retrieve physical bounds from negative flash values
+		if (gas_fraction <= 0.0 || gas_fraction >= 1.0)
+		{
+			PHASE_TYPE phase;
 			if (gas_fraction >= 1.0)
 			{
 				gas_fraction = 1.0;
-				gas_comp = feed;
 				oil_fraction = 0.0;
+				gas_comp = feed;
+				phase = PHASE_TYPE::GAS;
 			}
-			if (gas_fraction <= 0.0)
+			else
 			{
 				gas_fraction = 0.0;
 				oil_fraction = 1.0;
 				oil_comp = feed;
+				phase = PHASE_TYPE::OIL;
 			}
 
-			//Phase Properties
-			for (auto it = out_variables.PhaseModels.begin(); it != out_variables.PhaseModels.end(); ++it)
-			{
-				auto phase_type = (*it).first;
-				auto eos_phase_model = static_cast<CubicEoSPhaseModel*>((*it).second);
-				auto& comp = out_variables.PhasesProperties.at(phase_type).MoleComposition.value;
-				eos_phase_model->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase_type));
-			}
-
-			total_nb_iter = iter;
+			// Update phase properties since adjusting composition
+			auto eos_phase = static_cast<CubicEoSPhaseModel *>(out_variables.PhaseModels.at(phase));
+			auto & comp = out_variables.PhasesProperties.at(phase).MoleComposition.value;
+			eos_phase->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase));
 		}
 
 		// Compute final phase state
