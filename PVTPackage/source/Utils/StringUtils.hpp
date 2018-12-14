@@ -57,9 +57,9 @@ namespace StringUtils
   //};
 
   template<typename T>
-  void FromStringTo(std::string& data, std::vector<T>& v)
+  void FromStringTo(const std::string & data, std::vector<T> & v)
   {
-    v.reserve(data.size());
+    //v.reserve(data.size());
     std::istringstream iss(data);
     T sub;
     while (iss >> sub)
@@ -69,7 +69,7 @@ namespace StringUtils
   }
 
   template<typename T>
-  void FromStringTo(std::string& data, T& v)
+  void FromStringTo(const std::string & data, T & v)
   {
     std::istringstream iss(data);
     iss >> v;
