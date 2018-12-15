@@ -31,14 +31,14 @@ namespace PVTPackage
 
 
 		///DEBUG PURPOSE - PLOT table for matlab
-		std::ofstream outputFile("PVTG.txt");
-		for (size_t i = 0; i < m_PVTG.NSaturatedPoints; ++i)
-		{
-			for (size_t j = 0; j < m_PVTG.UndersaturatedRv[i].size(); ++j)
-			{
-				outputFile << m_PVTG.DewPressure[i] << " " << m_PVTG.UndersaturatedRv[i][j] + m_PVTG.Rv[i] << " " << m_PVTG.UndersaturatedBg[i][j] << " " << m_PVTG.UndersaturatedViscosity[i][j] << "\n";
-			}
-		}
+//		std::ofstream outputFile("PVTG.txt");
+//		for (size_t i = 0; i < m_PVTG.NSaturatedPoints; ++i)
+//		{
+//			for (size_t j = 0; j < m_PVTG.UndersaturatedRv[i].size(); ++j)
+//			{
+//				outputFile << m_PVTG.DewPressure[i] << " " << m_PVTG.UndersaturatedRv[i][j] + m_PVTG.Rv[i] << " " << m_PVTG.UndersaturatedBg[i][j] << " " << m_PVTG.UndersaturatedViscosity[i][j] << "\n";
+//			}
+//		}
 
 
 		//Density
