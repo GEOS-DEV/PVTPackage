@@ -32,9 +32,9 @@ namespace PVTPackage
 		auto& zg = out_variables.Feed[1];
 		auto& zw = out_variables.Feed[2];
 
-		const auto& oil_phase_model = dynamic_cast<BlackOil_OilModel*>(out_variables.PhaseModels.at(PHASE_TYPE::OIL));
-		const auto& gas_phase_model = dynamic_cast<BlackOil_GasModel*>(out_variables.PhaseModels.at(PHASE_TYPE::GAS));
-		const auto& water_phase_model = dynamic_cast<BlackOil_WaterModel*>(out_variables.PhaseModels.at(PHASE_TYPE::LIQUID_WATER_RICH));
+		const auto& oil_phase_model = std::dynamic_pointer_cast<BlackOil_OilModel>(out_variables.PhaseModels.at(PHASE_TYPE::OIL));
+		const auto& gas_phase_model = std::dynamic_pointer_cast<BlackOil_GasModel>(out_variables.PhaseModels.at(PHASE_TYPE::GAS));
+		const auto& water_phase_model = std::dynamic_pointer_cast<BlackOil_WaterModel>(out_variables.PhaseModels.at(PHASE_TYPE::LIQUID_WATER_RICH));
 
 		auto& oil_comp = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).MoleComposition.value;
 		auto& gas_comp = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).MoleComposition.value;

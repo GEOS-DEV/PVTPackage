@@ -61,18 +61,18 @@ namespace PVTPackage
 		//Create Phase Models
 		for (size_t i = 0; i != phase_types.size(); ++i)
 		{
-			PhaseModel* & phase = m_MultiphaseProperties.PhaseModels[phase_types[i]];
+			auto & phase_ptr = m_MultiphaseProperties.PhaseModels[phase_types[i]];
 			switch (phase_types[i])
 			{
 				case PHASE_TYPE::OIL:
-					phase = new BlackOil_OilModel(phase_tables[i], surface_densities[i], molar_weights[i]);
+					phase_ptr = std::make_shared<BlackOil_OilModel>(phase_tables[i], surface_densities[i], molar_weights[i]);
 					break;
 				case PHASE_TYPE::GAS:
-					phase = new BlackOil_GasModel(phase_tables[i], surface_densities[i], molar_weights[i]);
+					phase_ptr = std::make_shared<BlackOil_GasModel>(phase_tables[i], surface_densities[i], molar_weights[i]);
 					break;
 				case PHASE_TYPE::LIQUID_WATER_RICH:
 					ASSERT(phase_tables[i].size() == 1, "Too many lines in water properties table");
-					phase = new BlackOil_WaterModel(phase_tables[i][0], surface_densities[i], molar_weights[i]);
+					phase_ptr = std::make_shared<BlackOil_WaterModel>(phase_tables[i][0], surface_densities[i], molar_weights[i]);
 					break;
 				default:
 					LOGERROR("Phase type not supported for Black Oil model");

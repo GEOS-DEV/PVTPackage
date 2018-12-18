@@ -15,7 +15,8 @@ namespace PVTPackage
 		//Create Phase Models
 		for (size_t i = 0; i != phase_types.size(); ++i)
 		{
-			m_MultiphaseProperties.PhaseModels[phase_types[i]] = new CubicEoSPhaseModel(comp_properties, eos_types[i], phase_types[i]);
+			m_MultiphaseProperties.PhaseModels[phase_types[i]] =
+				std::make_shared<CubicEoSPhaseModel>(comp_properties, eos_types[i], phase_types[i]);
 		}
 
 
