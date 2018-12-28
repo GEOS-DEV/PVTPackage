@@ -1,6 +1,7 @@
 #pragma once
 
 // Std library includes
+#include <array>
 #include <vector>
 #include <type_traits>
 #include <numeric>
