@@ -83,7 +83,11 @@ int main(int argc, const char * argv[])
 	double GasMw = 16e-3;
 
 	/// ------------------------------  END BO RAW DATASET
-	auto PVTSystem = BlackOilMultiphaseSystem({ PHASE_TYPE::OIL,PHASE_TYPE::GAS,PHASE_TYPE::LIQUID_WATER_RICH }, PVTO, PVTG, PVTW, { SurfaceOilDensity, SurfaceGasDensity ,SurfaceWaterDensity  }, { OilMw,GasMw ,WaterMw  });
+	auto PVTSystem = BlackOilMultiphaseSystem(
+		{ PHASE_TYPE::OIL, PHASE_TYPE::GAS, PHASE_TYPE::LIQUID_WATER_RICH },
+		PVTO, PVTG, PVTW,
+		{ SurfaceOilDensity, SurfaceGasDensity, SurfaceWaterDensity },
+		{ OilMw, GasMw, WaterMw });
 
 	//Domain
 	const size_t NBlocks = static_cast<size_t>(1e1);

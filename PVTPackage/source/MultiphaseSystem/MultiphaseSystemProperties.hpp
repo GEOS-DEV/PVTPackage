@@ -1,9 +1,11 @@
 #pragma once
 #include <unordered_map>
+#include <utility>
+#include <memory>
 #include "MultiphaseSystem/PVTEnums.hpp"
 #include "PhaseSplitModel/CompositionalFlash.hpp"
-#include <utility>
 #include "PhaseModel/PhaseProperties.hpp"
+//#include "PhaseModel/PhaseModel.hpp"
 
 namespace PVTPackage
 {
@@ -69,7 +71,7 @@ namespace PVTPackage
 		std::vector<PHASE_TYPE> PhaseTypes;
 
 		//PhaseModels
-		std::unordered_map<PHASE_TYPE, PhaseModel*> PhaseModels;
+		std::unordered_map<PHASE_TYPE, std::shared_ptr<PhaseModel>> PhaseModels;
 
 		//System properties
 		std::unordered_map <PHASE_TYPE, ScalarPropertyAndDerivatives<double>> PhaseMoleFraction;

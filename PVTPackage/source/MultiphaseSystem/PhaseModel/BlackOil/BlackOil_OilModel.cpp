@@ -32,14 +32,14 @@ namespace PVTPackage
 		CheckTableConsistency();
 
 		///DEBUG PURPOSE - PLOT table for matlab
-		std::ofstream outputFile("PVTO.txt");
-		for (size_t i =0 ; i<m_PVTO.NSaturatedPoints; ++i )
-		{
-			for (size_t j = 0; j < m_PVTO.UndersaturatedPressure[i].size(); ++j)
-			{
-				outputFile << m_PVTO.Rs[i] << " " << m_PVTO.UndersaturatedPressure[i][j] + m_PVTO.BubblePressure[i] << " " << m_PVTO.UndersaturatedBo[i][j] << " " << m_PVTO.UndersaturatedViscosity[i][j] << "\n";
-			}
-		}
+//		std::ofstream outputFile("PVTO.txt");
+//		for (size_t i =0 ; i<m_PVTO.NSaturatedPoints; ++i )
+//		{
+//			for (size_t j = 0; j < m_PVTO.UndersaturatedPressure[i].size(); ++j)
+//			{
+//				outputFile << m_PVTO.Rs[i] << " " << m_PVTO.UndersaturatedPressure[i][j] + m_PVTO.BubblePressure[i] << " " << m_PVTO.UndersaturatedBo[i][j] << " " << m_PVTO.UndersaturatedViscosity[i][j] << "\n";
+//			}
+//		}
 
 
 		//Density

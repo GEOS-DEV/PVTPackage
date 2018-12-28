@@ -89,7 +89,7 @@ namespace PVTPackage
 		for (auto it = out_variables.PhaseModels.begin(); it != out_variables.PhaseModels.end(); ++it)
 		{
 			auto phase_type = (*it).first;
-			auto eos_phase_model = static_cast<CubicEoSPhaseModel*>((*it).second);
+			auto eos_phase_model = std::dynamic_pointer_cast<CubicEoSPhaseModel>((*it).second);
 			auto& comp = out_variables.PhasesProperties.at(phase_type).MoleComposition.value;
 			eos_phase_model->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase_type));
 		}

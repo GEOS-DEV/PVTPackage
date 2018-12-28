@@ -130,32 +130,11 @@ std::vector<T> ScalarMultiply(std::vector<T>& in, T scalar)
 template<typename T>
 void FindSurrondingIndex(std::vector<T>& x, T xval, size_t& iminus, size_t& iplus)
 {
-	constexpr double eps = 1e-16;
+	ASSERT(x.size() > 0, "Interpolation table is empty");
+	ASSERT(x[0] <= xval, "Input x value iut of range, extrapolation not allowed");
 	//Search for interval
-	iminus = 0; iplus = 0;
-	for (size_t i = 0; i != x.size(); ++i)
-	{
-		if (std::fabs(x[i] - xval) < eps * std::fabs(xval))
-		{
-			iminus = i;
-			iplus = i;
-			break;
-		}
-
-		if (x[i] > xval)
-		{
-			iminus = i - 1;
-			iplus = i;
-			break;
-		}
-
-		if (i == x.size() - 1)
-		{
-			iminus = x.size() - 2;
-			iplus = x.size() - 1;
-		}
-	}
-
+	for (iplus = 1; iplus < x.size()-1 && x[iplus] < xval; ++iplus){}
+	iminus = iplus - 1;
 }
 
 template<typename T>
@@ -176,21 +155,21 @@ std::vector<T> Interpolation1 (std::vector<T>& xin, std::vector<T>& yin, std::ve
 {
 	//return yout
 
-	ASSERT(xin.size() == yin.size(), "Size mistmatch");
+	ASSERT(xin.size() == yin.size(), "Size mismatch");
 
 	std::vector<T> yout(xout.size());
 
 	for (size_t n = 0;n != xout.size(); ++n)
 	{
 		T x = xout[n];
-		ASSERT(xin[0] <= x, "Input x out of range, cannot extrapolate");
+		ASSERT(xin[0] <= x, "Input x out of range, cannot extrapolate below the limits");
 		//LOGWARNING(xin[xin.size() - 1] >= x, "Input x out of range, extrapolation");
 
 		//Search for interval
-		size_t i_minus=0, i_plus=0;
+		size_t i_minus, i_plus;
 		FindSurrondingIndex(xin, x, i_minus, i_plus);
 
-		if (i_minus==i_plus)
+		if (i_minus == i_plus)
 		{
 			yout[n] = yin[i_minus];
 		}
@@ -198,6 +177,10 @@ std::vector<T> Interpolation1 (std::vector<T>& xin, std::vector<T>& yin, std::ve
 		{
 			//yout[n] = yin[i_minus] * (1 - (x - xin[i_minus]) / (xin[i_plus] - xin[i_minus])) + yin[i_plus] * ((x - xin[i_minus]) / (xin[i_plus] - xin[i_minus]));
 			yout[n] = yin[i_minus] * (xin[i_plus] - x) / (xin[i_plus] - xin[i_minus]) + yin[i_plus] * ((x - xin[i_minus]) / (xin[i_plus] - xin[i_minus]));
+			if (yout[n] < 0.0)
+			{
+				ASSERT(false, "Negative value");
+			}
 		}
 
 
