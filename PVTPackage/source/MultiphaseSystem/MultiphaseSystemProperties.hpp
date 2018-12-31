@@ -71,13 +71,13 @@ namespace PVTPackage
 		std::vector<PHASE_TYPE> PhaseTypes;
 
 		//PhaseModels
-		std::unordered_map<PHASE_TYPE, std::shared_ptr<PhaseModel>> PhaseModels;
+                std::unordered_map<PHASE_TYPE, std::shared_ptr<PhaseModel>, EnumClassHash> PhaseModels;
 
 		//System properties
-		std::unordered_map <PHASE_TYPE, ScalarPropertyAndDerivatives<double>> PhaseMoleFraction;
+		std::unordered_map <PHASE_TYPE, ScalarPropertyAndDerivatives<double>, EnumClassHash> PhaseMoleFraction;
 		
 		//Phases properties
-		std::unordered_map<PHASE_TYPE, PhaseProperties> PhasesProperties;
+		std::unordered_map<PHASE_TYPE, PhaseProperties, EnumClassHash> PhasesProperties;
 
 	};
 

@@ -21,7 +21,7 @@ namespace PVTPackage
 	{
 		props_out.MoleComposition.value = {0.,0.,1};
 		props_out.MolecularWeight.value = m_SurfaceMolecularWeight;
-		props_out.MassDensity.value = m_SurfaceMassDensity / (m_PVTW.Bw * std::exp(-m_PVTW.Compressibility*(P - m_PVTW.ReferencePressure)));
+		props_out.MassDensity.value = m_SurfaceMassDensity / (m_PVTW.Bw * exp(-m_PVTW.Compressibility*(P - m_PVTW.ReferencePressure)));
 		props_out.MoleDensity.value = props_out.MassDensity.value*props_out.MolecularWeight.value;
 		props_out.Viscosity = m_PVTW.Viscosity;
 	}

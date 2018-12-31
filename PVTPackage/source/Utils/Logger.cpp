@@ -1,4 +1,5 @@
 // Header include
+#include <iomanip>
 #include "Logger.hpp"
 
 #define LEVEL_LOG_FILE "DEBUG"
@@ -149,8 +150,8 @@ std::string Logger::get_time()
 #else
   now = localtime(&t);
 #endif
-  res << std::put_time(now, "%Y-%m-%d %H:%M:%S");
-  //res << (now.tm_year + 1900) << "-" << (now.tm_mon + 1) << "-" << (now.tm_mday) << "-" << now.tm_hour << ":" << now.tm_min << ":" << now.tm_sec;
+//  res << std::put_time(now, "%Y-%m-%d %H:%M:%S");
+  res << (now->tm_year + 1900) << "-" << (now->tm_mon + 1) << "-" << (now->tm_mday) << "-" << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec;
   return res.str();
 }
 }

@@ -13,7 +13,7 @@ namespace PVTPackage
 		std::vector<double> Rs;
 		std::vector<double> BubblePressure;
 		//Saturated
-		size_t NSaturatedPoints;
+		std::size_t NSaturatedPoints;
 		std::vector<double> SaturatedBo;
 		std::vector<double> SaturatedViscosity;
 		//Unsaturated
