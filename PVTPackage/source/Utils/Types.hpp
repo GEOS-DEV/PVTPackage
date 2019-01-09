@@ -3,7 +3,7 @@
 
 namespace PVTPackage
 {
-	
-	typedef std::vector<std::vector<double>> vecBlockComponent;
+
+typedef std::vector<std::vector<double>> vecBlockComponent;
 
 }

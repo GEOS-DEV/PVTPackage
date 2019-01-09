@@ -40,32 +40,32 @@ private:
 class Timer
 {
 public:
-	typedef int64_t Counter;
-	static void init();
+  typedef int64_t Counter;
+  static void init();
 
-	static void tic(Counter & counter_)
-	{
-		gettimeofday(&tmp, nullptr);
-		counter_ -= (tmp.tv_sec * 1000000 + tmp.tv_usec);
-	}
+  static void tic(Counter & counter_)
+  {
+    gettimeofday(&tmp, nullptr);
+    counter_ -= (tmp.tv_sec * 1000000 + tmp.tv_usec);
+  }
 
-	static void toc(Counter & counter_)
-	{
-		gettimeofday(&tmp, nullptr);
-		counter_ += (tmp.tv_sec * 1000000 + tmp.tv_usec);
-	}
-	
-	static void toctic(Counter & tocCounter_, Counter & ticCounter_)
-	{
-		gettimeofday(&tmp, nullptr);
-		tocCounter_ += (tmp.tv_sec * 1000000 + tmp.tv_usec);
-		ticCounter_ -= (tmp.tv_sec * 1000000 + tmp.tv_usec);
-	}
+  static void toc(Counter & counter_)
+  {
+    gettimeofday(&tmp, nullptr);
+    counter_ += (tmp.tv_sec * 1000000 + tmp.tv_usec);
+  }
 
-	static double elapsed(Counter & counter_);
+  static void toctic(Counter & tocCounter_, Counter & ticCounter_)
+  {
+    gettimeofday(&tmp, nullptr);
+    tocCounter_ += (tmp.tv_sec * 1000000 + tmp.tv_usec);
+    ticCounter_ -= (tmp.tv_sec * 1000000 + tmp.tv_usec);
+  }
+
+  static double elapsed(Counter & counter_);
 
 private:
-	static struct timeval tmp;
+  static struct timeval tmp;
 };
 #endif
 

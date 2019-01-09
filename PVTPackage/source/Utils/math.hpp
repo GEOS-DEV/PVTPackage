@@ -61,10 +61,10 @@ bool isNonNegative(const std::vector<T>& in)
 template<typename T>
 bool isLowerThanOne(const std::vector<T>& in)
 {
-	bool res = true;
-	for (std::size_t i = 0; i != in.size(); ++i)
-		if (in[i] > 1 ) return false;
-	return res;
+  bool res = true;
+  for (std::size_t i = 0; i != in.size(); ++i)
+    if (in[i] > 1 ) return false;
+  return res;
 }
 
 template<typename T>
@@ -122,133 +122,131 @@ void ExtendtoNDimension(std::vector<T>& in, unsigned int n)
 template<typename T>
 std::vector<T> ScalarMultiply(std::vector<T>& in, T scalar)
 {
-	std::vector<T> out(in.size());
-	for (auto i = 0; i != in.size(); i++)
-		out[i]= in[i]*scalar;
-	return out;
+  std::vector<T> out(in.size());
+  for (auto i = 0; i != in.size(); i++)
+    out[i]= in[i]*scalar;
+  return out;
 }
 
 template<typename T>
 void FindSurrondingIndex(std::vector<T>& x, T xval, size_t& iminus, size_t& iplus)
 {
-	ASSERT(x.size() > 0, "Interpolation table is empty");
-	ASSERT(x[0] <= xval, "Input x value iut of range, extrapolation not allowed");
-	//Search for interval
-	for (iplus = 1; iplus < x.size()-1 && x[iplus] < xval; ++iplus){}
-	iminus = iplus - 1;
+  ASSERT(x.size() > 0, "Interpolation table is empty");
+  ASSERT(x[0] <= xval, "Input x value iut of range, extrapolation not allowed");
+  //Search for interval
+  for (iplus = 1; iplus < x.size()-1 && x[iplus] < xval; ++iplus){}
+  iminus = iplus - 1;
 }
 
 template<typename T>
 std::vector<T> Normalize(const std::vector<T>& xin)
 {
-	std::vector<T> xout = xin;
-	auto sum = sum_array(xin);
-	for (size_t n = 0; n != xout.size(); ++n)
-	{
-		xout[n] = xout[n] / sum;
-	}
-	return xout;
+  std::vector<T> xout = xin;
+  auto sum = sum_array(xin);
+  for (size_t n = 0; n != xout.size(); ++n)
+  {
+    xout[n] = xout[n] / sum;
+  }
+  return xout;
 }
 
 
 template<typename T>
 std::vector<T> Interpolation1 (std::vector<T>& xin, std::vector<T>& yin, std::vector<T> xout)
 {
-	//return yout
+  //return yout
 
-	ASSERT(xin.size() == yin.size(), "Size mismatch");
+  ASSERT(xin.size() == yin.size(), "Size mismatch");
 
-	std::vector<T> yout(xout.size());
+  std::vector<T> yout(xout.size());
 
-	for (size_t n = 0;n != xout.size(); ++n)
-	{
-		T x = xout[n];
-		ASSERT(xin[0] <= x, "Input x out of range, cannot extrapolate below the limits");
-		//LOGWARNING(xin[xin.size() - 1] >= x, "Input x out of range, extrapolation");
+  for (size_t n = 0;n != xout.size(); ++n)
+  {
+    T x = xout[n];
+    ASSERT(xin[0] <= x, "Input x out of range, cannot extrapolate below the limits");
+    //LOGWARNING(xin[xin.size() - 1] >= x, "Input x out of range, extrapolation");
 
-		//Search for interval
-		size_t i_minus, i_plus;
-		FindSurrondingIndex(xin, x, i_minus, i_plus);
+    //Search for interval
+    size_t i_minus, i_plus;
+    FindSurrondingIndex(xin, x, i_minus, i_plus);
 
-		if (i_minus == i_plus)
-		{
-			yout[n] = yin[i_minus];
-		}
-		else
-		{
-			//yout[n] = yin[i_minus] * (1 - (x - xin[i_minus]) / (xin[i_plus] - xin[i_minus])) + yin[i_plus] * ((x - xin[i_minus]) / (xin[i_plus] - xin[i_minus]));
-			yout[n] = yin[i_minus] * (xin[i_plus] - x) / (xin[i_plus] - xin[i_minus]) + yin[i_plus] * ((x - xin[i_minus]) / (xin[i_plus] - xin[i_minus]));
-			if (yout[n] < 0.0)
-			{
-				ASSERT(false, "Negative value");
-			}
-		}
+    if (i_minus == i_plus)
+    {
+      yout[n] = yin[i_minus];
+    }
+    else
+    {
+      //yout[n] = yin[i_minus] * (1 - (x - xin[i_minus]) / (xin[i_plus] - xin[i_minus])) + yin[i_plus] * ((x - xin[i_minus]) / (xin[i_plus] - xin[i_minus]));
+      yout[n] = yin[i_minus] * (xin[i_plus] - x) / (xin[i_plus] - xin[i_minus]) + yin[i_plus] * ((x - xin[i_minus]) / (xin[i_plus] - xin[i_minus]));
+      if (yout[n] < 0.0)
+      {
+        ASSERT(false, "Negative value");
+      }
+    }
 
 
-	}
+  }
 
-	return yout;
+  return yout;
 
 }
 
 template<typename T>
 T LinearInterpolation(T dminus, T dplus, T xminus, T xplus)
 {
-	T f = dminus / (dminus + dplus);
-	return f* xplus + (1-f)*xminus;
+  T f = dminus / (dminus + dplus);
+  return f* xplus + (1-f)*xminus;
 }
 
 template<typename T>
 T LinearInterpolation(T x1, T y1, T x2, T y2, T x3)
 {
-	return LinearInterpolation(x3 - x1, x2 - x3, y1, y2);
+  return LinearInterpolation(x3 - x1, x2 - x3, y1, y2);
 }
 
 
 template<typename T>
 T LogInterpolation(T x1, T y1, T x2, T y2, T x3)
 {
-	return LogInterpolation(x3 - x1, x2 - x3, y1, y2);
+  return LogInterpolation(x3 - x1, x2 - x3, y1, y2);
 }
 
 
 template<typename T>
 T LogInterpolation(T dminus, T dplus, T xminus, T xplus)
 {
-	T f = log(dminus) / (log(dminus) + log(dplus));
-	T lnx = f * xplus + (1 - f)*xminus;
-	return exp(lnx);
+  T f = log(dminus) / (log(dminus) + log(dplus));
+  T lnx = f * xplus + (1 - f)*xminus;
+  return exp(lnx);
 }
 
 
 template<typename T>
 T LinearExtrapolation(T x1, T y1, T x2, T y2, T x3)
 {
-	return (y2 - y1) / (x2 - x1) * (x3-x2) + y2;
+  return (y2 - y1) / (x2 - x1) * (x3-x2) + y2;
 }
 
 template<typename T>
 T LogExtrapolation(T x1, T y1, T x2, T y2, T x3)
 {
-	T lny = (log(y2) - log(y1)) / (log(x2) - log(x1)) * (log(x3) - log(x2)) + log(y2);
-	return exp(lny);
+  T lny = (log(y2) - log(y1)) / (log(x2) - log(x1)) * (log(x3) - log(x2)) + log(y2);
+  return exp(lny);
 }
-
 
 
 template<typename T>
 std::vector<T> linspace(T a, T b, size_t num)
 {
-	// create a vector of length num
-	std::vector<T> v(num);
+  // create a vector of length num
+  std::vector<T> v(num);
 
-	// now assign the values to the vector
-	for (size_t i = 0; i != num; i++)
-	{
-		v[i] = a + i * ((b - a) / (num-1));
-	}
-	return v;
+  // now assign the values to the vector
+  for (size_t i = 0; i != num; i++)
+  {
+    v[i] = a + i * ((b - a) / (num-1));
+  }
+  return v;
 }
-
 
 }

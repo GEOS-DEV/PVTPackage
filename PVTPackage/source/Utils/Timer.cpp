@@ -22,7 +22,7 @@ void Timer::init()
 
 double Timer::elapsed(Counter & counter_)
 {
-	return counter_ * 1.e-6;
+  return counter_ * 1.e-6;
 }
 
 struct timeval Timer::tmp;
