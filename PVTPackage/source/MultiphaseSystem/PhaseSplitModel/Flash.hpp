@@ -1,24 +1,27 @@
 #pragma once
+
 #include "MultiphaseSystem/PVTEnums.hpp"
 
 namespace PVTPackage
 {
-	struct MultiphaseSystemProperties;
 
-	class Flash
-	{
-	public:
+struct MultiphaseSystemProperties;
 
-		virtual ~Flash() = default;
+class Flash
+{
+public:
 
-		Flash() = default;
+  virtual ~Flash() = default;
 
-		bool ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables);
-		virtual bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables) = 0;
-		virtual void set_PhaseState(MultiphaseSystemProperties& out_variables) = 0;
+  Flash() = default;
 
-	protected:
+  bool ComputeEquilibriumAndDerivatives(MultiphaseSystemProperties& out_variables);
+  virtual bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables) = 0;
+  virtual void set_PhaseState(MultiphaseSystemProperties& out_variables) = 0;
 
-		bool ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables);
-	};
+protected:
+
+  bool ComputeFiniteDifferenceDerivatives(MultiphaseSystemProperties& out_variables);
+};
+
 }

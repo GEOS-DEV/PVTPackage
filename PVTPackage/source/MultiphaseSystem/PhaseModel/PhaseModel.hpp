@@ -1,17 +1,20 @@
 #pragma once
+
 #include <vector>
 
 namespace PVTPackage
 {
-	struct PhaseProperties;
 
-	class PhaseModel
-	{
-	public:
+struct PhaseProperties;
 
-		PhaseModel();
+class PhaseModel
+{
+public:
 
-		virtual ~PhaseModel();
+  PhaseModel();
 
-	};
+  virtual ~PhaseModel();
+
+};
+
 }

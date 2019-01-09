@@ -6,27 +6,28 @@
 #include <list>
 #include "Flash.hpp"
 
-
 namespace PVTPackage
 {
-	struct MultiphaseSystemProperties;
-	class PhaseModel;
 
-	class BlackOilFlash : public Flash
-	{
-	public:
+struct MultiphaseSystemProperties;
+class PhaseModel;
 
-		BlackOilFlash();
-		bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
-		void set_PhaseState(MultiphaseSystemProperties& out_variables) override;
+class BlackOilFlash : public Flash
+{
+public:
 
-		~BlackOilFlash() override = default;
+  BlackOilFlash();
+  bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
+  void set_PhaseState(MultiphaseSystemProperties& out_variables) override;
 
-	protected:
+  ~BlackOilFlash() override = default;
 
-		PhaseModel* m_OilModel;
-		PhaseModel* m_GasModel;
-		PhaseModel* m_WaterModel;
+protected:
 
-	};
+  PhaseModel* m_OilModel;
+  PhaseModel* m_GasModel;
+  PhaseModel* m_WaterModel;
+
+};
+
 }
