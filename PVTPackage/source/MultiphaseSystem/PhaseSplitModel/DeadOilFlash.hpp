@@ -12,15 +12,16 @@ namespace PVTPackage
 struct MultiphaseSystemProperties;
 class PhaseModel;
 
-class BlackOilFlash : public Flash
+class DeadOilFlash : public Flash
 {
 public:
 
-  BlackOilFlash() = default;
+	DeadOilFlash() = default;
   bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
   void set_PhaseState(MultiphaseSystemProperties& out_variables) override;
 
-  ~BlackOilFlash() override = default;
+  ~DeadOilFlash() override = default;
+
 
 };
 
