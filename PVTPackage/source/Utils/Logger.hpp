@@ -45,11 +45,6 @@ protected:
 
   Logger(std::string level_logfile, std::string file_name, std::string level_screen);
 
-  //Input
-  static std::string m_level_logfile;
-  static std::string m_file_name;
-  static std::string m_level_screen;
-
 private:
 
   //Screen
