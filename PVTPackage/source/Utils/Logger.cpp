@@ -2,36 +2,21 @@
 #include <iomanip>
 #include "Logger.hpp"
 
-#define LEVEL_LOG_FILE "DEBUG"
-#define LEVEL_LOG_SCREEN "ALL"
+#define PVT_LOG_LEVEL_FILE "DEBUG"
+#define PVT_LOG_LEVEL_SCREEN "ALL"
+#define PVT_LOG_FILE_NAME "pvt.log"
 
 #ifdef __clang__
-#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wexit-time-destructors"
 #pragma clang diagnostic ignored "-Wglobal-constructors"
 #endif
 
 namespace PVTPackage {
-//Default values
-std::string Logger::m_level_logfile = "INFO";
-std::string Logger::m_file_name = "simulator.log";
-std::string Logger::m_level_screen = "BRIEF";
 
 Logger* Logger::instance()
 {
-  static Logger s_instance(LEVEL_LOG_FILE, m_file_name, LEVEL_LOG_SCREEN);
+  static Logger s_instance(PVT_LOG_LEVEL_FILE, PVT_LOG_FILE_NAME, PVT_LOG_LEVEL_SCREEN);
   return &s_instance;
-}
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
-void Logger::init(std::string LevelLogFile, std::string file_name, std::string LevelScreen)
-{
-  m_level_logfile = LevelLogFile;
-  m_file_name = file_name;
-  m_level_screen = LevelScreen;
 }
 
 Logger::Logger(std::string LevelLogFile, std::string file_name, std::string LevelScreen)
