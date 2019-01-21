@@ -1,10 +1,11 @@
 #include "DeadOilFlash.hpp"
 #include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
-#include <algorithm>
 #include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_OilModel.hpp"
 #include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_GasModel.hpp"
 #include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
 #include "MultiphaseSystem/PhaseModel/BlackOil/DeadOil_PhaseModel.hpp"
+#include <algorithm>
+#include <cmath>
 
 namespace PVTPackage
 {
@@ -73,19 +74,19 @@ bool DeadOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
 
   //Fugacity
   //--oil
-  oil_ln_fug[0] = log(1.);
-  oil_ln_fug[1] = log(1.);
-  oil_ln_fug[2] = log(1.);
+  oil_ln_fug[0] = std::log(1.);
+  oil_ln_fug[1] = std::log(1.);
+  oil_ln_fug[2] = std::log(1.);
 
   //--gas
-  gas_ln_fug[0] = log(1.);
-  gas_ln_fug[1] = log(1.);
-  gas_ln_fug[2] = log(1.);
+  gas_ln_fug[0] = std::log(1.);
+  gas_ln_fug[1] = std::log(1.);
+  gas_ln_fug[2] = std::log(1.);
 
   //--water
-  water_ln_fug[0] = log(1.);
-  water_ln_fug[1] = log(1.);
-  water_ln_fug[2] = log(1.);
+  water_ln_fug[0] = std::log(1.);
+  water_ln_fug[1] = std::log(1.);
+  water_ln_fug[2] = std::log(1.);
 
   // Compute final phase state
   set_PhaseState(out_variables);

@@ -15,7 +15,7 @@ class DeadOil_PhaseModel final : public PhaseModel
 {
 public:
 
-	DeadOil_PhaseModel(PHASE_TYPE type, std::vector<std::vector<double>> PVD, double oil_surface_mass_density, double oil_surface_mw);
+  DeadOil_PhaseModel(PHASE_TYPE type, std::vector<std::vector<double>> PVD, double oil_surface_mass_density, double oil_surface_mw);
 
   ~DeadOil_PhaseModel() override = default;
 
@@ -26,13 +26,13 @@ public:
 
   //Compute
   void ComputeProperties(double P, PhaseProperties& props_out) const;
- 
+
 
 protected:
 
 
   //Phase type
-	PHASE_TYPE m_type;
+  PHASE_TYPE m_type;
 
   //PVT data
   PVDdata m_PVD;

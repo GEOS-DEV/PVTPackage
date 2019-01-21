@@ -1,9 +1,10 @@
 #include "BlackOilFlash.hpp"
 #include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
-#include <algorithm>
 #include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_OilModel.hpp"
 #include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_GasModel.hpp"
 #include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
+#include <algorithm>
+#include <cmath>
 
 namespace PVTPackage
 {
@@ -72,30 +73,34 @@ bool BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables
     //oil
     oil_comp[0] = oil_surface_mole_density / (oil_surface_mole_density + gas_surface_mole_density * Rs_sat);
     oil_comp[1] = 1. - oil_comp[0];
-	oil_comp[2] = 0.;
-    oil_phase_model->ComputeSaturatedProperties(pressure, oil_comp, gas_surface_mole_density, gas_surface_mass_density, out_variables.PhasesProperties.at(PHASE_TYPE::OIL));
+    oil_comp[2] = 0.;
+    oil_phase_model->ComputeSaturatedProperties(pressure, oil_comp,
+                                                gas_surface_mole_density, gas_surface_mass_density,
+                                                out_variables.PhasesProperties.at(PHASE_TYPE::OIL));
 
     //gas
     gas_comp[1] = gas_surface_mole_density / (gas_surface_mole_density + oil_surface_mole_density * Rv_sat);
     gas_comp[0] = 1. - gas_comp[1];
-	gas_comp[2] = 0.;
-    gas_phase_model->ComputeSaturatedProperties(pressure, gas_comp, oil_surface_mole_density, oil_surface_mass_density, out_variables.PhasesProperties.at(PHASE_TYPE::GAS));
+    gas_comp[2] = 0.;
+    gas_phase_model->ComputeSaturatedProperties(pressure, gas_comp,
+                                                oil_surface_mole_density, oil_surface_mass_density,
+                                                out_variables.PhasesProperties.at(PHASE_TYPE::GAS));
 
-	//Fugacity
-	//--oil
-	oil_ln_fug[0] = log(oil_comp[0] * Ko * pressure);
-	oil_ln_fug[1] = log(oil_comp[1] * Kg * pressure);
-	oil_ln_fug[2] = log(1.);
+    //Fugacity
+    //--oil
+    oil_ln_fug[0] = std::log(oil_comp[0] * Ko * pressure);
+    oil_ln_fug[1] = std::log(oil_comp[1] * Kg * pressure);
+    oil_ln_fug[2] = std::log(1.);
 
-	//--gas
-	gas_ln_fug[0] = log(gas_comp[0] * pressure);
-	gas_ln_fug[1] = log(gas_comp[1] * pressure);
-	gas_ln_fug[2] = log(1.);
+    //--gas
+    gas_ln_fug[0] = std::log(gas_comp[0] * pressure);
+    gas_ln_fug[1] = std::log(gas_comp[1] * pressure);
+    gas_ln_fug[2] = std::log(1.);
 
-	//--water
-	water_ln_fug[0] = log(gas_comp[0] * pressure);
-	water_ln_fug[1] = log(gas_comp[1] * pressure);
-	water_ln_fug[2] = log(1.);
+    //--water
+    water_ln_fug[0] = std::log(gas_comp[0] * pressure);
+    water_ln_fug[1] = std::log(gas_comp[1] * pressure);
+    water_ln_fug[2] = std::log(1.);
 
   }
   else if (V > 1) //Only gas or undersaturated gas
@@ -110,24 +115,26 @@ bool BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables
     //gas
     gas_comp[0] = zo;
     gas_comp[1] = zg;
-	gas_comp[2] = 0.;
-    gas_phase_model->ComputeUnderSaturatedProperties(pressure, gas_comp, oil_surface_mole_density, oil_surface_mass_density, out_variables.PhasesProperties.at(PHASE_TYPE::GAS));
-	
-	//Fugacity
-	//--oil
-	oil_ln_fug[0] = log(1.);
-	oil_ln_fug[1] = log(1.);
-	oil_ln_fug[2] = log(1.);
+    gas_comp[2] = 0.;
+    gas_phase_model->ComputeUnderSaturatedProperties(pressure, gas_comp,
+                                                     oil_surface_mole_density, oil_surface_mass_density,
+                                                     out_variables.PhasesProperties.at(PHASE_TYPE::GAS));
 
-	//--gas
-	gas_ln_fug[0] = log(1.);
-	gas_ln_fug[1] = log(1.);
-	gas_ln_fug[2] = log(1.);
+    //Fugacity
+    //--oil
+    oil_ln_fug[0] = std::log(1.);
+    oil_ln_fug[1] = std::log(1.);
+    oil_ln_fug[2] = std::log(1.);
 
-	//--water
-	water_ln_fug[0] = log(1.);
-	water_ln_fug[1] = log(1.);
-	water_ln_fug[2] = log(1.);
+    //--gas
+    gas_ln_fug[0] = std::log(1.);
+    gas_ln_fug[1] = std::log(1.);
+    gas_ln_fug[2] = std::log(1.);
+
+    //--water
+    water_ln_fug[0] = std::log(1.);
+    water_ln_fug[1] = std::log(1.);
+    water_ln_fug[2] = std::log(1.);
 
 
   }
@@ -141,24 +148,26 @@ bool BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables
     //oil
     oil_comp[0] = zo;
     oil_comp[1] = zg;
-	oil_comp[2] = 0.;
-    oil_phase_model->ComputeUnderSaturatedProperties(pressure, oil_comp, gas_surface_mole_density, gas_surface_mass_density, out_variables.PhasesProperties.at(PHASE_TYPE::OIL));
+    oil_comp[2] = 0.;
+    oil_phase_model->ComputeUnderSaturatedProperties(pressure, oil_comp,
+                                                     gas_surface_mole_density, gas_surface_mass_density,
+                                                     out_variables.PhasesProperties.at(PHASE_TYPE::OIL));
 
-	//Fugacity
-	//--oil
-	oil_ln_fug[0] = log(1.);
-	oil_ln_fug[1] = log(1.);
-	oil_ln_fug[2] = log(1.);
+    //Fugacity
+    //--oil
+    oil_ln_fug[0] = std::log(1.);
+    oil_ln_fug[1] = std::log(1.);
+    oil_ln_fug[2] = std::log(1.);
 
-	//--gas
-	gas_ln_fug[0] = log(1.);
-	gas_ln_fug[1] = log(1.);
-	gas_ln_fug[2] = log(1.);
+    //--gas
+    gas_ln_fug[0] = std::log(1.);
+    gas_ln_fug[1] = std::log(1.);
+    gas_ln_fug[2] = std::log(1.);
 
-	//--water
-	water_ln_fug[0] = log(1.);
-	water_ln_fug[1] = log(1.);
-	water_ln_fug[2] = log(1.);
+    //--water
+    water_ln_fug[0] = std::log(1.);
+    water_ln_fug[1] = std::log(1.);
+    water_ln_fug[2] = std::log(1.);
 
   }
 
