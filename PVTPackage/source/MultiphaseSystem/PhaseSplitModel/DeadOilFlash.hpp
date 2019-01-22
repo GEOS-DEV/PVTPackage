@@ -16,7 +16,7 @@ class DeadOilFlash : public Flash
 {
 public:
 
-	DeadOilFlash() = default;
+  DeadOilFlash() = default;
   bool ComputeEquilibrium(MultiphaseSystemProperties& out_variables) override;
   void set_PhaseState(MultiphaseSystemProperties& out_variables) override;
 

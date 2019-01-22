@@ -9,8 +9,9 @@
 namespace PVTPackage
 {
 
-	DeadOil_PhaseModel::DeadOil_PhaseModel(PHASE_TYPE type, std::vector<std::vector<double>> PVD, double surface_mass_density, double surface_mw)
-  :	m_type(type), m_SurfaceMassDensity(0), m_SurfaceMoleDensity(0), m_SurfaceMolecularWeight(surface_mw)
+DeadOil_PhaseModel::DeadOil_PhaseModel(PHASE_TYPE type, std::vector<std::vector<double>> PVD,
+                                       double surface_mass_density, double surface_mw)
+: m_type(type), m_SurfaceMassDensity(0), m_SurfaceMoleDensity(0), m_SurfaceMolecularWeight(surface_mw)
 {
 
   //--Fill table
@@ -42,20 +43,20 @@ void DeadOil_PhaseModel::CheckTableConsistency()
   //Check for saturated region
   for (size_t i = 0; i < m_PVD.NPoints - 1; ++i)
   {
-	  if (m_type==PHASE_TYPE::OIL)
-	  {
-		  //Bo must increase with P
-		  ASSERT((m_PVD.B[i + 1] - m_PVD.B[i]) > 0, "Bo must increase with P");
-		  //Visc must decrease with P
-		  ASSERT((m_PVD.Viscosity[i + 1] - m_PVD.Viscosity[i]) < 0, "Viscosity must increase with P");
-	  }
-	  else if (m_type == PHASE_TYPE::GAS)
-	  {
-		  //Bg must decrease with P
-		  ASSERT((m_PVD.B[i + 1] - m_PVD.B[i]) < 0, "Bo must increase with P");
-		  //Visc must increase with P
-		  ASSERT((m_PVD.Viscosity[i + 1] - m_PVD.Viscosity[i]) > 0, "Viscosity must increase with P");
-	  }
+    if (m_type==PHASE_TYPE::OIL)
+    {
+      //Bo must increase with P
+      ASSERT((m_PVD.B[i + 1] - m_PVD.B[i]) > 0, "Bo must increase with P");
+      //Visc must decrease with P
+      ASSERT((m_PVD.Viscosity[i + 1] - m_PVD.Viscosity[i]) < 0, "Viscosity must increase with P");
+    }
+    else if (m_type == PHASE_TYPE::GAS)
+    {
+      //Bg must decrease with P
+      ASSERT((m_PVD.B[i + 1] - m_PVD.B[i]) < 0, "Bo must increase with P");
+      //Visc must increase with P
+      ASSERT((m_PVD.Viscosity[i + 1] - m_PVD.Viscosity[i]) > 0, "Viscosity must increase with P");
+    }
 
    
   }
@@ -73,10 +74,10 @@ void DeadOil_PhaseModel::CreateTable(const std::vector<std::vector<double>>& PVD
     m_PVD.B.resize(PVD.size());
     m_PVD.Viscosity.resize(PVD.size());
 
-    //Saturated part
-	m_PVD.Pressure[i]=PVD[i][0];
-	m_PVD.B[i]=PVD[i][1];
-	m_PVD.Viscosity[i]=PVD[i][2];
+      //Saturated part
+    m_PVD.Pressure[i]=PVD[i][0];
+    m_PVD.B[i]=PVD[i][1];
+    m_PVD.Viscosity[i]=PVD[i][2];
   }
 
   //Add 1atm value if does not exist yet
@@ -101,11 +102,11 @@ void DeadOil_PhaseModel::ComputeProperties(double P, PhaseProperties& props_out)
 
   if (m_type == PHASE_TYPE::OIL)
   {
-	  props_out.MoleComposition.value = { 1.,0.,0. };
+    props_out.MoleComposition.value = { 1.,0.,0. };
   }
   else if (m_type == PHASE_TYPE::GAS)
   {
-	  props_out.MoleComposition.value = { 0.,1.,0. };
+    props_out.MoleComposition.value = { 0.,1.,0. };
   }
   double B, Visc;
   ComputeBandVisc(P, B, Visc);
