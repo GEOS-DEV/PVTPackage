@@ -5,6 +5,7 @@
 #include <algorithm>    // std::max
 #include <complex>
 #include "MultiphaseSystem/PhaseModel/PhaseProperties.hpp"
+#include "Table.hpp"
 
 namespace PVTPackage
 {
@@ -436,4 +437,13 @@ namespace PVTPackage
 	{
 		return 1. / Bo * (m_SurfaceMassDensity + surface_gas_mass_density * Rs);
 	}
-}
+
+
+	//HQPAN
+	void BlackOil_OilModel::calcRS(double pres, double &RS, double &dRS_dp)
+	{
+		int index = Table::SInterpolate(pres, RS, dRS_dp, m_PVTO.BubblePressure, m_PVTO.Rs);
+	
+	}
+
+} //end namespace PVTPackage

@@ -28,6 +28,8 @@ namespace PVTPackage
 		void ComputeSaturatedProperties(double Pdew, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out);
 		void ComputeUnderSaturatedProperties(double P, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out);
 
+		//HQPAN
+		void calcRV(double pres, double &RV, double &dRV_dp);
 
 	protected:
 
