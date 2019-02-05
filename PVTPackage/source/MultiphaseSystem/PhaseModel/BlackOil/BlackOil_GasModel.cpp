@@ -3,6 +3,7 @@
 #include "BlackOil_Utils.hpp"
 #include "BlackOil_GasModel.hpp"
 #include "MultiphaseSystem/PhaseModel/PhaseProperties.hpp"
+#include "Table.hpp"
 
 namespace PVTPackage
 {
@@ -313,4 +314,10 @@ namespace PVTPackage
 	{
 		return 1. / Bg * (m_SurfaceMassDensity + surface_oil_mass_density * Rv);
 	}
+
+	void BlackOil_GasModel::calcRV(double pres, double &RV, double &dRV_dp)
+	{
+		int index = Table::SInterpolate(pres, RV, dRV_dp, m_PVTG.DewPressure, m_PVTG.Rv);
+	}
+
 }
