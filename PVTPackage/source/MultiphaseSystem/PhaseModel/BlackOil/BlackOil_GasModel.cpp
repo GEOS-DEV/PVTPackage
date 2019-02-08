@@ -3,6 +3,7 @@
 #include "BlackOil_Utils.hpp"
 #include "BlackOil_GasModel.hpp"
 #include "MultiphaseSystem/PhaseModel/PhaseProperties.hpp"
+#include "Utils/Table.hpp"
 
 namespace PVTPackage
 {
@@ -313,4 +314,39 @@ double BlackOil_GasModel::ComputeMassDensity(double Rv, double Bg, double surfac
 {
   return 1. / Bg * (m_SurfaceMassDensity + surface_oil_mass_density * Rv);
 }
+
+void BlackOil_GasModel::calcRV(double pres, double &RV, double &dRV_dp)
+{
+	int index = Table::SInterpolate(pres, RV, dRV_dp, m_PVTG.DewPressure, m_PVTG.Rv);
+}
+
+void BlackOil_GasModel::ComputeSaturatedProperties(double pres, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out)
+{
+	double RV,  dRV_dp;
+	int index = Table::SInterpolate(pres, RV, dRV_dp, m_PVTG.DewPressure, m_PVTG.Rv);
+
+	double vis, dvis_dp;
+	index = Table::SInterpolate(pres, vis, dvis_dp, m_PVTG.DewPressure, m_PVTG.SaturatedViscosity);
+	props_out.Viscosity = vis;
+
+	double Bg, dBg_dp;
+	index = Table::SInterpolate(pres, Bg, dBg_dp, m_PVTG.DewPressure, m_PVTG.SaturatedBg);
+
+	auto moleDen = (m_SurfaceMoleDensity + oil_mole_surface_density * RV)/Bg;
+	auto dMoleDen_dp = (-moleDen*dBg_dp + oil_mole_surface_density* dRV_dp) / Bg;
+	props_out.MoleDensity.value = moleDen;
+	props_out.MoleDensity.dP = dMoleDen_dp;
+
+	auto massDen = (m_SurfaceMassDensity + oil_mass_surface_density * RV) / Bg;
+	auto dMassDen_dp = (-massDen*dBg_dp + oil_mass_surface_density* dRV_dp) / Bg;
+	props_out.MassDensity.value = massDen;
+	props_out.MassDensity.dP = dMassDen_dp;
+
+	auto molecularWeight = massDen / moleDen;
+	auto dMolWet_dp = molecularWeight*(dMassDen_dp / massDen - dMoleDen_dp / moleDen);
+	props_out.MolecularWeight.value = molecularWeight;
+	props_out.MolecularWeight.dP = dMolWet_dp;
+
+}
+
 }

@@ -29,7 +29,9 @@ public:
   void ComputeSaturatedProperties(double Pb, std::vector<double> composition, double gas_mole_surface_density, double gas_mass_surface_density, PhaseProperties& props_out);
   void ComputeUnderSaturatedProperties(double P, std::vector<double> composition, double gas_mole_surface_density, double gas_mass_surface_density, PhaseProperties& props_out);
 
-
+	//HQPAN
+	void calcRS(double pres, double &RS, double &dRS_dp);
+	void ComputeSaturatedProperties(double Pb, double gas_mole_surface_density, double gas_mass_surface_density, PhaseProperties& props_out);
 
 protected:
 
