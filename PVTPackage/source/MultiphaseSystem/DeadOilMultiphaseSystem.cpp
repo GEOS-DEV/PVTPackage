@@ -1,26 +1,21 @@
-#include <utility>
-
-#include <utility>
-
-#include <utility>
-
 #include "DeadOilMultiphaseSystem.hpp"
 
-#include <unordered_map>
 #include "PhaseModel/BlackOil/DeadOil_PhaseModel.hpp"
 #include "PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
 #include "Utils/FileUtils.hpp"
 #include "PhaseSplitModel/DeadOilFlash.hpp"
+#include <unordered_map>
+#include <utility>
 
 namespace PVTPackage
 {
 
-	DeadOilMultiphaseSystem::DeadOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
-                                                   std::vector<std::vector<double>> PVDO,
-                                                   std::vector<std::vector<double>> PVDG,
-                                                   std::vector<double> PVTW,
-                                                   std::vector<double> surface_densities,
-                                                   std::vector<double> molar_weights)
+DeadOilMultiphaseSystem::DeadOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
+                                                 std::vector<std::vector<double>> PVDO,
+                                                 std::vector<std::vector<double>> PVDG,
+                                                 std::vector<double> PVTW,
+                                                 std::vector<double> surface_densities,
+                                                 std::vector<double> molar_weights)
   : MultiphaseSystem(phase_types.size(), phase_types)
 {
   CreatePhases(phase_types,
@@ -32,10 +27,10 @@ namespace PVTPackage
   m_Flash = new DeadOilFlash();
 }
 
-	DeadOilMultiphaseSystem::DeadOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
-                                                   std::vector<std::string> table_file_names,
-                                                   std::vector<double> surface_densities,
-                                                   std::vector<double> molar_weights)
+DeadOilMultiphaseSystem::DeadOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
+                                                 std::vector<std::string> table_file_names,
+                                                 std::vector<double> surface_densities,
+                                                 std::vector<double> molar_weights)
   : MultiphaseSystem(phase_types.size(), phase_types)
 {
   auto num_phase = static_cast<unsigned>(phase_types.size());
@@ -50,7 +45,7 @@ namespace PVTPackage
   CreatePhases(phase_types, tables, std::move(surface_densities), std::move(molar_weights));
 
   //Create Flash pointer
-  m_Flash = new BlackOilFlash();
+  m_Flash = new DeadOilFlash();
 }
 
 void DeadOilMultiphaseSystem::CreatePhases(std::vector<PHASE_TYPE> phase_types,
