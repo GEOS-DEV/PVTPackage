@@ -35,7 +35,7 @@ bool NegativeTwoPhaseFlash::ComputeEquilibrium(MultiphaseSystemProperties & out_
 
   std::vector<double> fug_ratio(nbc);
 
-  auto KGasOil = ComputeWilsonGasOilKvalue(pressure, temperature);
+  auto KGasOil = ComputeWilsonGasLiquidKvalue(pressure, temperature);
 
   //Check for machine-zero feed values
   const double epsilon = std::numeric_limits<double>::epsilon();

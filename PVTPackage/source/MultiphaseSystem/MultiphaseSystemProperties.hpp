@@ -65,7 +65,7 @@ struct MultiphaseSystemProperties
   double Temperature;
   double Pressure;
   std::vector<double> Feed;
-
+	
   //Phase state
   PHASE_STATE PhaseState;
 

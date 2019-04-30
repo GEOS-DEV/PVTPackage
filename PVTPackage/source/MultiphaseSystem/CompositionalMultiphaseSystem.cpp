@@ -3,6 +3,7 @@
 #include "MultiphaseSystem/PhaseSplitModel/TrivialFlash.hpp"
 #include "PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
 #include "PhaseSplitModel/NegativeTwoPhaseFlash.hpp"
+#include "PhaseSplitModel/FreeWaterFlash.hpp"
 
 namespace PVTPackage
 {
@@ -12,6 +13,8 @@ CompositionalMultiphaseSystem::CompositionalMultiphaseSystem(std::vector<PHASE_T
                                                              const ComponentProperties& comp_properties)
   : MultiphaseSystem(comp_properties.NComponents, phase_types)
 {
+
+  ASSERT(phase_types.size() == eos_types.size(), "The model requires as many phase models as phases");
 
   //Create Phase Models
   for (size_t i = 0; i != phase_types.size(); ++i)
@@ -31,11 +34,18 @@ CompositionalMultiphaseSystem::CompositionalMultiphaseSystem(std::vector<PHASE_T
     }
     case COMPOSITIONAL_FLASH_TYPE::NEGATIVE_OIL_GAS:
     {
+	  ASSERT(m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::OIL) != m_MultiphaseProperties.PhaseModels.end(), "Negative two phase flash require oil phase");
+	  ASSERT(m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::GAS) != m_MultiphaseProperties.PhaseModels.end(), "Negative two phase flash require gas phase");
+      ASSERT(m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::LIQUID_WATER_RICH) == m_MultiphaseProperties.PhaseModels.end(), "Negative two phase flash cannot handle water phase");
       m_Flash = new NegativeTwoPhaseFlash(comp_properties);
       break;
     }
-    case COMPOSITIONAL_FLASH_TYPE::FREE_WATER_FLASH:
-      break;
+    case COMPOSITIONAL_FLASH_TYPE::FREE_WATER:
+	  ASSERT(m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::OIL) != m_MultiphaseProperties.PhaseModels.end(), "Free Water flash require oil phase");
+      ASSERT(m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::GAS) != m_MultiphaseProperties.PhaseModels.end(), "Free Water flash require gas phase");
+	  ASSERT(m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::LIQUID_WATER_RICH) != m_MultiphaseProperties.PhaseModels.end(), "Free Watere flash require water phase");
+	  m_Flash = new FreeWaterFlash(comp_properties);
+	  break;
     default:
       LOGERROR("Flash type is not correct or not supported.");
   }

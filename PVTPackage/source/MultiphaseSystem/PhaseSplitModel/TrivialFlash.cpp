@@ -35,7 +35,7 @@ bool TrivialFlash::ComputeEquilibrium(MultiphaseSystemProperties & out_variables
   auto& oil_comp = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).MoleComposition.value = std::vector<double>(nbc,0);
   auto& water_comp = out_variables.PhasesProperties.at(PHASE_TYPE::LIQUID_WATER_RICH).MoleComposition.value = std::vector<double>(nbc,0);
 
-  auto KGasOil = ComputeWilsonGasOilKvalue(pressure, temperature);
+  auto KGasOil = ComputeWilsonGasLiquidKvalue(pressure, temperature);
   auto KWaterGas = ComputeWaterGasKvalue(pressure, temperature);
   auto KWaterOil = ComputeWaterOilKvalue(pressure, temperature);
 

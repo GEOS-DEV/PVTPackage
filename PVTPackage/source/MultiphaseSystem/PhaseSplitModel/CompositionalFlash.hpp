@@ -30,7 +30,7 @@ protected:
   ComponentProperties m_ComponentsProperties;
 
   //Wilson K-values
-  std::vector<double> ComputeWilsonGasOilKvalue(double Pressure, double Temperature) const;
+  std::vector<double> ComputeWilsonGasLiquidKvalue(double Pressure, double Temperature) const;
   std::vector<double> ComputeWaterGasKvalue(double Pressure, double Temperature) const;
   std::vector<double> ComputeWaterOilKvalue(double Pressure, double Temperature) const;
 };

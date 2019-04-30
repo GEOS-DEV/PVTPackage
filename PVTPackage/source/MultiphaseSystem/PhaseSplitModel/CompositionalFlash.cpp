@@ -94,7 +94,7 @@ double CompositionalFlash::SolveRachfordRiceEquation(const std::vector<double>& 
     if (SSI_iteration == max_SSI_iterations)
       LOGWARNING("Rachford-Rice SSI reached max number of iterations");
   }
-  gas_phase_mole_fraction = 0.5*(func_x_max + func_x_min);
+  gas_phase_mole_fraction = 0.5*(x_max + x_min);
 
   //Newton loop
   int Newton_iteration = 0;
@@ -136,7 +136,7 @@ double CompositionalFlash::dRachfordRiceFunction_dx(const std::vector<double>& K
   return val;
 }
 
-std::vector<double> CompositionalFlash::ComputeWilsonGasOilKvalue(double Pressure, double Temperature) const
+std::vector<double> CompositionalFlash::ComputeWilsonGasLiquidKvalue(double Pressure, double Temperature) const
 {
   const auto nbc = m_ComponentsProperties.NComponents;
   const auto& Tc = m_ComponentsProperties.Tc;
