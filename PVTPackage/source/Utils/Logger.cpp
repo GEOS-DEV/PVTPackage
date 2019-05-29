@@ -87,19 +87,16 @@ void Logger::LogINFO(std::string msg)
 
 void Logger::LogDEBUG(std::string msg)
 {
-
   std::string message = "[" + get_time() + "] DEBUG:   " + msg.c_str();
   if (m_log_level >= VerbosityLevelLogFile::DEBUG)
     write_file(message);
   if (m_screen_level >= VerbosityLevelScreen::ALL)
     write_screen(msg);
-
 }
 
 
 void Logger::Log(LogMessage& msg)
 {
-
   std::string str_msg = msg.getMessage();
   VerbosityLevelLogFile MessageLevel = msg.getMessageLevel();
   if (MessageLevel == VerbosityLevelLogFile::ERROR)
@@ -117,8 +114,7 @@ void Logger::Log(LogMessage& msg)
   else if (MessageLevel == VerbosityLevelLogFile::INFO)
   {
     LogINFO(str_msg);
-  };
-
+  }
 }
 
 
