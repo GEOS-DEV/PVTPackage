@@ -6,11 +6,6 @@
 #define PVT_LOG_LEVEL_SCREEN "ALL"
 #define PVT_LOG_FILE_NAME "pvt.log"
 
-#ifdef __clang__
-#pragma clang diagnostic ignored "-Wexit-time-destructors"
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#endif
-
 namespace PVTPackage {
 
 Logger* Logger::instance()
@@ -44,11 +39,6 @@ Logger::Logger(std::string LevelLogFile, std::string file_name, std::string Leve
 
 }
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-#endif
-
 void Logger::LogERROR(std::string msg)
 {
 
@@ -59,10 +49,6 @@ void Logger::LogERROR(std::string msg)
   abort();
 
 }
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
 void Logger::LogWARNING(std::string msg)
 {
@@ -94,7 +80,6 @@ void Logger::LogDEBUG(std::string msg)
     write_screen(msg);
 }
 
-
 void Logger::Log(LogMessage& msg)
 {
   std::string str_msg = msg.getMessage();
@@ -116,8 +101,6 @@ void Logger::Log(LogMessage& msg)
     LogINFO(str_msg);
   }
 }
-
-
 
 std::string Logger::get_time()
 {
