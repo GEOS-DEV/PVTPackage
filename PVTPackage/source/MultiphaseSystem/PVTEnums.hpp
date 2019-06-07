@@ -35,12 +35,6 @@ struct EnumClassHash
 };
 
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wexit-time-destructors"
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#endif
-
 //Phase State
 const std::unordered_map<std::vector<bool>, PHASE_STATE> PhaseStateMap =
   {
@@ -52,9 +46,5 @@ const std::unordered_map<std::vector<bool>, PHASE_STATE> PhaseStateMap =
     { { 1,0,0 } ,PHASE_STATE::OIL },
     { { 0,1,0 } ,PHASE_STATE::GAS },
   };
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
 }

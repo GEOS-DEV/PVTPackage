@@ -300,7 +300,7 @@ void BlackOil_GasModel::ComputeUndersaturatedBgVisc(double Rv, double P, double&
 
   //TODO Put real undersaturated properties
   //This function cannot be called
-  LOGERROR("cannot be called");
+  // LOGERROR("cannot be called");
 
 }
 
