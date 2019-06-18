@@ -118,6 +118,8 @@ double CompositionalFlash::RachfordRiceFunction(const std::vector<double>& Kvalu
     const double K = (Kvalues[ic] - 1.0);
     val = val + feed[ic] / (1.0 / K + x);
   }
+
+  std::cout << "RachfordRiceFunction val = " << val << std::endl;
   return val;
 }
 
