@@ -55,13 +55,10 @@ double CompositionalFlash::SolveRachfordRiceEquation(const std::vector<double>& 
   while ((current_error > SSI_tolerance)&&(SSI_iteration<max_SSI_iterations))
   {
     double x_mid = 0.5*(x_min + x_max);
-    func_x_min = 0; func_x_mid = 0; func_x_max = 0;
-    for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
-    {
-      func_x_min = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_min);
-      func_x_mid = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_mid);
-      func_x_max = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_max);
-    }
+
+    func_x_min = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_min);
+    func_x_mid = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_mid);
+    func_x_max = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_max);
 
     ASSERT(!std::isnan(func_x_min), "Rachford-Rice solver returns NaN");
     ASSERT(!std::isnan(func_x_mid), "Rachford-Rice solver returns NaN");
@@ -119,7 +116,7 @@ double CompositionalFlash::RachfordRiceFunction(const std::vector<double>& Kvalu
   for (auto ic : non_zero_index)
   {
     const double K = (Kvalues[ic] - 1.0);
-    val = val + feed[ic] * K / (1.0 + x * K);
+    val = val + feed[ic] / (1.0 / K + x);
   }
   return val;
 }
