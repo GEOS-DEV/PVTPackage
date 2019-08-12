@@ -84,7 +84,6 @@ void DeadOil_PhaseModel::CreateTable(const std::vector<std::vector<double>>& PVD
   auto Pref = 101325.0;
   if (!math::isNearlyEqual(m_PVD.Pressure[0], Pref))
   {
-    auto visc = math::LogExtrapolation(m_PVD.Pressure[1], m_PVD.Viscosity[1], m_PVD.Pressure[0], m_PVD.Viscosity[0], Pref);
     m_PVD.Pressure.insert(m_PVD.Pressure.begin(), Pref);
     m_PVD.NPoints++;
   }
