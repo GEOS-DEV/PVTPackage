@@ -166,6 +166,7 @@ std::vector<double> CompositionalFlash::ComputeWaterGasKvalue(double Pressure, d
 
 std::vector<double> CompositionalFlash::ComputeWaterOilKvalue(double Pressure, double Temperature) const
 {
+  (void) Pressure, (void) Temperature;
   const auto nbc = m_ComponentsProperties.NComponents;
   return std::vector<double>(nbc, 0);
 }

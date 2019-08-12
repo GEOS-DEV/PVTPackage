@@ -59,6 +59,7 @@ CubicEoSPhaseModel::CubicEosMixtureCoefficients CubicEoSPhaseModel::ComputeMixtu
 
 double CubicEoSPhaseModel::ComputeCompressibilityFactor(double Pressure, double Temperature, std::vector<double>& composition, CubicEosMixtureCoefficients& mix_coeffs) const
 {
+  (void) Pressure, (void) Temperature;
   //ASSERT(m_MixtureCoefficientsUpToDate, "Z factor requires mixture properties up-to-date.");
   std::vector<double> coeff(3);
   //aZ3+bZ2+cZ+d=0
