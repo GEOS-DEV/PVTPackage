@@ -4,7 +4,6 @@
 // Std library includes
 #include <algorithm>
 
-namespace PVTPackage {
 void StringUtils::Trim(std::string& str)
 {
   if (str.size() > 0)
@@ -147,4 +146,3 @@ std::string StringUtils::GetNthWord(int n, std::string data)
   return data.substr(0, data.find(' '));
 
 }
-} // namespace
