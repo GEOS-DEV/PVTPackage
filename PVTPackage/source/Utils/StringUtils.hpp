@@ -7,7 +7,6 @@
 #include <sstream>
 #include <vector>
 
-namespace PVTPackage {
 namespace StringUtils
 {
 
@@ -100,7 +99,4 @@ namespace StringUtils
   ASSERT(cpt == 0, " Data size must be a multiple of ChopSize");
   }
 
-
-
-}
 } // namespace

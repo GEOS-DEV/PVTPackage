@@ -231,7 +231,7 @@ namespace PVTPackage
 		{
 			total_error = total_error + feed[i] - (gas_comp[i] * gas_fraction + water_comp[i] * water_fraction + oil_comp[i] * oil_fraction);
 		}
-		ASSERT(abs(total_error) < epsilon, "Mass conservation problem in flash");
+		ASSERT(std::abs(total_error) < epsilon, "Mass conservation problem in flash");
 #endif
 
 
