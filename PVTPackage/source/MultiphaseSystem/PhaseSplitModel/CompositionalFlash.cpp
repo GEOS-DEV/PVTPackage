@@ -13,7 +13,7 @@ double CompositionalFlash::SolveRachfordRiceEquation(const std::vector<double>& 
   double gas_phase_mole_fraction=0;
 
   //Numerical Parameters //TODO: move them outside the function
-  double SSI_tolerance=1e-8;
+  double SSI_tolerance=1e-3;
   int max_SSI_iterations = 200;
   double Newton_tolerance = 1e-12;
   int max_Newton_iterations = 30;
@@ -51,49 +51,43 @@ double CompositionalFlash::SolveRachfordRiceEquation(const std::vector<double>& 
 
   //SSI loop
   double func_x_min =0, func_x_mid =0, func_x_max =0;
+  bool recompute_min = true, recompute_max = true;
   int SSI_iteration=0;
   while ((current_error > SSI_tolerance)&&(SSI_iteration<max_SSI_iterations))
   {
     double x_mid = 0.5*(x_min + x_max);
-    func_x_min = 0; func_x_mid = 0; func_x_max = 0;
-    for (auto it = non_zero_index.begin(); it != non_zero_index.end(); ++it)
-    {
-      func_x_min = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_min);
-      func_x_mid = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_mid);
-      func_x_max = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_max);
-    }
-
-    ASSERT(!std::isnan(func_x_min), "Rachford-Rice solver returns NaN");
-    ASSERT(!std::isnan(func_x_mid), "Rachford-Rice solver returns NaN");
-    ASSERT(!std::isnan(func_x_max), "Rachford-Rice solver returns NaN");
+    if (recompute_min) func_x_min = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_min);
+    if (recompute_max) func_x_max = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_max);
+    func_x_mid = RachfordRiceFunction(Kvalues, feed, non_zero_index, x_mid);
 
     if ((func_x_min < 0) && (func_x_max < 0))
     {
       return gas_phase_mole_fraction = 0.0;
     }
-
-    if ((func_x_min > 1) && (func_x_max > 1))
+    else if ((func_x_min > 1) && (func_x_max > 1))
     {
       return gas_phase_mole_fraction = 1.0;
     }
-
-    if (func_x_min*func_x_mid <0.0)
+    else if (func_x_min*func_x_mid <0.0)
     {
       x_max = x_mid;
+      recompute_max = true;
+      recompute_min = false;
     }
-
-    if (func_x_max*func_x_mid < 0.0)
+    else if (func_x_max*func_x_mid < 0.0)
     {
       x_min = x_mid;
+      recompute_max = false;
+      recompute_min = true;
     }
 
     current_error = std::min(std::fabs(func_x_max - func_x_min),std::fabs(x_max - x_min));
-
     SSI_iteration++;
 
     if (SSI_iteration == max_SSI_iterations)
       LOGWARNING("Rachford-Rice SSI reached max number of iterations");
   }
+
   gas_phase_mole_fraction = 0.5*(x_max + x_min);
 
   //Newton loop
@@ -103,7 +97,21 @@ double CompositionalFlash::SolveRachfordRiceEquation(const std::vector<double>& 
   {
     double delta_Newton = -RachfordRiceFunction(Kvalues, feed, non_zero_index, Newton_value) / dRachfordRiceFunction_dx(Kvalues, feed, non_zero_index, Newton_value);
     current_error = std::fabs(delta_Newton) / std::fabs(Newton_value);
-    Newton_value = Newton_value + delta_Newton;
+
+    // Test if we are stepping out of the [x_min;x_max] interval
+    if (Newton_value + delta_Newton < x_min)
+    {
+      Newton_value = .5 * (Newton_value + x_min);
+    }
+    else if (Newton_value + delta_Newton > x_max)
+    {
+      Newton_value = .5 * (Newton_value + x_max);
+    }
+    else
+    {
+      Newton_value = Newton_value + delta_Newton;
+    }
+
     Newton_iteration++;
 
     if (Newton_iteration == max_Newton_iterations)
@@ -166,6 +174,7 @@ std::vector<double> CompositionalFlash::ComputeWaterGasKvalue(double Pressure, d
 
 std::vector<double> CompositionalFlash::ComputeWaterOilKvalue(double Pressure, double Temperature) const
 {
+  (void) Pressure, (void) Temperature;
   const auto nbc = m_ComponentsProperties.NComponents;
   return std::vector<double>(nbc, 0);
 }

@@ -32,8 +32,8 @@ struct PhaseProperties
     Compressibility(0)
   {
 
-    auto df = 2; //TODO: don't know why I need this default constructor. Nothing goes through it but compiler crashes
-    df++;
+//    auto df = 2; //TODO: don't know why I need this default constructor. Nothing goes through it but compiler crashes
+//    df++;
   }
 
   void UpdateDerivative_dP_FiniteDifference(const PhaseProperties& props_eps, double epsilon)

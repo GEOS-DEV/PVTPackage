@@ -202,7 +202,7 @@ void BlackOil_GasModel::ExtendUnderSaturatedProperties()
 
 void BlackOil_GasModel::RefineTable(size_t nlevel)
 {
-
+  (void) nlevel;
   //std::vector<double> refine_p;
   //for (size_t i = 0; i < m_PVTG.NSaturatedPoints; ++i)
   //{
@@ -297,10 +297,10 @@ void BlackOil_GasModel::ComputeSaturatedBgVisc(double Rv, double& Bg, double& vi
 
 void BlackOil_GasModel::ComputeUndersaturatedBgVisc(double Rv, double P, double& Bg, double& visc)
 {
-
+  (void) Rv, (void) P, (void) Bg, (void) visc;
   //TODO Put real undersaturated properties
   //This function cannot be called
-  LOGERROR("cannot be called");
+  // LOGERROR("cannot be called");
 
 }
 
