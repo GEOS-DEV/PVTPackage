@@ -26,11 +26,10 @@ set(PVTPackage_sources ${PROJECT_SRC})
 set(PVTPackage_dependencies "")
 
 message("adding PVTPackage library")
-blt_add_library(NAME          ${PVTPackage_target}
-        SOURCES               ${PVTPackage_sources}
-        HEADERS               ${PVTPackage_headers}
-        HEADERS_OUTPUT_SUBDIR PVTPackage
-        DEPENDS_ON            ${PVTPackage_dependencies})
+blt_add_library(NAME       ${PVTPackage_target}
+                SOURCES    ${PVTPackage_sources}
+                HEADERS    ${PVTPackage_headers}
+                DEPENDS_ON ${PVTPackage_dependencies})
 
 target_include_directories(${PVTPackage_target} PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${PROJECT_SRC_DIR})
 
