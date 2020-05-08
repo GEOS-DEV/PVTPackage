@@ -249,7 +249,7 @@ void BlackOil_OilModel::CreateUnderSaturatedProperties()
       std::sort(p_target.begin(), p_target.end());
       p_target.erase(std::unique(p_target.begin(), p_target.end()), p_target.end());
 
-      //Shit pressures up and down
+      //Shift pressures up and down
       std::vector<double> x_up(m_PVTO.UndersaturatedPressure[upper_branch_index].size()), x_dn(m_PVTO.UndersaturatedPressure[lower_branch_index].size());
       for (size_t i = 0; i < m_PVTO.UndersaturatedPressure[upper_branch_index].size(); ++i)
       {
