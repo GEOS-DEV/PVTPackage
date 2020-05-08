@@ -25,9 +25,10 @@ bool BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables
   const auto& pressure = out_variables.Pressure;
 
   // Component index are 0=OIL, 1=GAS, 2=WATER
-  auto& zo = out_variables.Feed[0];
-  auto& zg = out_variables.Feed[1];
-  auto& zw = out_variables.Feed[2];
+  auto& zo = out_variables.Feed[static_cast<size_t>(PHASE_TYPE::OIL)];
+//  auto& zo = out_variables.Feed[0];
+  auto& zg = out_variables.Feed[static_cast<size_t>(PHASE_TYPE::GAS)];
+  auto& zw = out_variables.Feed[static_cast<size_t>(PHASE_TYPE::LIQUID_WATER_RICH)];
 
   const auto& oil_phase_model = std::dynamic_pointer_cast<BlackOil_OilModel>(out_variables.PhaseModels.at(PHASE_TYPE::OIL));
   const auto& gas_phase_model = std::dynamic_pointer_cast<BlackOil_GasModel>(out_variables.PhaseModels.at(PHASE_TYPE::GAS));
@@ -186,5 +187,3 @@ bool BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables
 }
 
 }
-
-
