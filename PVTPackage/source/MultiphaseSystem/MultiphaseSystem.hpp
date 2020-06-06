@@ -14,61 +14,186 @@
 
 #pragma once
 
+#include "MultiphaseSystem/MultiphaseSystemProperties/CompositionalMultiphaseSystemProperties.hpp"
+#include "MultiphaseSystem/MultiphaseSystemProperties/FactorMultiphaseSystemProperties.hpp"
+
+#include "Utils/math.hpp"
+
+#include "pvt/pvt.hpp"
+
+#include <math.h>
+#include <limits>
 #include <vector>
-#include "MultiphaseSystem/PVTEnums.hpp"
-#include "MultiphaseSystemProperties.hpp"
-#include "PhaseModel/PhaseProperties.hpp"
 
 namespace PVTPackage
 {
 
-class PhaseModel;
-class Flash;
-
-class MultiphaseSystem
+class MultiphaseSystem : public pvt::MultiphaseSystem
 {
 public:
 
-  enum class State { NOT_INITIALIZED, SUCCESS, NOT_CONVERGED, FATAL_ERROR, NOT_IMPLEMENTED };
-
-  virtual ~MultiphaseSystem() = default;
-
-  MultiphaseSystem(size_t nc, const std::vector<PHASE_TYPE>& phase_types) :
-    m_MultiphaseProperties(phase_types, nc),
-    m_Flash(nullptr),
-    m_StateIndicator(State::NOT_INITIALIZED)
-  {
-  }
-
-  void Update(double pressure, double temperature, std::vector<double> feed);
-
-  //--Getters
-  const MultiphaseSystemProperties& get_MultiphaseSystemProperties() const
-  {
-    return m_MultiphaseProperties;
-  }
-
-  const PhaseProperties& get_PhaseProperties(PHASE_TYPE phase_type)
-  {
-    return m_MultiphaseProperties.PhasesProperties.at(phase_type);
-  }
-
-  State getState()
-  {
-    return m_StateIndicator;
-  }
+  bool hasSucceeded() const final;
 
 protected:
 
-  //Properties
-  MultiphaseSystemProperties m_MultiphaseProperties;
+  enum class State
+  {
+    NOT_INITIALIZED, SUCCESS, NOT_CONVERGED, FATAL_ERROR, NOT_IMPLEMENTED
+  };
 
-  //Flash pointer
-  Flash* m_Flash;
+  /// Success indicator for system state update
+  State m_stateIndicator;
 
-  //Success indicator for system state update
-  State m_StateIndicator;
+  /**
+   * @brief Computes the equilibrium and some derivatives for given @p flash.
+   * @tparam F The flash type (F stands for flash).
+   * @tparam MSP The MultiphaseSystemProperties type.
+   * @param flash The flash instance.
+   * @param properties The data the flash algorithm will be using.
+   * @return True in case of success.
+   *
+   * @note This function computes the derivatives w.r.t. pressure, components. Not temperature.
+   */
+  template< class F, class MSP >
+  static bool computeDerivativesNoTemperature( const F & flash,
+                                               MSP & properties )
+  {
+    bool success = flash.computeEquilibrium( properties );
 
+    double const & pressure = properties.getPressure();
+
+    double const sqrtPrecision = sqrt( std::numeric_limits< double >::epsilon() );
+
+    // Copying for finite difference process
+    MSP pEps = properties;
+
+    // Pressure
+    {
+      const double dPressure = sqrtPrecision * ( std::fabs( pressure ) + sqrtPrecision );
+      pEps.setPressure( pressure + dPressure );
+      success &= flash.computeEquilibrium( pEps );
+      updateDerivativeDPFiniteDifference( properties, pEps, dPressure );
+      pEps.setPressure( pressure );
+    }
+
+    // Feed
+    {
+      std::vector< double > const & savedFeed = properties.getFeed();
+      for( std::size_t iComponent = 0; iComponent < savedFeed.size(); ++iComponent )
+      {
+        double dz = sqrtPrecision * ( std::fabs( savedFeed[iComponent] ) + sqrtPrecision );
+        if( savedFeed[iComponent] + dz > 1 )
+        {
+          dz = -dz;
+        }
+        std::vector< double > newFeed( savedFeed );
+        newFeed[iComponent] += dz;
+        pEps.setFeed( math::Normalize( newFeed ) );
+        success &= flash.computeEquilibrium( pEps );
+        updateDerivativeDZFiniteDifference( iComponent, properties, pEps, dz );
+        pEps.setFeed( savedFeed );
+      }
+    }
+
+    return success;
+  }
+
+private:
+
+  static void updateDerivativeDPFiniteDifference( FactorMultiphaseSystemProperties & sysProps,
+                                                  const FactorMultiphaseSystemProperties & diffed,
+                                                  double dPressure );
+
+  static void updateDerivativeDZFiniteDifference( std::size_t iComponent,
+                                                  FactorMultiphaseSystemProperties & sysProps,
+                                                  const FactorMultiphaseSystemProperties & diffed,
+                                                  double dz );
+};
+
+class CompositionalMultiphaseSystem : public MultiphaseSystem
+{
+protected:
+
+  static bool areComponentDataConsistent( std::vector< std::string > const & componentNames,
+                                          std::vector< double > const & componentMolarWeights,
+                                          std::vector< double > const & componentCriticalTemperatures,
+                                          std::vector< double > const & componentCriticalPressures,
+                                          std::vector< double > const & componentOmegas );
+
+  /**
+   * @brief Computes the equilibrium and derivatives for given @p flash.
+   * @tparam F The flash type (F stands for flash).
+   * @tparam MSP The MultiphaseSystemProperties type.
+   * @param flash The flash instance.
+   * @param properties The data the flash algorithm will be using.
+   * @return True in case of success.
+   *
+   * @note This function computes the derivatives w.r.t. pressure, temperature, components.
+   */
+  template< class F, class MSP >
+  static bool computeDerivativesWithTemperature( const F & flash,
+                                                 MSP & properties )
+  {
+    bool success = computeDerivativesNoTemperature( flash, properties );
+
+    double const sqrtPrecision = sqrt( std::numeric_limits< double >::epsilon() );
+
+    // Copying for finite difference process
+    MSP pEps = properties;
+
+    // Temperature finite difference process
+    double const & temperature = properties.getTemperature();
+    const double dTemperature = sqrtPrecision * ( std::fabs( temperature ) + sqrtPrecision );
+    pEps.setTemperature( temperature + dTemperature );
+    success &= flash.computeEquilibrium( pEps );
+    updateDerivativeDTFiniteDifference( properties, pEps, dTemperature );
+    pEps.setTemperature( temperature );
+
+    return success;
+  }
+
+private:
+
+  static void updateDerivativeDTFiniteDifference( CompositionalMultiphaseSystemProperties & sysProps,
+                                                  const CompositionalMultiphaseSystemProperties & diffed,
+                                                  double dTemperature );
+};
+
+/**
+ * @brief Utility class containing table reading functions.
+ *
+ * @note A class is made just to reduce visibility.
+ */
+class TableReader
+{
+private:
+
+  static void readTable( const std::string & fileName,
+                         std::vector< std::vector< double > > & data,
+                         unsigned int minRowLen );
+
+  static std::vector< std::vector< std::vector< double > > > readTables( const std::vector< pvt::PHASE_TYPE > & phases,
+                                                                         const std::vector< std::string > & tableFileNames );
+
+protected:
+
+  struct Properties
+  {
+    std::vector< std::vector< double > > oilTable;
+    double oilSurfaceMassDensity;
+    double oilSurfaceMolecularWeight;
+    std::vector< std::vector< double > > gasTable;
+    double gasSurfaceMassDensity;
+    double gasSurfaceMolecularWeight;
+    std::vector< double > waterTable;
+    double waterSurfaceMassDensity;
+    double waterSurfaceMolecularWeight;
+  };
+
+  static Properties buildTables( const std::vector< pvt::PHASE_TYPE > & phases,
+                                 const std::vector< std::string > & tableFileNames,
+                                 const std::vector< double > & surfaceDensities,
+                                 const std::vector< double > & molarWeights );
 };
 
 }

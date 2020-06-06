@@ -14,32 +14,33 @@
 
 #pragma once
 
+#include "MultiphaseSystem/ComponentProperties.hpp"
+#include "MultiphaseSystem/MultiphaseSystemProperties/TrivialFlashMultiphaseSystemProperties.hpp"
 #include "MultiphaseSystem/PhaseSplitModel/CompositionalFlash.hpp"
-#include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
+
+#include "pvt/pvt.hpp"
 
 namespace PVTPackage
 {
 
-class TrivialFlash final : public CompositionalFlash
+class TrivialFlash final : private CompositionalFlash
 {
 public:
 
-  TrivialFlash(const ComponentProperties& component_properties)
-    : CompositionalFlash(component_properties)
+  TrivialFlash( const ComponentProperties & componentProperties );
+
+  /**
+   * @brief Temporary access to component properties used for the computation.
+   * @return Reference to const.
+   *
+   * This member is added for debugging purpose. It should be removed.
+   */
+  const ComponentProperties & getComponentProperties() const
   {
+    return this->m_ComponentsProperties;
   }
 
-  void set_PhaseState(MultiphaseSystemProperties& out_variables) override;
-
-  ~TrivialFlash() override = default;
-
-  bool ComputeEquilibrium(MultiphaseSystemProperties & out_variables) override;
-
-protected:
-
-
+  static bool computeEquilibrium( TrivialFlashMultiphaseSystemProperties & sysProps );
 };
 
 }
-
-

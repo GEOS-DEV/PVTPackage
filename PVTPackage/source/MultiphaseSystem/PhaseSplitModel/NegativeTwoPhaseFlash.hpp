@@ -14,41 +14,35 @@
 
 #pragma once
 
+#include "MultiphaseSystem/ComponentProperties.hpp"
+#include "MultiphaseSystem/MultiphaseSystemProperties/NegativeTwoPhaseFlashMultiphaseSystemProperties.hpp"
 #include "MultiphaseSystem/PhaseSplitModel/CompositionalFlash.hpp"
-#include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
+
+#include "pvt/pvt.hpp"
 
 namespace PVTPackage
 {
 
-class NegativeTwoPhaseFlash final : public CompositionalFlash
+class NegativeTwoPhaseFlash final : private CompositionalFlash
 {
 public:
 
-  NegativeTwoPhaseFlash(const ComponentProperties& component_properties)
-    : CompositionalFlash(component_properties)
+  NegativeTwoPhaseFlash( const ComponentProperties & componentProperties )
+    : CompositionalFlash( componentProperties )
+  { }
+
+  /**
+   * @brief Temporary access to component properties used for the computation.
+   * @return Reference to const.
+   *
+   * This member is added for debugging purpose. It should be removed.
+   */
+  const ComponentProperties & getComponentProperties() const
   {
+    return this->m_ComponentsProperties;
   }
 
-  ~NegativeTwoPhaseFlash() override = default;
-
-
-  void set_PhaseState(MultiphaseSystemProperties& out_variables) override
-  {
-
-    out_variables.PhaseState = PhaseStateMap.at
-      ({ out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value > 0.,
-         out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0.,
-         false
-       });
-  }
-
-  bool ComputeEquilibrium(MultiphaseSystemProperties & out_variables) override;
-
-protected:
-
-
+  static bool computeEquilibrium( NegativeTwoPhaseFlashMultiphaseSystemProperties & sysProps );
 };
 
 }
-
-

@@ -12,58 +12,37 @@
  * ------------------------------------------------------------------------------------------------------------
  */
 
-#pragma once
-#include "Utils/Assert.hpp"
-#include  <vector>
+#ifndef PVTPACKAGE_COMPONENTPROPERTIES_HPP
+#define PVTPACKAGE_COMPONENTPROPERTIES_HPP
+
+#include <string>
+#include <vector>
 
 namespace PVTPackage
 {
 
 struct ComponentProperties
 {
-  ComponentProperties(size_t n_components, std::vector<std::string> labels, std::vector<double> mw, std::vector<double> tc,
-                      std::vector<double> pc, std::vector<double> omega)
-    : NComponents(n_components),
-      Label(labels),
-      Mw(mw),
-      Pc(pc),
-      Tc(tc),
-      Omega(omega),
-      BIC(std::vector<std::vector<double>>(NComponents, std::vector<double>(NComponents, 0))),
-      VolumeShift(std::vector<std::vector<double>>(NComponents, std::vector<double>(2, 0))), WaterIndex(size_t(-1))
-  {
-    ASSERT((n_components == labels.size()) && (n_components == mw.size()) && (n_components == tc.size())
-           && (n_components == pc.size()) && (n_components == omega.size()), "Dimension Mismatch.");
-    for (size_t i = 0; i != NComponents; ++i)
-    {
-      if (Label[i] == "Water" || Label[i] == "water" || Label[i] == "H2O" || Label[i] == "h2o")
-        WaterIndex = i;
-    }
-  }
+  ComponentProperties( const std::size_t & nComponents,
+                       const std::vector< std::string > & labels,
+                       const std::vector< double > & mw,
+                       const std::vector< double > & tc,
+                       const std::vector< double > & pc,
+                       const std::vector< double > & omega );
 
-  bool operator ==(const ComponentProperties& d) const
-  {
-    return
-      NComponents == d.NComponents&&
-      Label == d.Label&&
-      Mw == d.Mw&&
-      Pc == d.Pc&&
-      Tc == d.Tc&&
-      Omega == d.Omega&&
-      BIC == d.BIC&&
-      VolumeShift == d.VolumeShift&&
-      WaterIndex == d.WaterIndex;
-  }
+  bool operator==( const ComponentProperties & d ) const;
 
-  const size_t NComponents;
-  const std::vector<std::string> Label;
-  const std::vector<double> Mw;
-  const std::vector<double> Pc;
-  const std::vector<double> Tc;
-  const std::vector<double> Omega;
-  const std::vector<std::vector<double>> BIC;
-  const std::vector<std::vector<double>> VolumeShift;
-  size_t WaterIndex;
+  const unsigned long NComponents;
+  const std::vector< std::string > Label;
+  const std::vector< double > Mw;
+  const std::vector< double > Pc;
+  const std::vector< double > Tc;
+  const std::vector< double > Omega;
+  const std::vector< std::vector< double > > BIC;
+  const std::vector< std::vector< double > > VolumeShift;
+  unsigned long WaterIndex;
 };
 
-} // end of namespace PVTPackage
+}
+
+#endif //PVTPACKAGE_COMPONENTPROPERTIES_HPP

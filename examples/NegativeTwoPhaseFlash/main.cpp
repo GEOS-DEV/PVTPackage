@@ -14,10 +14,11 @@
 
 #include "MultiphaseSystem/ComponentProperties.hpp"
 #include "MultiphaseSystem/CompositionalMultiphaseSystem.hpp"
+
+#include "pvt/pvt.hpp"
+
 #include <chrono>
 #include <vector>
-//#include <cstdlib>
-//#include <vld.h> //Visual leak detector
 
 int main()
 {
@@ -34,7 +35,7 @@ int main()
   const ComponentProperties CompProps(nbc, Labels, Mw, Tc, Pc, Omega);
 
   auto PVTSystem = CompositionalMultiphaseSystem(
-    { PHASE_TYPE::OIL,PHASE_TYPE::GAS },
+    { pvt::PHASE_TYPE::OIL,PHASE_TYPE::GAS },
     { EOS_TYPE::PENG_ROBINSON,EOS_TYPE::PENG_ROBINSON },
     COMPOSITIONAL_FLASH_TYPE::NEGATIVE_OIL_GAS,
     CompProps);
@@ -61,8 +62,8 @@ int main()
 
   end = std::chrono::system_clock::now();
 
-  auto PhaseRepartitionProperties = PVTSystem.get_MultiphaseSystemProperties();
-  auto OilProperties = PVTSystem.get_PhaseProperties(PHASE_TYPE::OIL);
+  auto PhaseRepartitionProperties = PVTSystem.getMultiphaseSystemProperties();
+  auto OilProperties = PVTSystem.getPhaseProperties( pvt::PHASE_TYPE::OIL );
 
   double elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 

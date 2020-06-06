@@ -13,15 +13,18 @@
  */
 
 #include "BlackOil_WaterModel.hpp"
-#include "MultiphaseSystem/PhaseModel/PhaseProperties.hpp"
-#include <math.h>
+
 #include <cmath>
 
 namespace PVTPackage
 {
 
-BlackOil_WaterModel::BlackOil_WaterModel(std::vector<double> PVTW, double surface_density, double mw):
-  m_SurfaceMassDensity(surface_density),m_SurfaceMolecularWeight(mw)
+BlackOil_WaterModel::BlackOil_WaterModel( const std::vector< double > & PVTW,
+                                          double waterSurfaceMassDensity,
+                                          double waterSurfaceMolecularWeight )
+  :
+  m_surfaceMassDensity( waterSurfaceMassDensity ),
+  m_surfaceMolecularWeight( waterSurfaceMolecularWeight )
 {
   m_PVTW.ReferencePressure = PVTW[0];
   m_PVTW.Bw = PVTW[1];
@@ -29,16 +32,18 @@ BlackOil_WaterModel::BlackOil_WaterModel(std::vector<double> PVTW, double surfac
   m_PVTW.Viscosity = PVTW[3];
 
   //Density
-  m_SurfaceMoleDensity = m_SurfaceMassDensity / m_SurfaceMolecularWeight;
+  m_surfaceMoleDensity = m_surfaceMassDensity / m_surfaceMolecularWeight;
 }
 
-void BlackOil_WaterModel::ComputeProperties(double P, PhaseProperties& props_out)
+BlackOilDeadOilProperties BlackOil_WaterModel::computeProperties( double pressure ) const
 {
-  props_out.MoleComposition.value = {0.,0.,1};
-  props_out.MolecularWeight.value = m_SurfaceMolecularWeight;
-  props_out.MassDensity.value = m_SurfaceMassDensity / (m_PVTW.Bw * exp(-m_PVTW.Compressibility*(P - m_PVTW.ReferencePressure)));
-  props_out.MoleDensity.value = props_out.MassDensity.value/props_out.MolecularWeight.value;
-  props_out.Viscosity = m_PVTW.Viscosity;
+  double const massDensity = m_surfaceMassDensity / ( m_PVTW.Bw * exp( -m_PVTW.Compressibility * ( pressure - m_PVTW.ReferencePressure ) ) );
+
+  return BlackOilDeadOilProperties(
+    massDensity,
+    massDensity / m_surfaceMolecularWeight,
+    m_PVTW.Viscosity
+  );
 }
 
 }

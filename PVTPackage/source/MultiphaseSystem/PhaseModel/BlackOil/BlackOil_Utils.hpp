@@ -14,15 +14,18 @@
 
 #pragma once
 
-#include <vector>
 #include "PVTOdata.hpp"
+
+#include <vector>
 
 namespace PVTPackage
 {
 
 namespace BlackOilUtils
 {
-void RefineTable(std::vector<std::vector<std::vector<double>>>& table, std::size_t nlevel);
+
+void refineTable( std::vector< std::vector< std::vector< double > > > & table,
+                  std::size_t nLevel );
 }
 
 }

@@ -15,27 +15,30 @@
 // Header include
 #include "Utils/LogMessage.hpp"
 
-namespace PVTPackage {
-LogMessage* LogMessage::instance()
+namespace PVTPackage
 {
-  return instance(VerbosityLevelLogFile::INFO);
+
+LogMessage * LogMessage::instance()
+{
+  return instance( VerbosityLevelLogFile::INFO );
 }
 
-LogMessage* LogMessage::instance(VerbosityLevelLogFile lvl)
+LogMessage * LogMessage::instance( VerbosityLevelLogFile level )
 {
-  static LogMessage s_instance(lvl);
+  static LogMessage s_instance( level );
   return &s_instance;
 }
 
 LogMessage::LogMessage()
 {
-  m_message_level = VerbosityLevelLogFile::INFO;
+  m_messageLevel = VerbosityLevelLogFile::INFO;
   m_message << "";
 }
 
-LogMessage::LogMessage(VerbosityLevelLogFile lvl)
+LogMessage::LogMessage( VerbosityLevelLogFile level )
 {
-  m_message_level = lvl;
+  m_messageLevel = level;
   m_message << "";
 }
+
 }

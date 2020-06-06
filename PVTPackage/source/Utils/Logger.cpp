@@ -12,124 +12,154 @@
  * ------------------------------------------------------------------------------------------------------------
  */
 
-// Header include
-#include <iomanip>
 #include "Logger.hpp"
+
+#include <iomanip>
 
 #define PVT_LOG_LEVEL_FILE "DEBUG"
 #define PVT_LOG_LEVEL_SCREEN "ALL"
 #define PVT_LOG_FILE_NAME "pvt.log"
 
-namespace PVTPackage {
-
-Logger* Logger::instance()
+namespace PVTPackage
 {
-  static Logger s_instance(PVT_LOG_LEVEL_FILE, PVT_LOG_FILE_NAME, PVT_LOG_LEVEL_SCREEN);
+
+Logger * Logger::instance()
+{
+  static Logger s_instance( PVT_LOG_LEVEL_FILE, PVT_LOG_FILE_NAME, PVT_LOG_LEVEL_SCREEN );
   return &s_instance;
 }
 
-Logger::Logger(std::string LevelLogFile, std::string file_name, std::string LevelScreen)
+Logger::Logger( std::string levelLogfile,
+                std::string fileName,
+                std::string levelScreen )
 {
 
   //Log file
-  if (LevelLogFile == "ERROR")
-    m_log_level = VerbosityLevelLogFile::ERROR;
-  if (LevelLogFile == "WARNING")
-    m_log_level = VerbosityLevelLogFile::WARNING;
-  if (LevelLogFile == "INFO")
-    m_log_level = VerbosityLevelLogFile::INFO;
-  if (LevelLogFile == "DEBUG")
-    m_log_level = VerbosityLevelLogFile::DEBUG;
+  if( levelLogfile == "ERROR" )
+  {
+    m_logLevel = VerbosityLevelLogFile::ERROR;
+  }
+  if( levelLogfile == "WARNING" )
+  {
+    m_logLevel = VerbosityLevelLogFile::WARNING;
+  }
+  if( levelLogfile == "INFO" )
+  {
+    m_logLevel = VerbosityLevelLogFile::INFO;
+  }
+  if( levelLogfile == "DEBUG" )
+  {
+    m_logLevel = VerbosityLevelLogFile::DEBUG;
+  }
 
-  m_logfile.open(file_name);
+  m_logfile.open( fileName );
 
   //Screen
-  if (LevelScreen == "SILENT")
-    m_screen_level = VerbosityLevelScreen::SILENT;
-  if (LevelScreen == "BRIEF")
-    m_screen_level = VerbosityLevelScreen::BRIEF;
-  if (LevelScreen == "ALL")
-    m_screen_level = VerbosityLevelScreen::ALL;
+  if( levelScreen == "SILENT" )
+  {
+    m_screenLevel = VerbosityLevelScreen::SILENT;
+  }
+  if( levelScreen == "BRIEF" )
+  {
+    m_screenLevel = VerbosityLevelScreen::BRIEF;
+  }
+  if( levelScreen == "ALL" )
+  {
+    m_screenLevel = VerbosityLevelScreen::ALL;
+  }
 
 }
 
-void Logger::LogERROR(std::string msg)
+void Logger::LogERROR( std::string msg )
 {
 
   std::string message = "[" + get_time() + "] ERROR:   " + msg.c_str();
-  write_file(message);
-  if (m_screen_level >= VerbosityLevelScreen::BRIEF)
-    write_screen("ERROR:   " + msg + " in file " + __FILE__ + " line " + std::to_string(__LINE__));
+  write_file( message );
+  if( m_screenLevel >= VerbosityLevelScreen::BRIEF )
+  {
+    write_screen( "ERROR:   " + msg + " in file " + __FILE__ + " line " + std::to_string( __LINE__ ) );
+  }
   abort();
-
 }
 
-void Logger::LogWARNING(std::string msg)
+void Logger::LogWARNING( std::string msg )
 {
 
   std::string message = "[" + get_time() + "] WARNING: " + msg.c_str();
-  if (m_log_level >= VerbosityLevelLogFile::WARNING)
-    write_file(message);
-  if (m_screen_level >= VerbosityLevelScreen::BRIEF)
-    write_screen("WARNING: " + msg);
+  if( m_logLevel >= VerbosityLevelLogFile::WARNING )
+  {
+    write_file( message );
+  }
+  if( m_screenLevel >= VerbosityLevelScreen::BRIEF )
+  {
+    write_screen( "WARNING: " + msg );
+  }
 
 }
 
-void Logger::LogINFO(std::string msg)
+void Logger::LogINFO( std::string msg )
 {
 
   std::string message = "[" + get_time() + "] INFO:    " + msg.c_str();
-  if (m_log_level >= VerbosityLevelLogFile::INFO)
-    write_file(message);
-  if (m_screen_level >= VerbosityLevelScreen::BRIEF)
-    write_screen(msg);
+  if( m_logLevel >= VerbosityLevelLogFile::INFO )
+  {
+    write_file( message );
+  }
+  if( m_screenLevel >= VerbosityLevelScreen::BRIEF )
+  {
+    write_screen( msg );
+  }
 }
 
-void Logger::LogDEBUG(std::string msg)
+void Logger::LogDEBUG( std::string msg )
 {
   std::string message = "[" + get_time() + "] DEBUG:   " + msg.c_str();
-  if (m_log_level >= VerbosityLevelLogFile::DEBUG)
-    write_file(message);
-  if (m_screen_level >= VerbosityLevelScreen::ALL)
-    write_screen(msg);
+  if( m_logLevel >= VerbosityLevelLogFile::DEBUG )
+  {
+    write_file( message );
+  }
+  if( m_screenLevel >= VerbosityLevelScreen::ALL )
+  {
+    write_screen( msg );
+  }
 }
 
-void Logger::Log(LogMessage& msg)
+void Logger::Log( LogMessage & msg )
 {
   std::string str_msg = msg.getMessage();
   VerbosityLevelLogFile MessageLevel = msg.getMessageLevel();
-  if (MessageLevel == VerbosityLevelLogFile::ERROR)
+  if( MessageLevel == VerbosityLevelLogFile::ERROR )
   {
-    LogERROR(str_msg);
+    LogERROR( str_msg );
   }
-  else if (MessageLevel == VerbosityLevelLogFile::WARNING)
+  else if( MessageLevel == VerbosityLevelLogFile::WARNING )
   {
-    LogWARNING(str_msg);
+    LogWARNING( str_msg );
   }
-  else if (MessageLevel == VerbosityLevelLogFile::DEBUG)
+  else if( MessageLevel == VerbosityLevelLogFile::DEBUG )
   {
-    LogDEBUG(str_msg);
+    LogDEBUG( str_msg );
   }
-  else if (MessageLevel == VerbosityLevelLogFile::INFO)
+  else if( MessageLevel == VerbosityLevelLogFile::INFO )
   {
-    LogINFO(str_msg);
+    LogINFO( str_msg );
   }
 }
 
 std::string Logger::get_time()
 {
   std::stringstream res;
-  time_t t = time(nullptr);
-  struct tm *now;
+  time_t t = time( nullptr );
+  struct tm * now;
 #ifdef WIN32
   struct tm now_st;
   now = &now_st;
   localtime_s(now, &t);
 #else
-  now = localtime(&t);
+  now = localtime( &t );
 #endif
 //  res << std::put_time(now, "%Y-%m-%d %H:%M:%S");
-  res << (now->tm_year + 1900) << "-" << (now->tm_mon + 1) << "-" << (now->tm_mday) << "-" << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec;
+  res << ( now->tm_year + 1900 ) << "-" << ( now->tm_mon + 1 ) << "-" << ( now->tm_mday ) << "-" << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec;
   return res.str();
 }
 }
