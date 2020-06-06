@@ -16,6 +16,7 @@
 
 #include "MultiphaseSystem/ComponentProperties.hpp"
 #include "MultiphaseSystem/MultiphaseSystemProperties/CompositionalMultiphaseSystemProperties.hpp"
+#include "MultiphaseSystem/PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
 
 #include "pvt/pvt.hpp"
 
@@ -28,29 +29,37 @@ class CompositionalFlash
 {
 public:
 
-  explicit CompositionalFlash( const ComponentProperties & componentProperties );
+  CompositionalFlash( const std::vector< pvt::PHASE_TYPE > & phases,
+                      const std::vector< pvt::EOS_TYPE > & eosTypes,
+                      ComponentProperties const & componentProperties );
 
 protected:
-
-  const ComponentProperties m_ComponentsProperties;
 
   static double solveRachfordRiceEquation( const std::vector< double > & kValues,
                                            const std::vector< double > & feed,
                                            const std::list< std::size_t > & nonZeroIndex );
 
-  static std::vector< double > computeWilsonGasLiquidKvalue( const ComponentProperties & componentsProperties,
-                                                             double pressure,
-                                                             double temperature );
+  // It may be possible to redefine these static functions as members in order to hide componentsProperties arg.
+  std::vector< double > computeWilsonGasLiquidKvalue( double pressure,
+                                                      double temperature ) const;
 
-  static std::vector< double > computeWaterGasKvalue( const ComponentProperties & componentsProperties,
-                                                      double pressure,
-                                                      double temperature );
+  std::vector< double > computeWaterGasKvalue( double pressure,
+                                               double temperature ) const;
 
-  static std::vector< double > computeWaterOilKvalue( const ComponentProperties & componentsProperties,
-                                                      double pressure,
-                                                      double temperature );
+  std::vector< double > computeWaterOilKvalue( double pressure,
+                                               double temperature ) const;
+
+  const CubicEoSPhaseModel & getCubicEoSPhaseModel( const pvt::PHASE_TYPE & phase ) const;
+
+  std::size_t getNComponents() const;
+
+  std::size_t getWaterIndex() const;
 
 private:
+
+  std::map< pvt::PHASE_TYPE, CubicEoSPhaseModel > m_phaseModels;
+
+  const ComponentProperties m_componentProperties;
 
   static double RachfordRiceFunction( const std::vector< double > & kValues,
                                       const std::vector< double > & feed,

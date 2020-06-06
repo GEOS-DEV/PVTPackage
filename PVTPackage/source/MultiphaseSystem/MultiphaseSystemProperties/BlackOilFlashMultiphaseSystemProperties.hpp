@@ -16,9 +16,6 @@
 #define PVTPACKAGE_BLACKOILFLASHMULTIPHASESYSTEMPROPERTIES_HPP
 
 #include "MultiphaseSystem/MultiphaseSystemProperties/BlackOilDeadOilMultiphaseSystemProperties.hpp"
-#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_OilModel.hpp"
-#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_GasModel.hpp"
-#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
 
 #include "pvt/pvt.hpp"
 
@@ -31,22 +28,7 @@ class BlackOilFlashMultiphaseSystemProperties : public BlackOilDeadOilMultiphase
 {
 public:
 
-  BlackOilFlashMultiphaseSystemProperties( std::size_t nComponents,
-                                           const std::vector< std::vector< double > > & PVTO,
-                                           double oilSurfaceMassDensity,
-                                           double oilSurfaceMolecularWeight,
-                                           const std::vector< std::vector< double > > & PVTG,
-                                           double gasSurfaceMassDensity,
-                                           double gasSurfaceMolecularWeight,
-                                           const std::vector< double > & PVTW,
-                                           double waterSurfaceMassDensity,
-                                           double waterSurfaceMolecularWeight );
-
-  BlackOil_OilModel const & getOilPhaseModel() const;
-
-  BlackOil_GasModel const & getGasPhaseModel() const;
-
-  BlackOil_WaterModel const & getWaterPhaseModel() const;
+  BlackOilFlashMultiphaseSystemProperties( std::size_t nComponents );
 
   void setOilFraction( double const & fraction );
 
@@ -67,11 +49,6 @@ public:
 private:
 
   std::map< pvt::PHASE_TYPE, pvt::VectorPropertyAndDerivatives< double > > m_lnFugacity;
-
-  // TODO better separate data and algorithm
-  BlackOil_OilModel m_oilPhaseModel;
-  BlackOil_GasModel m_gasPhaseModel;
-  BlackOil_WaterModel m_waterPhaseModel;
 };
 
 }

@@ -33,7 +33,7 @@ ComponentProperties::ComponentProperties( const std::size_t & nComponents,
     Omega( omega ),
     BIC( std::vector< std::vector< double > >( NComponents, std::vector< double >( NComponents, 0 ) ) ),
     VolumeShift( std::vector< std::vector< double > >( NComponents, std::vector< double >( 2, 0 ) ) ),
-    WaterIndex( std::size_t( -1 ) )
+    WaterIndex( std::size_t( -1 ) ) // FIXME use a lambda and declare WaterIndex const.
 {
   ASSERT( ( nComponents == labels.size() ) && ( nComponents == mw.size() ) && ( nComponents == tc.size() )
           && ( nComponents == pc.size() ) && ( nComponents == omega.size() ), "Dimension Mismatch." );

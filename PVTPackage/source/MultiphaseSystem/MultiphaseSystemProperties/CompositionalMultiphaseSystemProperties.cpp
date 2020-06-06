@@ -18,25 +18,15 @@ namespace PVTPackage
 {
 
 CompositionalMultiphaseSystemProperties::CompositionalMultiphaseSystemProperties( const std::vector< pvt::PHASE_TYPE > & phases,
-                                                                                  const std::vector< pvt::EOS_TYPE > & eosTypes,
-                                                                                  ComponentProperties const & componentProperties )
+                                                                                  std::size_t nComponents )
   :
-  FactorMultiphaseSystemProperties( phases, componentProperties.NComponents ),
-  m_componentProperties( componentProperties )
+  FactorMultiphaseSystemProperties( phases, nComponents )
 {
-  const std::size_t nComponents = m_componentProperties.NComponents;
   for( pvt::PHASE_TYPE pt: phases )
   {
     // FIXME not so sure that all models use those two following data.
     m_lnFugacity.insert( { pt, std::vector< double >( nComponents, 0. ) } );
     m_compressibilityFactor.insert( { pt, 0. } );
-  }
-
-  for( std::size_t i = 0; i != phases.size(); ++i )
-  {
-    m_phaseModels.insert(
-      { phases[i], CubicEoSPhaseModel( m_componentProperties, eosTypes[i], phases[i] ) }
-    );
   }
 }
 
@@ -48,16 +38,6 @@ double const & CompositionalMultiphaseSystemProperties::getTemperature() const
 void CompositionalMultiphaseSystemProperties::setTemperature( double const & temperature )
 {
   m_temperature = temperature;
-}
-
-const ComponentProperties & CompositionalMultiphaseSystemProperties::getComponentProperties() const
-{
-  return m_componentProperties;
-}
-
-const CubicEoSPhaseModel & CompositionalMultiphaseSystemProperties::getCubicEoSPhaseModel( pvt::PHASE_TYPE const & phase ) const
-{
-  return m_phaseModels.at( phase );
 }
 
 void CompositionalMultiphaseSystemProperties::setOilMoleComposition( std::vector< double > const & moleComposition )

@@ -14,16 +14,29 @@
 
 #include "BlackOilFlash.hpp"
 
-#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_OilModel.hpp"
-#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_GasModel.hpp"
-#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
-
 #include <cmath>
 
 namespace PVTPackage
 {
 
-bool BlackOilFlash::computeEquilibrium( BlackOilFlashMultiphaseSystemProperties & sysProps )
+BlackOilFlash::BlackOilFlash( const std::vector< std::vector< double > > & PVTO,
+                              double oilSurfaceMassDensity,
+                              double oilSurfaceMolecularWeight,
+                              const std::vector< std::vector< double > > & PVTG,
+                              double gasSurfaceMassDensity,
+                              double gasSurfaceMolecularWeight,
+                              const std::vector< double > & PVTW,
+                              double waterSurfaceMassDensity,
+                              double waterSurfaceMolecularWeight )
+  :
+  m_oilPhaseModel( PVTO, oilSurfaceMassDensity, oilSurfaceMolecularWeight ),
+  m_gasPhaseModel( PVTG, gasSurfaceMassDensity, gasSurfaceMolecularWeight ),
+  m_waterPhaseModel( PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight )
+{
+
+}
+
+bool BlackOilFlash::computeEquilibrium( BlackOilFlashMultiphaseSystemProperties & sysProps ) const
 {
   // FIXME hard coded indices everywhere.
   const auto & pressure = sysProps.getPressure();
@@ -31,19 +44,15 @@ bool BlackOilFlash::computeEquilibrium( BlackOilFlashMultiphaseSystemProperties 
   const std::vector< double > & feed = sysProps.getFeed();
   const double zo = feed[0], zg = feed[1], zw = feed[2];
 
-  const BlackOil_OilModel & oilPhaseModel = sysProps.getOilPhaseModel();
-  const BlackOil_GasModel & gasPhaseModel = sysProps.getGasPhaseModel();
-  const BlackOil_WaterModel & waterPhaseModel = sysProps.getWaterPhaseModel();
-
   // OIL
-  const double & oilSurfaceMoleDensity = oilPhaseModel.getSurfaceMoleDensity();
-  const double & oilSurfaceMassDensity = oilPhaseModel.getSurfaceMassDensity();
-  const double rsSat = oilPhaseModel.computeRs( pressure );
+  const double & oilSurfaceMoleDensity = m_oilPhaseModel.getSurfaceMoleDensity();
+  const double & oilSurfaceMassDensity = m_oilPhaseModel.getSurfaceMassDensity();
+  const double rsSat = m_oilPhaseModel.computeRs( pressure );
 
   // GAS
-  const double & gasSurfaceMoleDensity = gasPhaseModel.getSurfaceMoleDensity();
-  const double & gasSurfaceMassDensity = gasPhaseModel.getSurfaceMassDensity();
-  const double rvSat = gasPhaseModel.computeRv( pressure );
+  const double & gasSurfaceMoleDensity = m_gasPhaseModel.getSurfaceMoleDensity();
+  const double & gasSurfaceMassDensity = m_gasPhaseModel.getSurfaceMassDensity();
+  const double rvSat = m_gasPhaseModel.computeRv( pressure );
 
   // Phase State - Negative flash type
   double const Ko = rvSat * ( oilSurfaceMoleDensity + gasSurfaceMoleDensity * rsSat ) / ( gasSurfaceMoleDensity + oilSurfaceMoleDensity * rvSat );
@@ -61,7 +70,7 @@ bool BlackOilFlash::computeEquilibrium( BlackOilFlashMultiphaseSystemProperties 
     const std::vector< double > oilMoleComposition{ tmpOil, 1. - tmpOil, 0. }; // FIXME always 0.
     sysProps.setOilMoleComposition( oilMoleComposition );
 
-    auto const oilSaturatedProperties = oilPhaseModel.computeSaturatedProperties( pressure, gasSurfaceMoleDensity, gasSurfaceMassDensity );
+    auto const oilSaturatedProperties = m_oilPhaseModel.computeSaturatedProperties( pressure, gasSurfaceMoleDensity, gasSurfaceMassDensity );
     sysProps.setOilModelProperties( oilSaturatedProperties );
 
     // GAS
@@ -69,7 +78,7 @@ bool BlackOilFlash::computeEquilibrium( BlackOilFlashMultiphaseSystemProperties 
     const std::vector< double > gasMoleComposition{ 1. - tmpGas, tmpGas, 0. }; // FIXME always 0.
     sysProps.setGasMoleComposition( gasMoleComposition );
 
-    auto const gasSaturatedProperties = gasPhaseModel.computeSaturatedProperties( pressure, oilSurfaceMoleDensity, oilSurfaceMassDensity );
+    auto const gasSaturatedProperties = m_gasPhaseModel.computeSaturatedProperties( pressure, oilSurfaceMoleDensity, oilSurfaceMassDensity );
     sysProps.setGasModelProperties( gasSaturatedProperties );
 
     // Oil ln fugacity
@@ -103,7 +112,7 @@ bool BlackOilFlash::computeEquilibrium( BlackOilFlashMultiphaseSystemProperties 
     // OIL
     std::vector< double > const oilMoleComposition{ zo, zg, 0. }; // FIXME always 0.
     sysProps.setOilMoleComposition( oilMoleComposition );
-    auto const oilUnderSaturatedProperties = oilPhaseModel.computeUnderSaturatedProperties( pressure, oilMoleComposition, gasSurfaceMoleDensity, gasSurfaceMassDensity );
+    auto const oilUnderSaturatedProperties = m_oilPhaseModel.computeUnderSaturatedProperties( pressure, oilMoleComposition, gasSurfaceMoleDensity, gasSurfaceMassDensity );
     sysProps.setOilModelProperties( oilUnderSaturatedProperties );
 
     // LN FUGACITIES
@@ -113,7 +122,7 @@ bool BlackOilFlash::computeEquilibrium( BlackOilFlashMultiphaseSystemProperties 
   }
 
   // Water
-  auto const waterProperties = waterPhaseModel.computeProperties( pressure );
+  auto const waterProperties = m_waterPhaseModel.computeProperties( pressure );
   sysProps.setWaterModelProperties( waterProperties );
   // FIXME be sure that waterComp = {0, 0, 1} is done...
 

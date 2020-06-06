@@ -25,15 +25,6 @@ enum class PHASE_STATE : int
   GAS = 6, OIL = 5, WATER = 4, OIL_GAS = 3, GAS_WATER = 2, OIL_WATER = 1, OIL_GAS_WATER = 0, UNKNOWN = -1
 };
 
-struct EnumClassHash
-{
-  template< typename T >
-  std::size_t operator()( T t ) const
-  {
-    return static_cast<int>(t);
-  }
-};
-
 const std::unordered_map< std::vector< bool >, PHASE_STATE > PhaseStateMap =
   {
     { { true,  true,  true },  PHASE_STATE::OIL_GAS_WATER },

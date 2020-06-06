@@ -31,7 +31,7 @@ public:
 
   static std::unique_ptr< BlackOilMultiphaseSystem > build( const std::vector< pvt::PHASE_TYPE > & phases,
                                                             const std::vector< std::string > & tableFileNames,
-                                                            const std::vector< double > & surfaceDensities,
+                                                            const std::vector< double > & surfaceMassDensities,
                                                             const std::vector< double > & molarWeights );
 
   void Update( double pressure,

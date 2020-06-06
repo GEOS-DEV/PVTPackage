@@ -50,8 +50,8 @@ TrivialMultiphaseSystem::TrivialMultiphaseSystem( const std::vector< pvt::PHASE_
                                                   const std::vector< pvt::EOS_TYPE > & eosTypes,
                                                   const ComponentProperties & componentProperties )
   :
-  m_trivialFlash( componentProperties ),
-  m_tfmsp( phases, eosTypes, componentProperties )
+  m_trivialFlash( phases, eosTypes, componentProperties ),
+  m_tfmsp( phases, componentProperties.NComponents )
 {
 
 }

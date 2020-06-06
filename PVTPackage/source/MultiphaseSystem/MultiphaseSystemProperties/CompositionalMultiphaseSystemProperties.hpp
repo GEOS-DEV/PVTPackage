@@ -16,7 +16,6 @@
 #define PVTPACKAGE_COMPOSITIONALMULTIPHASESYSTEMPROPERTIES_HPP
 
 #include "MultiphaseSystem/MultiphaseSystemProperties/FactorMultiphaseSystemProperties.hpp"
-#include "MultiphaseSystem/ComponentProperties.hpp"
 
 #include "MultiphaseSystem/PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
 
@@ -33,13 +32,7 @@ class CompositionalMultiphaseSystemProperties : public FactorMultiphaseSystemPro
 public:
 
   CompositionalMultiphaseSystemProperties( const std::vector< pvt::PHASE_TYPE > & phases,
-                                           const std::vector< pvt::EOS_TYPE > & eosTypes,
-                                           ComponentProperties const & componentProperties );
-
-  const ComponentProperties & getComponentProperties() const;
-
-  // FIXME TODO This should not be there (data), but part of Flash (algorithm)
-  const CubicEoSPhaseModel & getCubicEoSPhaseModel( const pvt::PHASE_TYPE & phase ) const;
+                                           std::size_t nComponents );
 
   double const & getTemperature() const;
 
@@ -62,7 +55,7 @@ public:
    * compressibility factor and ln fugacity coefficients.
    */
   void setModelProperties( const pvt::PHASE_TYPE & phase,
-                           const CubicEoSPhaseModel::Properties & properties );
+                           const CubicEoSPhaseModel::Properties & properties ); // FIXME consider moving the definition of this struct for dependencies
 
   void setPhaseMoleFractionDT( pvt::PHASE_TYPE const & phase,
                                double const & value );
@@ -85,8 +78,6 @@ protected:
   std::map< pvt::PHASE_TYPE, std::vector< double > > m_lnFugacity;
 
   double m_temperature;
-  ComponentProperties m_componentProperties;
-  std::map< pvt::PHASE_TYPE, CubicEoSPhaseModel > m_phaseModels;
 };
 
 }

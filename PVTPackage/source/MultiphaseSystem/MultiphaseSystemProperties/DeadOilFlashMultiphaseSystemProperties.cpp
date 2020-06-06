@@ -21,21 +21,9 @@
 namespace PVTPackage
 {
 
-DeadOilFlashMultiphaseSystemProperties::DeadOilFlashMultiphaseSystemProperties( std::size_t nComponents,
-                                                                                std::vector< std::vector< double > > const & PVDO,
-                                                                                double oilSurfaceMassDensity,
-                                                                                double oilSurfaceMolecularWeight,
-                                                                                std::vector< std::vector< double > > const & PVDG,
-                                                                                double gasSurfaceMassDensity,
-                                                                                double gasSurfaceMolecularWeight,
-                                                                                std::vector< double > const & PVTW,
-                                                                                double waterSurfaceMassDensity,
-                                                                                double waterSurfaceMolecularWeight )
+DeadOilFlashMultiphaseSystemProperties::DeadOilFlashMultiphaseSystemProperties( std::size_t nComponents )
   :
-  BlackOilDeadOilMultiphaseSystemProperties( nComponents ),
-  m_oilPhaseModel( pvt::PHASE_TYPE::OIL, PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight ),
-  m_gasPhaseModel( pvt::PHASE_TYPE::GAS, PVDG, gasSurfaceMassDensity, gasSurfaceMolecularWeight ),
-  m_waterPhaseModel( PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight )
+  BlackOilDeadOilMultiphaseSystemProperties( nComponents )
 {
   for( pvt::PHASE_TYPE pt: getPhases() )
   {
@@ -64,21 +52,6 @@ double DeadOilFlashMultiphaseSystemProperties::getGasPhaseMoleFraction() const
 double DeadOilFlashMultiphaseSystemProperties::getWaterPhaseMoleFraction() const
 {
   return m_phaseMoleFraction.at( pvt::PHASE_TYPE::LIQUID_WATER_RICH ).value;
-}
-
-DeadOil_PhaseModel const & DeadOilFlashMultiphaseSystemProperties::getOilPhaseModel() const
-{
-  return m_oilPhaseModel;
-}
-
-DeadOil_PhaseModel const & DeadOilFlashMultiphaseSystemProperties::getGasPhaseModel() const
-{
-  return m_gasPhaseModel;
-}
-
-BlackOil_WaterModel const & DeadOilFlashMultiphaseSystemProperties::getWaterPhaseModel() const
-{
-  return m_waterPhaseModel;
 }
 
 void DeadOilFlashMultiphaseSystemProperties::setFeed( std::vector< double > const & feed )

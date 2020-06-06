@@ -30,10 +30,10 @@ DeadOilMultiphaseSystem::DeadOilMultiphaseSystem( const std::vector< pvt::PHASE_
                                                   double waterSurfaceMassDensity,
                                                   double waterSurfaceMolecularWeight )
   :
-  m_dofmsp( phases.size(),
-            PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight,
-            PVDG, gasSurfaceMassDensity, gasSurfaceMolecularWeight,
-            PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight )
+  m_deadOilFlash( PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight,
+                  PVDG, gasSurfaceMassDensity, gasSurfaceMolecularWeight,
+                  PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight ),
+  m_dofmsp( phases.size() )
 {
 
 }

@@ -16,8 +16,6 @@
 #define PVTPACKAGE_FREEWATERFLASHMULTIPHASESYSTEMPROPERTIES_HPP
 
 #include "MultiphaseSystem/MultiphaseSystemProperties/CompositionalMultiphaseSystemProperties.hpp"
-#include "MultiphaseSystem/ComponentProperties.hpp"
-#include "MultiphaseSystem/PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
 
 #include "pvt/pvt.hpp"
 
@@ -31,8 +29,7 @@ class FreeWaterFlashMultiphaseSystemProperties final : public CompositionalMulti
 public:
 
   FreeWaterFlashMultiphaseSystemProperties( const std::vector< pvt::PHASE_TYPE > & phases,
-                                            const std::vector< pvt::EOS_TYPE > & eosTypes,
-                                            const ComponentProperties & cp );
+                                            std::size_t nComponents );
 
   void setWaterMoleComposition( std::vector< double > const & moleComposition );
 

@@ -82,6 +82,11 @@ set( PVTPackage_target PVTPackage )
 
 set( PVTPackage_dependencies "" )
 
+if( ENABLE_PVTPACKAGE_TESTS )
+  add_subdirectory( refactor )
+  set( PVTPackage_dependencies ${PVTPackage_dependencies} PVTPackageDump )
+endif()
+
 message("adding PVTPackage library")
 blt_add_library(NAME       ${PVTPackage_target}
                 SOURCES    ${PVTPackage_sources}
