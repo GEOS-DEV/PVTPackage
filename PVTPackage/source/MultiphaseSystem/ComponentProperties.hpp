@@ -16,6 +16,9 @@
 #include "Utils/Assert.hpp"
 #include  <vector>
 
+namespace PVTPackage
+{
+
 struct ComponentProperties
 {
   ComponentProperties(size_t n_components, std::vector<std::string> labels, std::vector<double> mw, std::vector<double> tc,
@@ -63,4 +66,4 @@ struct ComponentProperties
   size_t WaterIndex;
 };
 
-
+} // end of namespace PVTPackage
