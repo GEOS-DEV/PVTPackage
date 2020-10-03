@@ -43,12 +43,12 @@ public:
   void Update(double pressure, double temperature, std::vector<double> feed);
 
   //--Getters
-  const MultiphaseSystemProperties& get_MultiphaseSystemProperties() const
+  const MultiphaseSystemProperties& getMultiphaseSystemProperties() const
   {
     return m_MultiphaseProperties;
   }
 
-  const PhaseProperties& get_PhaseProperties(PHASE_TYPE phase_type)
+  const PhaseProperties& getPhaseProperties( PHASE_TYPE phase_type)
   {
     return m_MultiphaseProperties.PhasesProperties.at(phase_type);
   }

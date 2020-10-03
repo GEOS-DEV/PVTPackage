@@ -61,8 +61,8 @@ int main()
 
   end = std::chrono::system_clock::now();
 
-  auto PhaseRepartitionProperties = PVTSystem.get_MultiphaseSystemProperties();
-  auto OilProperties = PVTSystem.get_PhaseProperties(PHASE_TYPE::OIL);
+  auto PhaseRepartitionProperties = PVTSystem.getMultiphaseSystemProperties();
+  auto OilProperties = PVTSystem.getPhaseProperties( PHASE_TYPE::OIL );
 
   double elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
