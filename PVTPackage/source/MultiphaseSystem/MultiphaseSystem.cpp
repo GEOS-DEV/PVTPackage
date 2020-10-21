@@ -32,7 +32,7 @@ bool MultiphaseSystem::hasSucceeded() const
  * @param reference Reference solution.
  * @param variation Variation solution.
  * @param delta Finite difference step.
- * @param consumer Callback that will be called with the computed derivatives.
+ * @param store Callback that will be called with the computed derivatives.
  *
  * Generic functions (pure code factorisation) that evaluates the derivatives
  * through finite differences process between reference @p sysProps and variation @p diffed.
@@ -42,7 +42,7 @@ template< class C >
 void updateDerivativeFiniteDifference( const FactorMultiphaseSystemProperties & reference,
                                        const FactorMultiphaseSystemProperties & variation,
                                        double delta,
-                                       const C & consumer )
+                                       const C & store )
 {
   for( const pvt::PHASE_TYPE & phase : reference.getPhases() )
   {
@@ -53,16 +53,16 @@ void updateDerivativeFiniteDifference( const FactorMultiphaseSystemProperties & 
 
     std::vector< double > dMoleComposition;
     {
-      const std::vector< double > & moleComposition = reference.getMoleComposition( phase ).value;
-      const std::vector< double > & diffedMoleComposition = variation.getMoleComposition( phase ).value;
-      dMoleComposition.resize( moleComposition.size() );
-      for( std::size_t i = 0; i < moleComposition.size(); ++i )
+      const std::vector< double > & refMoleComposition = reference.getMoleComposition( phase ).value;
+      const std::vector< double > & varMoleComposition = variation.getMoleComposition( phase ).value;
+      dMoleComposition.resize( refMoleComposition.size() );
+      for( std::size_t i = 0; i < refMoleComposition.size(); ++i )
       {
-        dMoleComposition[i] = ( diffedMoleComposition[i] - moleComposition[i] ) / delta;
+        dMoleComposition[i] = ( varMoleComposition[i] - refMoleComposition[i] ) / delta;
       }
     }
 
-    consumer( phase, dPhaseMoleFraction, dMolecularWeight, dMoleDensity, dMassDensity, dMoleComposition );
+    store( phase, dPhaseMoleFraction, dMolecularWeight, dMoleDensity, dMassDensity, dMoleComposition );
   }
 }
 
@@ -92,34 +92,21 @@ void MultiphaseSystem::updateDerivativeDZFiniteDifference( std::size_t iComponen
                                                            FactorMultiphaseSystemProperties const & diffed,
                                                            double dz )
 {
-  for( const pvt::PHASE_TYPE & phase : sysProps.getPhases() )
+  auto callBack = [&sysProps, &iComponent]( pvt::PHASE_TYPE phase,
+                                            double dPhaseMoleFraction,
+                                            double dMolecularWeight,
+                                            double dMoleDensity,
+                                            double dMassDensity,
+                                            const std::vector< double > & dMoleComposition )
   {
-    {
-      const double tmp = ( diffed.getPhaseMoleFraction( phase ).value - sysProps.getPhaseMoleFraction( phase ).value ) / dz;
-      sysProps.setPhaseMoleFractionDZ( phase, iComponent, tmp );
-    }
-    {
-      const double tmp = ( diffed.getMolecularWeight( phase ).value - sysProps.getMolecularWeight( phase ).value ) / dz;
-      sysProps.setMolecularWeightDZ( phase, iComponent, tmp );
-    }
-    {
-      double const tmp = ( diffed.getMoleDensity( phase ).value - sysProps.getMoleDensity( phase ).value ) / dz;
-      sysProps.setMoleDensityDZ( phase, iComponent, tmp );
-    }
-    {
-      double const tmp = ( diffed.getMassDensity( phase ).value - sysProps.getMassDensity( phase ).value ) / dz;
-      sysProps.setMassDensityDZ( phase, iComponent, tmp );
-    }
-    {
-      const std::size_t nComponents = sysProps.getFeed().size(); // FIXME add a nComponents getter...
-      std::vector< double > dMole( nComponents );
-      for( std::size_t i = 0; i < nComponents; ++i )
-      {
-        dMole[i] = ( diffed.getMoleComposition( phase ).value[i] - sysProps.getMoleComposition( phase ).value[i] ) / dz;
-      }
-      sysProps.setMoleCompositionDZ( phase, iComponent, dMole );
-    }
-  }
+    sysProps.setPhaseMoleFractionDZ( phase, iComponent, dPhaseMoleFraction );
+    sysProps.setMolecularWeightDZ( phase, iComponent, dMolecularWeight );
+    sysProps.setMoleDensityDZ( phase, iComponent, dMoleDensity );
+    sysProps.setMassDensityDZ( phase, iComponent, dMassDensity );
+    sysProps.setMoleCompositionDZ( phase, iComponent, dMoleComposition );
+  };
+
+  updateDerivativeFiniteDifference( sysProps, diffed, dz, callBack );
 }
 
 void TableReader::readTable( std::string const & fileName,

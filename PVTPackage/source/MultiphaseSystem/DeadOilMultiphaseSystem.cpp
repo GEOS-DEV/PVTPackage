@@ -47,7 +47,7 @@ void DeadOilMultiphaseSystem::Update( double pressure,
   m_dofmsp.setPressure( pressure );
   m_dofmsp.setFeed( feed );
 
-  const bool result = computeDerivativesNoTemperature( m_deadOilFlash, m_dofmsp );
+  const bool result = computeEquilibriumAndDerivativesNoTemperature( m_deadOilFlash, m_dofmsp );
 
   m_stateIndicator = result ? State::SUCCESS : State::NOT_CONVERGED;
 }

@@ -69,7 +69,7 @@ void FreeWaterMultiphaseSystem::Update( double pressure,
   m_fwfmsp.setPressure( pressure );
   m_fwfmsp.setFeed( feed );
 
-  const bool result = computeDerivativesWithTemperature( m_freeWaterFlash, m_fwfmsp );
+  const bool result = computeEquilibriumAndDerivativesWithTemperature( m_freeWaterFlash, m_fwfmsp );
 
   m_stateIndicator = result ? State::SUCCESS : State::NOT_CONVERGED;
 }

@@ -64,7 +64,7 @@ void TrivialMultiphaseSystem::Update( double pressure,
   m_tfmsp.setTemperature( temperature );
   m_tfmsp.setFeed( feed );
 
-  const bool result = computeDerivativesWithTemperature( m_trivialFlash, m_tfmsp );
+  const bool result = computeEquilibriumAndDerivativesWithTemperature( m_trivialFlash, m_tfmsp );
 
   m_stateIndicator = result ? State::SUCCESS : State::NOT_CONVERGED;
 }

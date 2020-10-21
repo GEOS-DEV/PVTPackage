@@ -55,8 +55,8 @@ protected:
    * @note This function computes the derivatives w.r.t. pressure, components. Not temperature.
    */
   template< class F, class MSP >
-  static bool computeDerivativesNoTemperature( const F & flash,
-                                               MSP & properties )
+  static bool computeEquilibriumAndDerivativesNoTemperature( const F & flash,
+                                                             MSP & properties )
   {
     bool success = flash.computeEquilibrium( properties );
 
@@ -131,10 +131,10 @@ protected:
    * @note This function computes the derivatives w.r.t. pressure, temperature, components.
    */
   template< class F, class MSP >
-  static bool computeDerivativesWithTemperature( const F & flash,
-                                                 MSP & properties )
+  static bool computeEquilibriumAndDerivativesWithTemperature( const F & flash,
+                                                               MSP & properties )
   {
-    bool success = computeDerivativesNoTemperature( flash, properties );
+    bool success = computeEquilibriumAndDerivativesNoTemperature( flash, properties );
 
     double const sqrtPrecision = sqrt( std::numeric_limits< double >::epsilon() );
 

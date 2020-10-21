@@ -64,7 +64,7 @@ void BlackOilMultiphaseSystem::Update( double pressure,
   m_bofmsp.setPressure( pressure );
   m_bofmsp.setFeed( feed );
 
-  const bool res = computeDerivativesNoTemperature( m_blackOilFlash, m_bofmsp );
+  const bool res = computeEquilibriumAndDerivativesNoTemperature( m_blackOilFlash, m_bofmsp );
 
   m_stateIndicator = res ? State::SUCCESS : State::NOT_CONVERGED;
 }

@@ -70,7 +70,7 @@ void NegativeTwoPhaseMultiphaseSystem::Update( double pressure,
   m_ntpfmsp.setPressure( pressure );
   m_ntpfmsp.setFeed( feed );
 
-  const bool result = computeDerivativesWithTemperature( m_negativeTwoPhaseFlash, m_ntpfmsp );
+  const bool result = computeEquilibriumAndDerivativesWithTemperature( m_negativeTwoPhaseFlash, m_ntpfmsp );
 
   m_stateIndicator = result ? State::SUCCESS : State::NOT_CONVERGED;
 }
