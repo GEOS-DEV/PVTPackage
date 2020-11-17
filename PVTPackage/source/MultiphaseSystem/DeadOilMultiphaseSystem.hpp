@@ -13,42 +13,47 @@
  */
 
 #pragma once
+
+#include "MultiphaseSystem/MultiphaseSystemProperties/DeadOilFlashMultiphaseSystemProperties.hpp"
+#include "PhaseSplitModel/DeadOilFlash.hpp"
 #include "MultiphaseSystem/MultiphaseSystem.hpp"
-#include "PhaseSplitModel/BlackOilFlash.hpp"
+
+#include "pvt/pvt.hpp"
+
+#include <vector>
 
 namespace PVTPackage
 {
 
-class DeadOilMultiphaseSystem final : public MultiphaseSystem
+class DeadOilMultiphaseSystem final : public MultiphaseSystem, private TableReader
 {
 public:
 
-  DeadOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
-                          std::vector<std::vector<double>> PVDO,
-                          std::vector<std::vector<double>> PVDG,
-                          std::vector<double> PVTW,
-                          std::vector<double> surface_densities,
-                          std::vector<double> molar_weights);
+  static std::unique_ptr< DeadOilMultiphaseSystem > build( const std::vector< pvt::PHASE_TYPE > & phases,
+                                                           const std::vector< std::string > & tableFileNames,
+                                                           const std::vector< double > & surfaceDensities,
+                                                           const std::vector< double > & molarWeights );
 
-  DeadOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
-                          std::vector<std::string> table_file_names,
-                          std::vector<double> surface_densities,
-                          std::vector<double> molar_weights);
+  virtual void Update( double pressure, double temperature, std::vector< double > feed ) override;
 
-  ~DeadOilMultiphaseSystem() override;
+  const pvt::MultiphaseSystemProperties & getMultiphaseSystemProperties() const override;
 
+private:
 
-protected:
+  DeadOilMultiphaseSystem( const std::vector< pvt::PHASE_TYPE > & phases,
+                           const std::vector< std::vector< double > > & PVDO,
+                           double oilSurfaceMassDensity,
+                           double oilSurfaceMolecularWeight,
+                           const std::vector< std::vector< double > > & PVDG,
+                           double gasSurfaceMassDensity,
+                           double gasSurfaceMolecularWeight,
+                           const std::vector< double > & PVTW,
+                           double waterSurfaceMassDensity,
+                           double waterSurfaceMolecularWeight );
 
-  void CreatePhases(std::vector<PHASE_TYPE> phase_types,
-                    std::vector<std::vector<std::vector<double>>> phase_tables,
-                    std::vector<double> surface_densities,
-                    std::vector<double> molar_weights);
+  DeadOilFlash m_deadOilFlash;
 
-  void ReadTable(const std::string & filename, std::vector<std::vector<double>> & data, unsigned int min_row_len);
-
+  DeadOilFlashMultiphaseSystemProperties m_dofmsp;
 };
 
-
 }
-

@@ -13,9 +13,13 @@
  */
 
 #include "MultiphaseSystem/ComponentProperties.hpp"
+#include "MultiphaseSystem/BlackOilMultiphaseSystem.hpp"
+
+#include "pvt/pvt.hpp"
+
 #include <chrono>
 #include <vector>
-#include "MultiphaseSystem/BlackOilMultiphaseSystem.hpp"
+
 //#include <cstdlib>
 //#include <vld.h> //Visual leak detector
 
@@ -98,7 +102,7 @@ int main(int argc, const char * argv[])
 
   /// ------------------------------  END BO RAW DATASET
   auto PVTSystem = BlackOilMultiphaseSystem(
-    { PHASE_TYPE::OIL, PHASE_TYPE::GAS, PHASE_TYPE::LIQUID_WATER_RICH },
+    { pvt::PHASE_TYPE::OIL, pvt::PHASE_TYPE::GAS, pvt::PHASE_TYPE::LIQUID_WATER_RICH },
     PVTO, PVTG, PVTW,
     { SurfaceOilDensity, SurfaceGasDensity, SurfaceWaterDensity },
     { OilMw, GasMw, WaterMw });
@@ -125,8 +129,8 @@ int main(int argc, const char * argv[])
 
   end = std::chrono::system_clock::now();
 
-  auto PhaseRepartitionProperties = PVTSystem.get_MultiphaseSystemProperties();
-  auto OilProperties = PVTSystem.get_PhaseProperties(PHASE_TYPE::OIL);
+  auto PhaseRepartitionProperties = PVTSystem.getMultiphaseSystemProperties();
+  auto OilProperties = PVTSystem.getPhaseProperties( pvt::PHASE_TYPE::OIL );
 
   double elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>
     (end - start).count();

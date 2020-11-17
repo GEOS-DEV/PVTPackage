@@ -12,4 +12,30 @@
  * ------------------------------------------------------------------------------------------------------------
  */
 
-#include "PVTPackage.hpp"
+#ifndef PVTPACKAGE_BLACKOILDEADOILPROPERTIES_HPP
+#define PVTPACKAGE_BLACKOILDEADOILPROPERTIES_HPP
+
+namespace PVTPackage
+{
+
+/**
+ * @brief Small utility structure for easier output.
+ */
+struct BlackOilDeadOilProperties
+{
+  double massDensity;
+  double moleDensity;
+  double viscosity;
+
+  BlackOilDeadOilProperties( double massDensity_,
+                             double moleDensity_,
+                             double viscosity_ )
+    : massDensity( massDensity_ ),
+      moleDensity( moleDensity_ ),
+      viscosity( viscosity_ )
+  {}
+};
+
+}
+
+#endif //PVTPACKAGE_BLACKOILDEADOILPROPERTIES_HPP

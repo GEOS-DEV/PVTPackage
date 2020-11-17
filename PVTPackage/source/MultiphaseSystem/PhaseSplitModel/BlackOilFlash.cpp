@@ -13,192 +13,111 @@
  */
 
 #include "BlackOilFlash.hpp"
-#include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
+
 #include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_OilModel.hpp"
 #include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_GasModel.hpp"
 #include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
-#include <algorithm>
+
 #include <cmath>
 
 namespace PVTPackage
 {
 
-void BlackOilFlash::set_PhaseState(MultiphaseSystemProperties& out_variables)
+bool BlackOilFlash::computeEquilibrium( BlackOilFlashMultiphaseSystemProperties & sysProps )
 {
+  // FIXME hard coded indices everywhere.
+  const auto & pressure = sysProps.getPressure();
 
-  out_variables.PhaseState = PhaseStateMap.at
-    ({ out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value > 0.,
-       out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0. ,
-       out_variables.PhaseMoleFraction.at(PHASE_TYPE::LIQUID_WATER_RICH).value > 0.
-     });
-}
+  const std::vector< double > & feed = sysProps.getFeed();
+  const double zo = feed[0], zg = feed[1], zw = feed[2];
 
-bool BlackOilFlash::ComputeEquilibrium(MultiphaseSystemProperties& out_variables)
-{
+  const BlackOil_OilModel & oilPhaseModel = sysProps.getOilPhaseModel();
+  const BlackOil_GasModel & gasPhaseModel = sysProps.getGasPhaseModel();
+  const BlackOil_WaterModel & waterPhaseModel = sysProps.getWaterPhaseModel();
 
-  const auto& pressure = out_variables.Pressure;
+  // OIL
+  const double & oilSurfaceMoleDensity = oilPhaseModel.getSurfaceMoleDensity();
+  const double & oilSurfaceMassDensity = oilPhaseModel.getSurfaceMassDensity();
+  const double rsSat = oilPhaseModel.computeRs( pressure );
 
-  // Component index are 0=OIL, 1=GAS, 2=WATER
-  auto& zo = out_variables.Feed[0];
-  auto& zg = out_variables.Feed[1];
-  auto& zw = out_variables.Feed[2];
+  // GAS
+  const double & gasSurfaceMoleDensity = gasPhaseModel.getSurfaceMoleDensity();
+  const double & gasSurfaceMassDensity = gasPhaseModel.getSurfaceMassDensity();
+  const double rvSat = gasPhaseModel.computeRv( pressure );
 
-  const auto& oil_phase_model = std::dynamic_pointer_cast<BlackOil_OilModel>(out_variables.PhaseModels.at(PHASE_TYPE::OIL));
-  const auto& gas_phase_model = std::dynamic_pointer_cast<BlackOil_GasModel>(out_variables.PhaseModels.at(PHASE_TYPE::GAS));
-  const auto& water_phase_model = std::dynamic_pointer_cast<BlackOil_WaterModel>(out_variables.PhaseModels.at(PHASE_TYPE::LIQUID_WATER_RICH));
+  // Phase State - Negative flash type
+  double const Ko = rvSat * ( oilSurfaceMoleDensity + gasSurfaceMoleDensity * rsSat ) / ( gasSurfaceMoleDensity + oilSurfaceMoleDensity * rvSat );
+  double const Kg = ( oilSurfaceMoleDensity + gasSurfaceMoleDensity * rsSat ) / ( rsSat * ( gasSurfaceMoleDensity + oilSurfaceMoleDensity * rvSat ) );
+  double const V = zo / ( 1. - Kg ) + zg / ( 1. - Ko );
 
-  auto& oil_comp = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).MoleComposition.value;
-  auto& gas_comp = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).MoleComposition.value;
-  auto& water_comp = out_variables.PhasesProperties.at(PHASE_TYPE::LIQUID_WATER_RICH).MoleComposition.value;
-
-  auto& oil_fraction = out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value;
-  auto& gas_fraction = out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value;
-  auto& water_fraction = out_variables.PhaseMoleFraction.at(PHASE_TYPE::LIQUID_WATER_RICH).value;
-
-  auto& oil_ln_fug = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).LnFugacityCoefficients.value;
-  auto& gas_ln_fug = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).LnFugacityCoefficients.value;
-  auto& water_ln_fug = out_variables.PhasesProperties.at(PHASE_TYPE::LIQUID_WATER_RICH).LnFugacityCoefficients.value;
-
-  //Oil
-  const auto& oil_surface_mole_density =  oil_phase_model->GetSurfaceMoleDensity();
-  const auto& oil_surface_mass_density = oil_phase_model->GetSurfaceMassDensity();
-  auto Rs_sat = oil_phase_model->ComputeRs(pressure);
-
-  //Gas
-  const auto& gas_surface_mole_density = gas_phase_model->GetSurfaceMoleDensity();
-  const auto& gas_surface_mass_density = gas_phase_model->GetSurfaceMassDensity();
-  auto Rv_sat = gas_phase_model->ComputeRv(pressure);
-
-  //Phase State - Negative flash type
-  auto Ko = Rv_sat * (oil_surface_mole_density + gas_surface_mole_density * Rs_sat) / (gas_surface_mole_density + oil_surface_mole_density * Rv_sat);
-  auto Kg = (oil_surface_mole_density + gas_surface_mole_density * Rs_sat) / (Rs_sat * (gas_surface_mole_density + oil_surface_mole_density * Rv_sat));
-  auto V = zo / (1. - Kg) + zg / (1. - Ko);
-
-  //bool undersaturated_oil = zg / gas_surface_mole_density - Rs_sat * zo / oil_surface_mole_density;
-  //bool undersaturated_gas = zo / oil_surface_mole_density - Rv_sat * zg / gas_surface_mole_density;
-
-  if ((V < 1) & (V>0))  //Two-phase or both oil and gas saturated
+  if( ( 0 < V ) && ( V < 1 ) )  //Two-phase or both oil and gas saturated
   {
-    //Phase Fractions
-    oil_fraction = 1. - V - zw;
-    gas_fraction = V;
-    water_fraction = zw;
+    // Phase Fractions
+    sysProps.setOilFraction( 1. - V - zw );
+    sysProps.setGasFraction( V );
+    sysProps.setWaterFraction( zw );
+    // OIL
+    const double tmpOil = oilSurfaceMoleDensity / ( oilSurfaceMoleDensity + gasSurfaceMoleDensity * rsSat );
+    const std::vector< double > oilMoleComposition{ tmpOil, 1. - tmpOil, 0. }; // FIXME always 0.
+    sysProps.setOilMoleComposition( oilMoleComposition );
 
-    //oil
-    oil_comp[0] = oil_surface_mole_density / (oil_surface_mole_density + gas_surface_mole_density * Rs_sat);
-    oil_comp[1] = 1. - oil_comp[0];
-    oil_comp[2] = 0.;
-    oil_phase_model->ComputeSaturatedProperties(pressure, oil_comp,
-                                                gas_surface_mole_density, gas_surface_mass_density,
-                                                out_variables.PhasesProperties.at(PHASE_TYPE::OIL));
+    auto const oilSaturatedProperties = oilPhaseModel.computeSaturatedProperties( pressure, gasSurfaceMoleDensity, gasSurfaceMassDensity );
+    sysProps.setOilModelProperties( oilSaturatedProperties );
 
-    //gas
-    gas_comp[1] = gas_surface_mole_density / (gas_surface_mole_density + oil_surface_mole_density * Rv_sat);
-    gas_comp[0] = 1. - gas_comp[1];
-    gas_comp[2] = 0.;
-    gas_phase_model->ComputeSaturatedProperties(pressure, gas_comp,
-                                                oil_surface_mole_density, oil_surface_mass_density,
-                                                out_variables.PhasesProperties.at(PHASE_TYPE::GAS));
+    // GAS
+    const double tmpGas = gasSurfaceMoleDensity / ( gasSurfaceMoleDensity + oilSurfaceMoleDensity * rvSat );
+    const std::vector< double > gasMoleComposition{ 1. - tmpGas, tmpGas, 0. }; // FIXME always 0.
+    sysProps.setGasMoleComposition( gasMoleComposition );
 
-    //Fugacity
-    //--oil
-    oil_ln_fug[0] = std::log(oil_comp[0] * Ko * pressure);
-    oil_ln_fug[1] = std::log(oil_comp[1] * Kg * pressure);
-    oil_ln_fug[2] = std::log(1.);
+    auto const gasSaturatedProperties = gasPhaseModel.computeSaturatedProperties( pressure, oilSurfaceMoleDensity, oilSurfaceMassDensity );
+    sysProps.setGasModelProperties( gasSaturatedProperties );
 
-    //--gas
-    gas_ln_fug[0] = std::log(gas_comp[0] * pressure);
-    gas_ln_fug[1] = std::log(gas_comp[1] * pressure);
-    gas_ln_fug[2] = std::log(1.);
+    // Oil ln fugacity
+    const std::vector< double > oilLnFugacity{
+      std::log( oilMoleComposition[0] * Ko * pressure ),
+      std::log( oilMoleComposition[1] * Kg * pressure ),
+      std::log( 1. )
+    };
+    sysProps.setOilLnFugacity( oilLnFugacity );
 
-    //--water
-    water_ln_fug[0] = std::log(gas_comp[0] * pressure);
-    water_ln_fug[1] = std::log(gas_comp[1] * pressure);
-    water_ln_fug[2] = std::log(1.);
-
+    // Gas and water ln fugacity
+    const std::vector< double > gasAndWaterLnFugacity{
+      std::log( gasMoleComposition[0] * pressure ),
+      std::log( gasMoleComposition[1] * pressure ),
+      std::log( 1. ) // FIXME water fugacities are always std::log( 1. )
+    };
+    sysProps.setGasLnFugacity( gasAndWaterLnFugacity );
+    sysProps.setWaterLnFugacity( gasAndWaterLnFugacity ); // FIXME It's the same values for water and gas?
   }
-  else if (V > 1) //Only gas or undersaturated gas
+  else if( V > 1 ) //Only gas or undersaturated gas
   {
-    LOGERROR("Undersaturated gas not supported yet");
-
-    //Phase Fractions
-    oil_fraction = 0.;
-    gas_fraction = 1.-zw;
-    water_fraction = zw;
-
-    //gas
-    gas_comp[0] = zo;
-    gas_comp[1] = zg;
-    gas_comp[2] = 0.;
-    gas_phase_model->ComputeUnderSaturatedProperties(pressure, gas_comp,
-                                                     oil_surface_mole_density, oil_surface_mass_density,
-                                                     out_variables.PhasesProperties.at(PHASE_TYPE::GAS));
-
-    //Fugacity
-    //--oil
-    oil_ln_fug[0] = std::log(1.);
-    oil_ln_fug[1] = std::log(1.);
-    oil_ln_fug[2] = std::log(1.);
-
-    //--gas
-    gas_ln_fug[0] = std::log(1.);
-    gas_ln_fug[1] = std::log(1.);
-    gas_ln_fug[2] = std::log(1.);
-
-    //--water
-    water_ln_fug[0] = std::log(1.);
-    water_ln_fug[1] = std::log(1.);
-    water_ln_fug[2] = std::log(1.);
-
-
+    LOGERROR( "Undersaturated gas not supported yet" );
   }
-  else //Only oil or undersaturated oil
+  else // Only oil or undersaturated oil
   {
-    //Phase Fractions
-    oil_fraction = 1.-zw;
-    gas_fraction = 0.;
-    water_fraction = zw;
+    // Phase Fractions
+    sysProps.setOilFraction( 1. - zw );
+    sysProps.setGasFraction( 0. );
+    sysProps.setWaterFraction( zw );
 
-    //oil
-    oil_comp[0] = zo;
-    oil_comp[1] = zg;
-    oil_comp[2] = 0.;
-    oil_phase_model->ComputeUnderSaturatedProperties(pressure, oil_comp,
-                                                     gas_surface_mole_density, gas_surface_mass_density,
-                                                     out_variables.PhasesProperties.at(PHASE_TYPE::OIL));
+    // OIL
+    std::vector< double > const oilMoleComposition{ zo, zg, 0. }; // FIXME always 0.
+    sysProps.setOilMoleComposition( oilMoleComposition );
+    auto const oilUnderSaturatedProperties = oilPhaseModel.computeUnderSaturatedProperties( pressure, oilMoleComposition, gasSurfaceMoleDensity, gasSurfaceMassDensity );
+    sysProps.setOilModelProperties( oilUnderSaturatedProperties );
 
-    //Fugacity
-    //--oil
-    oil_ln_fug[0] = std::log(1.);
-    oil_ln_fug[1] = std::log(1.);
-    oil_ln_fug[2] = std::log(1.);
-
-    //--gas
-    gas_ln_fug[0] = std::log(1.);
-    gas_ln_fug[1] = std::log(1.);
-    gas_ln_fug[2] = std::log(1.);
-
-    //--water
-    water_ln_fug[0] = std::log(1.);
-    water_ln_fug[1] = std::log(1.);
-    water_ln_fug[2] = std::log(1.);
-
+    // LN FUGACITIES
+    sysProps.setOilLnFugacity( { std::log( 1. ), std::log( 1. ), std::log( 1. ) } );
+    sysProps.setGasLnFugacity( { std::log( 1. ), std::log( 1. ), std::log( 1. ) } );
+    sysProps.setWaterLnFugacity( { std::log( 1. ), std::log( 1. ), std::log( 1. ) } );
   }
 
-  //Water
-  water_phase_model->ComputeProperties(pressure, out_variables.PhasesProperties.at(PHASE_TYPE::LIQUID_WATER_RICH));
-  water_comp[0] = 0.;
-  water_comp[1] = 0.;
-  water_comp[2] = 1;
-
-
-  // Compute final phase state
-  set_PhaseState(out_variables);
+  // Water
+  auto const waterProperties = waterPhaseModel.computeProperties( pressure );
+  sysProps.setWaterModelProperties( waterProperties );
+  // FIXME be sure that waterComp = {0, 0, 1} is done...
 
   return true;
-
 }
 
 }
-
-

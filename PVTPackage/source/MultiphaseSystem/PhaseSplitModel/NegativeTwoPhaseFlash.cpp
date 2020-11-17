@@ -13,137 +13,144 @@
  */
 
 #include "MultiphaseSystem/PhaseSplitModel/NegativeTwoPhaseFlash.hpp"
-#include "MultiphaseSystem/ComponentProperties.hpp"
-#include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
-#include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
-#include <vector>
-#include <numeric>
-#include "Utils/math.hpp"
 #include "MultiphaseSystem/PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
+#include "MultiphaseSystem/MultiphaseSystemProperties/NegativeTwoPhaseFlashMultiphaseSystemProperties.hpp"
+
+#include "Utils/math.hpp"
+
+#include <limits>
+#include <map>
+#include <vector>
 
 namespace PVTPackage
 {
 
-bool NegativeTwoPhaseFlash::ComputeEquilibrium(MultiphaseSystemProperties & out_variables)
+bool NegativeTwoPhaseFlash::computeEquilibrium( NegativeTwoPhaseFlashMultiphaseSystemProperties & sysProps )
 {
   // Equilibrium convergence parameters
   const int max_SSI_iterations = 100;
-  const double fug_epsilon = 1e-8;
+  const double fugacityEpsilon = 1e-8;
 
-  const auto& pressure = out_variables.Pressure;
-  const auto& temperature = out_variables.Temperature;
-  const auto& feed = out_variables.Feed;
+  const double & pressure = sysProps.getPressure();
+  const double & temperature = sysProps.getTemperature();
+  const std::vector< double > & feed = sysProps.getFeed();
 
-  ASSERT(std::fabs(math::sum_array(feed) - 1.0) < 1e-12, "Feed sum must be 1");
+  ASSERT( std::fabs( math::sum_array( feed ) - 1.0 ) < 1e-12, "Feed sum must be 1" );
 
-  const auto nbc = m_ComponentsProperties.NComponents;
+  const ComponentProperties & componentProperties = sysProps.getComponentProperties();
+  const std::size_t nComponents = componentProperties.NComponents;
 
-  auto& oil_comp = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).MoleComposition.value;
-  auto& gas_comp = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).MoleComposition.value;
-
-  auto& oil_fraction = out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value;
-  auto& gas_fraction = out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value;
-
-  auto& oil_ln_fug = out_variables.PhasesProperties.at(PHASE_TYPE::OIL).LnFugacityCoefficients.value;
-  auto& gas_ln_fug = out_variables.PhasesProperties.at(PHASE_TYPE::GAS).LnFugacityCoefficients.value;
-
-  std::vector<double> fug_ratio(nbc);
-
-  auto KGasOil = ComputeWilsonGasLiquidKvalue(pressure, temperature);
+  std::vector< double > fugacityRatios( nComponents );
+  std::vector< double > kGasOil = computeWilsonGasLiquidKvalue( componentProperties, pressure, temperature );
 
   //Check for machine-zero feed values
-  const double epsilon = std::numeric_limits<double>::epsilon();
-  std::list<size_t> positive_components;
-  for (size_t i = 0; i != nbc; ++i)
+  const double epsilon = std::numeric_limits< double >::epsilon();
+  std::list< std::size_t > positiveComponents;
+  for( std::size_t i = 0; i < nComponents; ++i )
   {
-    if (feed[i] > epsilon)
+    if( feed[i] > epsilon )
     {
-      positive_components.push_back(i);
+      positiveComponents.push_back( i );
     }
   }
 
-  gas_comp.assign(nbc, 0.0);
-  oil_comp.assign(nbc, 0.0);
+  std::vector< double > oilMoleComposition( nComponents, 0. ), gasMoleComposition( nComponents, 0. );
+  // This map holds references to the data so we can use them in loops
+  std::map< pvt::PHASE_TYPE, const std::vector< double > & > moleComposition{
+    { pvt::PHASE_TYPE::OIL, oilMoleComposition },
+    { pvt::PHASE_TYPE::GAS, gasMoleComposition }
+  };
+  double oilPhaseMoleFraction, gasPhaseMoleFraction;
 
-  int total_nb_iter = 0;
-  for (int iter = 0; iter < max_SSI_iterations; ++iter)
+  int totalNbIter = 0;
+  for( int iter = 0; iter < max_SSI_iterations; ++iter )
   {
     // Solve Rachford-Rice Equation
-    const double vapor_fraction = SolveRachfordRiceEquation(KGasOil, feed, positive_components);
-    gas_fraction = vapor_fraction;
-    oil_fraction = 1.0 - gas_fraction;
+    const double vaporFraction = solveRachfordRiceEquation( kGasOil, feed, positiveComponents );
+    gasPhaseMoleFraction = vaporFraction;
+    oilPhaseMoleFraction = 1.0 - gasPhaseMoleFraction;
 
     // Assign phase compositions
-    for (auto ic : positive_components)
+    for( auto ic : positiveComponents )
     {
-      oil_comp[ic] = feed[ic] / (1.0 + vapor_fraction * (KGasOil[ic] - 1.0));
-      gas_comp[ic] = KGasOil[ic] * oil_comp[ic];
+      oilMoleComposition[ic] = feed[ic] / ( 1.0 + vaporFraction * ( kGasOil[ic] - 1.0 ) );
+      gasMoleComposition[ic] = kGasOil[ic] * oilMoleComposition[ic];
     }
 
-    oil_comp = math::Normalize(oil_comp);
-    gas_comp = math::Normalize(gas_comp);
+    oilMoleComposition = math::Normalize( oilMoleComposition );
+    gasMoleComposition = math::Normalize( gasMoleComposition );
 
     // Compute phase fugacity
-    for (auto it = out_variables.PhaseModels.begin(); it != out_variables.PhaseModels.end(); ++it)
+    for( const pvt::PHASE_TYPE & phase: sysProps.getPhases() )
     {
-      auto phase_type = (*it).first;
-      auto eos_phase_model = std::dynamic_pointer_cast<CubicEoSPhaseModel>((*it).second);
-      auto& comp = out_variables.PhasesProperties.at(phase_type).MoleComposition.value;
-      eos_phase_model->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase_type));
+      const CubicEoSPhaseModel & model = sysProps.getCubicEoSPhaseModel( phase );
+      const auto props = model.computeAllProperties( pressure, temperature, moleComposition.at( phase ) );
+      sysProps.setModelProperties( phase, props );
     }
 
     // Compute fugacity ratio and check convergence
     bool converged = true;
 
-    for (auto ic : positive_components)
+    const std::vector< double > & oilLnFugacity = sysProps.getOilLnFugacity();
+    const std::vector< double > & gasLnFugacity = sysProps.getGasLnFugacity();
+    for( auto ic : positiveComponents )
     {
-      fug_ratio[ic] = std::exp(oil_ln_fug[ic] - gas_ln_fug[ic]) * oil_comp[ic] / gas_comp[ic];
-      if (std::fabs(fug_ratio[ic] - 1.0) > fug_epsilon)
+      fugacityRatios[ic] = std::exp( oilLnFugacity[ic] - gasLnFugacity[ic] ) * oilMoleComposition[ic] / gasMoleComposition[ic];
+      if( std::fabs( fugacityRatios[ic] - 1.0 ) > fugacityEpsilon )
+      {
         converged = false;
+      }
     }
 
-    if (converged)
+    if( converged )
+    {
       break;
+    }
 
     // Update K-values
-    for (auto ic : positive_components)
+    for( auto ic : positiveComponents )
     {
-      KGasOil[ic] *= fug_ratio[ic];
+      kGasOil[ic] *= fugacityRatios[ic];
     }
 
-    total_nb_iter = iter;
+    totalNbIter = iter;
   }
 
   // Retrieve physical bounds from negative flash values
-  if (gas_fraction <= 0.0 || gas_fraction >= 1.0)
+  if( gasPhaseMoleFraction <= 0. or gasPhaseMoleFraction >= 1. )
   {
-    PHASE_TYPE phase;
-    if (gas_fraction >= 1.0)
+    pvt::PHASE_TYPE phase;
+    if( gasPhaseMoleFraction >= 1. )
     {
-      gas_fraction = 1.0;
-      oil_fraction = 0.0;
-      gas_comp = feed;
-      phase = PHASE_TYPE::GAS;
+      gasPhaseMoleFraction = 1.;
+      oilPhaseMoleFraction = 0.;
+      gasMoleComposition = feed;
+      phase = pvt::PHASE_TYPE::GAS;
     }
     else
     {
-      gas_fraction = 0.0;
-      oil_fraction = 1.0;
-      oil_comp = feed;
-      phase = PHASE_TYPE::OIL;
+      gasPhaseMoleFraction = 0.;
+      oilPhaseMoleFraction = 1.;
+      oilMoleComposition = feed;
+      phase = pvt::PHASE_TYPE::OIL;
     }
 
     // Update phase properties since adjusting composition
-    auto eos_phase = std::dynamic_pointer_cast<CubicEoSPhaseModel>(out_variables.PhaseModels.at(phase));
-    auto & comp = out_variables.PhasesProperties.at(phase).MoleComposition.value;
-    eos_phase->ComputeAllProperties(pressure, temperature, comp, out_variables.PhasesProperties.at(phase));
+    const CubicEoSPhaseModel & model = sysProps.getCubicEoSPhaseModel( phase );
+    const auto props = model.computeAllProperties( pressure, temperature, moleComposition.at( phase ) );
+    sysProps.setModelProperties( phase, props );
   }
 
+  // TODO reassign the final values
+  sysProps.setOilMoleComposition( oilMoleComposition );
+  sysProps.setGasMoleComposition( gasMoleComposition );
+  sysProps.setOilFraction( oilPhaseMoleFraction );
+  sysProps.setGasFraction( gasPhaseMoleFraction );
+
   // Compute final phase state
-  set_PhaseState(out_variables);
+//  setPhaseState( sysProps );
 
-  return total_nb_iter != max_SSI_iterations;
+  return totalNbIter < max_SSI_iterations;
 }
 
 }
-

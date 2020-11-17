@@ -14,106 +14,64 @@
 
 #include "BlackOilMultiphaseSystem.hpp"
 
-#include "PhaseModel/BlackOil/BlackOil_GasModel.hpp"
-#include "PhaseModel/BlackOil/BlackOil_OilModel.hpp"
-#include "PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
-#include "Utils/FileUtils.hpp"
-#include <unordered_map>
-#include <utility>
+#include "pvt/pvt.hpp"
 
 namespace PVTPackage
 {
 
-BlackOilMultiphaseSystem::BlackOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
-                                                   std::vector<std::vector<double>> PVTO,
-                                                   std::vector<std::vector<double>> PVTG,
-                                                   std::vector<double> PVTW,
-                                                   std::vector<double> surface_densities,
-                                                   std::vector<double> molar_weights)
-  : MultiphaseSystem(phase_types.size(), phase_types)
+BlackOilMultiphaseSystem::BlackOilMultiphaseSystem( const std::vector< pvt::PHASE_TYPE > & phases,
+                                                    const std::vector< std::vector< double > > & PVTO,
+                                                    double oilSurfaceMassDensity,
+                                                    double oilSurfaceMolecularWeight,
+                                                    const std::vector< std::vector< double > > & PVTG,
+                                                    double gasSurfaceMassDensity,
+                                                    double gasSurfaceMolecularWeight,
+                                                    const std::vector< double > & PVTW,
+                                                    double waterSurfaceMassDensity,
+                                                    double waterSurfaceMolecularWeight )
+  :
+  m_bofmsp( phases.size(),
+            PVTO, oilSurfaceMassDensity, oilSurfaceMolecularWeight,
+            PVTG, gasSurfaceMassDensity, gasSurfaceMolecularWeight,
+            PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight )
 {
-  CreatePhases(phase_types,
-               { std::move(PVTO), std::move(PVTG), { std::move(PVTW) } },
-               std::move(surface_densities),
-               std::move(molar_weights));
 
-  //Create Flash pointer
-  m_Flash = new BlackOilFlash();
 }
 
-BlackOilMultiphaseSystem::BlackOilMultiphaseSystem(std::vector<PHASE_TYPE> phase_types,
-                                                   std::vector<std::string> table_file_names,
-                                                   std::vector<double> surface_densities,
-                                                   std::vector<double> molar_weights)
-  : MultiphaseSystem(phase_types.size(), phase_types)
+std::unique_ptr< BlackOilMultiphaseSystem > BlackOilMultiphaseSystem::build( const std::vector< pvt::PHASE_TYPE > & phases,
+                                                                             const std::vector< std::string > & tableFileNames,
+                                                                             const std::vector< double > & surfaceDensities,
+                                                                             const std::vector< double > & molarWeights )
 {
-  auto num_phase = static_cast<unsigned>(phase_types.size());
-  std::vector<std::vector<std::vector<double>>> tables(num_phase);
+  // TODO Check consistency between PVTO and PVTG
+  // props.oilTable, props.gasTable and props.waterTable respectively contain PVTO, PVTG and PVTW
+  const Properties & props = buildTables( phases, tableFileNames, surfaceDensities, molarWeights );
 
-  for (unsigned i = 0; i < num_phase; ++i)
-  {
-    const int row_min_len = (phase_types[i] == PHASE_TYPE::LIQUID_WATER_RICH) ? 4 : 3;
-    ReadTable(table_file_names[i], tables[i], row_min_len);
-  }
-
-  CreatePhases(phase_types, tables, std::move(surface_densities), std::move(molar_weights));
-
-  //Create Flash pointer
-  m_Flash = new BlackOilFlash();
+  // I am not using std::make_unique because I want the constructor to be private.
+  auto * ptr = new BlackOilMultiphaseSystem( phases,
+                                             props.oilTable, props.oilSurfaceMassDensity, props.oilSurfaceMolecularWeight,
+                                             props.gasTable, props.gasSurfaceMassDensity, props.gasSurfaceMolecularWeight,
+                                             props.waterTable, props.waterSurfaceMassDensity, props.waterSurfaceMolecularWeight );
+  return std::unique_ptr< BlackOilMultiphaseSystem >( ptr );
 }
 
-void BlackOilMultiphaseSystem::CreatePhases(std::vector<PHASE_TYPE> phase_types,
-                                            std::vector<std::vector<std::vector<double>>> phase_tables,
-                                            std::vector<double> surface_densities,
-                                            std::vector<double> molar_weights)
+void BlackOilMultiphaseSystem::Update( double pressure,
+                                       double temperature,
+                                       std::vector< double > feed )
 {
-  //Create Phase Models
-  for (size_t i = 0; i != phase_types.size(); ++i)
-  {
-    auto & phase_ptr = m_MultiphaseProperties.PhaseModels[phase_types[i]];
-    switch (phase_types[i])
-    {
-      case PHASE_TYPE::OIL:
-        phase_ptr = std::make_shared<BlackOil_OilModel>(phase_tables[i], surface_densities[i], molar_weights[i]);
-        break;
-      case PHASE_TYPE::GAS:
-        phase_ptr = std::make_shared<BlackOil_GasModel>(phase_tables[i], surface_densities[i], molar_weights[i]);
-        break;
-      case PHASE_TYPE::LIQUID_WATER_RICH:
-        ASSERT(phase_tables[i].size() == 1, "Too many lines in water properties table");
-        phase_ptr = std::make_shared<BlackOil_WaterModel>(phase_tables[i][0], surface_densities[i], molar_weights[i]);
-        break;
-      default:
-        LOGERROR("Phase type not supported for Black Oil model");
-    }
-  }
+  // Temperature unused
+  (void) temperature;
+  m_bofmsp.setPressure( pressure );
+  m_bofmsp.setFeed( feed );
 
-  //Check consistency between PVTO and PVTG
-  //TODO
+  const bool res = computeEquilibriumAndDerivativesNoTemperature( m_blackOilFlash, m_bofmsp );
 
-  //Check if both oil and gas are defined
-  ASSERT((m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::OIL) != m_MultiphaseProperties.PhaseModels.end())
-         && (m_MultiphaseProperties.PhaseModels.find(PHASE_TYPE::GAS) != m_MultiphaseProperties.PhaseModels.end()),
-         "Both oil and gas phase must be defined for BO model");
+  m_stateIndicator = res ? State::SUCCESS : State::NOT_CONVERGED;
 }
 
-
-BlackOilMultiphaseSystem::~BlackOilMultiphaseSystem()
+const pvt::MultiphaseSystemProperties & BlackOilMultiphaseSystem::getMultiphaseSystemProperties() const
 {
-  delete m_Flash;
+  return m_bofmsp;
 }
-
-void BlackOilMultiphaseSystem::ReadTable(const std::string & filename, std::vector<std::vector<double>> & data,
-                                         unsigned int min_row_len)
-{
-  FileUtils::ReadTable(filename, data);
-
-  for (auto & row : data)
-  {
-    ASSERT(row.size() >= min_row_len, "Too few entries in a row of table " + filename
-                                      + ", minimum " + std::to_string(min_row_len) + " required");
-  }
-}
-
 
 }

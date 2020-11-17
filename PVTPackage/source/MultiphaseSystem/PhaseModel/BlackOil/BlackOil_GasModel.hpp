@@ -14,69 +14,122 @@
 
 #pragma once
 
-#include "Utils/Assert.hpp"
-#include "MultiphaseSystem/PVTEnums.hpp"
-#include <vector>
-#include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
-#include <map>
+#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOilDeadOilProperties.hpp"
 #include "PVTGdata.hpp"
 
+#include "Utils/Assert.hpp"
+
+#include <map>
+#include <vector>
 
 namespace PVTPackage
 {
 
-struct PhaseProperties;
-
-class BlackOil_GasModel final : public PhaseModel
+class BlackOil_GasModel final
 {
 public:
 
-  BlackOil_GasModel(std::vector<std::vector<double>> PVTG, double gas_surface_mass_density, double gas_surface_mw);
-  ~BlackOil_GasModel() override = default;
+  BlackOil_GasModel( const std::vector< std::vector< double > > & PVTG,
+                     double gasSurfaceMassDensity,
+                     double gasSurfaceMw );
 
-  //Getter
-  double GetSurfaceMassDensity() { return m_SurfaceMassDensity; }
-  double GetSurfaceMoleDensity() { return m_SurfaceMoleDensity; }
-  double GetSurfaceMolecularWeight() { return m_SurfaceMolecularWeight; }
+  /**
+   * @brief Paramter constructor for refactor only
+   * FIXME REFACTOR
+   */
+  BlackOil_GasModel( const PVTGdata & PVTG,
+                     double minPressure,
+                     double maxPressure,
+                     double surfaceMassDensity,
+                     double surfaceMoleDensity,
+                     double surfaceMolecularWeight )
+    :
+    m_PVTG( PVTG ),
+    m_minPressure( minPressure ),
+    m_maxPressure( maxPressure ),
+    m_surfaceMassDensity( surfaceMassDensity ),
+    m_surfaceMoleDensity( surfaceMoleDensity ),
+    m_surfaceMolecularWeight( surfaceMolecularWeight )
+  {
+    // Left blank
+  }
 
-  //
-  double ComputeRv(double Pdew);
-  void ComputeSaturatedProperties(double Pdew, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out);
-  void ComputeUnderSaturatedProperties(double P, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out);
+  const double & getSurfaceMassDensity() const
+  {
+    return m_surfaceMassDensity;
+  }
 
+  const double & getSurfaceMoleDensity() const
+  {
+    return m_surfaceMoleDensity;
+  }
 
-protected:
+  const double & getSurfaceMolecularWeight() const
+  {
+    return m_surfaceMolecularWeight;
+  }
+
+  double computeRv( double Pdew ) const;
+
+  BlackOilDeadOilProperties computeSaturatedProperties( double Pdew,
+                                                        double oilMoleSurfaceDensity,
+                                                        double oilMassSurfaceDensity ) const;
+
+private:
 
   //PVT data
   PVTGdata m_PVTG;
 
+  double m_minPressure;
+  double m_maxPressure;
 
-  //
-  double min_Pressure;
-  double max_Pressure;
+  double m_surfaceMassDensity;
+  double m_surfaceMoleDensity;
+  double m_surfaceMolecularWeight;
 
+  double computePdew( double Rv ) const;
 
-  //
-  double m_SurfaceMassDensity;
-  double m_SurfaceMoleDensity;
-  double m_SurfaceMolecularWeight;
+  void computeSaturatedBgVisc( double Rv,
+                               double & Bg,
+                               double & viscosity ) const;
 
+  double computeMoleDensity( double Rv,
+                             double Bg,
+                             double surfaceOilMoleDensity ) const;
 
-  //
-  double ComputePdew(double Rv);
-  void ComputeSaturatedBgVisc(double Rv, double& Bg, double& visc) const;
-  void ComputeUndersaturatedBgVisc(double Rv, double P, double& Bg, double& visc);
+  double computeMassDensity( double Rv,
+                             double Bg,
+                             double surfaceOilMassDensity ) const;
 
-  double ComputeMoleDensity(double Rv, double Bg, double surface_oil_mole_density) const;
-  double ComputeMassDensity(double Rv, double Bg, double surface_oil_mass_density) const;
+  void createTable( const std::vector< std::vector< double > > & PVT );
 
+  void extendUnderSaturatedProperties();
 
-  //Functions
-  void CreateTable(const std::vector<std::vector<double>>& PVT);
-  void ExtendUnderSaturatedProperties();
-  void CheckTableConsistency();
-  void RefineTable(size_t nlevel);
+  void checkTableConsistency() const;
 
+  static void refineTable( std::size_t nLevel );
+
+public:
+  /**
+   * @brief Getter for refactor only
+   * FIXME REFACTOR
+   */
+  PVTGdata const & getPvtg() const
+  { return m_PVTG; }
+
+  /**
+   * @brief Getter for refactor only
+   * FIXME REFACTOR
+   */
+  double getMinPressure() const
+  { return m_minPressure; }
+
+  /**
+   * @brief Getter for refactor only
+   * FIXME REFACTOR
+   */
+  double getMaxPressure() const
+  { return m_maxPressure; }
 };
 
 }

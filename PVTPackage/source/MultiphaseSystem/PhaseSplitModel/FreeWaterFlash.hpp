@@ -13,58 +13,89 @@
  */
 
 #pragma once
+
+#include "MultiphaseSystem/ComponentProperties.hpp"
+
+#include "MultiphaseSystem/MultiphaseSystemProperties/FreeWaterFlashMultiphaseSystemProperties.hpp"
 #include "MultiphaseSystem/PhaseSplitModel/CompositionalFlash.hpp"
-#include "MultiphaseSystem/MultiphaseSystemProperties.hpp"
-#include "MultiphaseSystem/PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
+
+#include "pvt/pvt.hpp"
 
 namespace PVTPackage
 {
 
-	class FreeWaterFlash final : public CompositionalFlash
-	{
-	public:
+class FreeWaterFlash final : private CompositionalFlash
+{
+public:
 
-		FreeWaterFlash(const ComponentProperties& component_properties)
-			: CompositionalFlash(component_properties)
-		{
-			m_WaterIndex = component_properties.WaterIndex;
+  FreeWaterFlash( const ComponentProperties & componentProperties )
+    : CompositionalFlash( componentProperties )
+  {
+    m_WaterIndex = componentProperties.WaterIndex;
+  }
 
-		}
+  /**
+   * @brief Temporary access to component properties used for the computation.
+   * @return Reference to const.
+   *
+   * This member is added for debugging purpose. It should be removed.
+   */
+  const ComponentProperties & getComponentProperties() const
+  {
+    return this->m_ComponentsProperties;
+  }
 
-		~FreeWaterFlash() override = default;
+  static bool computeEquilibrium( FreeWaterFlashMultiphaseSystemProperties & outVariables );
 
+protected:
 
-		void set_PhaseState(MultiphaseSystemProperties& out_variables) override
-		{
+  std::size_t m_WaterIndex;
 
-			out_variables.PhaseState = PhaseStateMap.at
-			({ out_variables.PhaseMoleFraction.at(PHASE_TYPE::OIL).value > 0.,
-			   out_variables.PhaseMoleFraction.at(PHASE_TYPE::GAS).value > 0.,
-			   out_variables.PhaseMoleFraction.at(PHASE_TYPE::LIQUID_WATER_RICH).value > 0.
-				});
-		}
+private:
 
-		bool ComputeEquilibrium(MultiphaseSystemProperties & out_variables) override;
+  static bool isThreePhase( const std::vector< double > & kValues,
+                            const std::vector< double > & feed,
+                            const std::list< std::size_t > & nonZeroIndex,
+                            double KWater_GasWater,
+                            double KWater_OilWater,
+                            double waterFeed,
+                            std::size_t waterIndex );
 
-		bool IsThreePhase(const std::vector<double>& feed, const std::vector<double>& Kvalues, const std::list<size_t>& non_zero_index, 
-									const double KWater_GasWater, const double KWater_OilWater, double water_feed);
-		double ModifiedRachfordRiceFunction(const std::vector<double>& Kvalues, const std::vector<double>& feed,
-		                            const std::list<size_t>& non_zero_index, double KWater_GasWater,
-		                            double KWater_OilWater,
-		                            double water_feed, double x);
-		double dModifiedRachfordRiceFunction_dx(const std::vector<double>& Kvalues, const std::vector<double>& feed,
-		                                const std::list<size_t>& non_zero_index, double KWater_GasWater,
-		                                double KWater_OilWater,
-		                                double water_feed, double x);
-		double SolveModifiedRachfordRiceEquation(const std::vector<double>& Kvalues, const std::vector<double>& feed,
-		                                         const std::list<size_t>& non_zero_index, double KWater_GasWater,
-												 double KWater_OilWater,double water_feed);
+  static double modifiedRachfordRiceFunction( const std::vector< double > & kValues,
+                                              const std::vector< double > & feed,
+                                              const std::list< std::size_t > & nonZeroIndex,
+                                              double kWater_GasWater,
+                                              double kWater_OilWater,
+                                              double waterFeed,
+                                              std::size_t waterIndex,
+                                              double x );
 
+  static double dModifiedRachfordRiceFunction_dx( const std::vector< double > & kValues,
+                                                  const std::vector< double > & feed,
+                                                  const std::list< std::size_t > & nonZeroIndex,
+                                                  double kWater_GasWater,
+                                                  double kWater_OilWater,
+                                                  double waterFeed,
+                                                  std::size_t waterIndex,
+                                                  double x );
 
-	protected:
+  static double solveModifiedRachfordRiceEquation( const std::vector< double > & kValues,
+                                                   const std::vector< double > & feed,
+                                                   const std::list< std::size_t > & nonZeroIndex,
+                                                   double kWater_gasWater,
+                                                   double kWater_oilWater,
+                                                   double waterFeed,
+                                                   std::size_t waterIndex );
 
-		size_t m_WaterIndex;
-
-	};
+public:
+  /**
+   * @brief Getter for refactor purpose
+   * FIXME REFACTOR
+   */
+  std::size_t getWaterIndex() const
+  {
+    return m_WaterIndex;
+  }
+};
 
 }

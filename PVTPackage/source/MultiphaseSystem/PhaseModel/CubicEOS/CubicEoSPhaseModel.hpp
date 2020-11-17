@@ -14,91 +14,146 @@
 
 #pragma once
 
-#include "Utils/Assert.hpp"
-#include "MultiphaseSystem/PVTEnums.hpp"
-#include <vector>
-#include <cmath>
-#include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
 #include "MultiphaseSystem/ComponentProperties.hpp"
 
+#include "Utils/Assert.hpp"
+
+#include "pvt/pvt.hpp"
+
+#include <vector>
+#include <cmath>
 
 namespace PVTPackage
 {
 
-class CubicEoSPhaseModel final : public PhaseModel
+class CubicEoSPhaseModel final
 {
 public:
 
-  CubicEoSPhaseModel(ComponentProperties comp_props, EOS_TYPE eos, PHASE_TYPE phase_type)
-    : PhaseModel(), m_ComponentsProperties(comp_props),m_PhaseType(phase_type),
-      m_EOSType(eos), m_OmegaA(0), m_OmegaB(0), m_Delta1(0), m_Delta2(0), EOS_m_function(nullptr),
-      m_BICs(0)
+  CubicEoSPhaseModel( ComponentProperties componentProperties,
+                      pvt::EOS_TYPE eos,
+                      pvt::PHASE_TYPE phase )
+    : m_componentProperties( componentProperties ),
+      m_phase( phase ),
+      m_EOSType( eos ),
+      m_omegaA( 0 ),
+      m_omegaB( 0 ),
+      m_delta1( 0 ),
+      m_delta2( 0 ),
+      EOS_m_function( nullptr ),
+      m_BICs( 0 )
   {
-    Init();
+    init();
   }
 
-  ~CubicEoSPhaseModel() override = default;
-
-  const ComponentProperties& get_ComponentsProperties()
+  const ComponentProperties & getComponentsProperties() const
   {
-    return m_ComponentsProperties;
+    return m_componentProperties;
   }
 
-  void ComputeAllProperties(double Pressure, double Temperature, std::vector<double>& composition, PhaseProperties& props_out) ;
-
-protected:
-
-  //Component Properties
-  ComponentProperties m_ComponentsProperties;
-
-  //Constants
-  const double R = 8.3144621;
-  const double PI = std::acos(-1);
-
-  //Phase Type
-  PHASE_TYPE m_PhaseType;
-
-  //EOS parameters
-  EOS_TYPE m_EOSType;
-  double m_OmegaA;
-  double m_OmegaB;
-  double m_Delta1, m_Delta2;
-  double (CubicEoSPhaseModel::*EOS_m_function)(double);
-
-  //Constant Properties
-  std::vector<double> m_m;
-  double m_BICs;
-
-  //Init function at instatiation
-  void Init();
-
-  //Used to shorten input
-  struct CubicEosMixtureCoefficients
+  /**
+   * @brief Small utility class for better output.
+   *
+   * @note Modify with care the order since it's using aggregate automatic constructors.
+   */
+  struct Properties
   {
-    CubicEosMixtureCoefficients(size_t nc) : APure(std::vector<double>(nc)), BPure(std::vector<double>(nc)),
-                                             AMixture(0), BMixture(0)
-    {
-    }
-
-    std::vector<double> APure, BPure;
-    double AMixture, BMixture;
+    double compressibilityFactor;
+    double massDensity;
+    double moleDensity;
+    double molecularWeight;
+    std::vector< double > lnFugacityCoefficients;
   };
 
+  Properties computeAllProperties( double pressure,
+                                   double temperature,
+                                   std::vector< double > const & composition ) const;
 
-  CubicEosMixtureCoefficients ComputeMixtureCoefficients(double Pressure, double Temperature, std::vector<double>& composition);
-  double ComputeCompressibilityFactor( double Pressure, double Temperature, std::vector<double>& composition, CubicEosMixtureCoefficients& mix_coeffs) const;
-  double ComputeMoleDensity_(double Pressure, double Temperature, std::vector<double>& composition, double Z) const;
-  double ComputeMolecularWeight(std::vector<double>& composition) const;
-  double ComputeMassDensity_(double mole_density, double mw) const;
-  std::vector<double> ComputeLnFugacitiesCoefficients( std::vector<double>& composition, double Z, CubicEosMixtureCoefficients& mixture_coefficients) const;
+private:
 
-  //
-  std::vector<double> SolveCubicPolynomial(double a, double b, double c, double d) const;
+  const ComponentProperties m_componentProperties;
 
-  //m functions
-  double m_function_PR(double omega);
-  double m_function_SRK(double omega);
+  // Constants
+  static constexpr double R = 8.3144621;
+  static constexpr double PI = 3.141592653589793238462643383279502884;
 
+  // Phase Type
+  const pvt::PHASE_TYPE m_phase;
+
+  // EOS parameters
+  const pvt::EOS_TYPE m_EOSType;
+  double m_omegaA;
+  double m_omegaB;
+  double m_delta1, m_delta2;
+
+  double (CubicEoSPhaseModel::*EOS_m_function)( double );
+
+  // Constant Properties
+  std::vector< double > m_m;
+  const double m_BICs;
+
+  // Init function at instantiation
+  void init();
+
+  // Used to shorten input
+  struct CubicEosMixtureCoefficients
+  {
+    std::vector< double > APure, BPure;
+    double AMixture, BMixture;
+
+    CubicEosMixtureCoefficients( std::size_t nComponents )
+      : APure( nComponents ),
+        BPure( nComponents ),
+        AMixture( 0. ),
+        BMixture( 0. )
+    { }
+  };
+
+  CubicEosMixtureCoefficients computeMixtureCoefficients( double pressure,
+                                                          double temperature,
+                                                          std::vector< double > const & composition ) const;
+
+  double computeCompressibilityFactor( double pressure,
+                                       double temperature,
+                                       std::vector< double > const & composition,
+                                       CubicEosMixtureCoefficients const & mixCoeffs ) const;
+
+  static double computeMoleDensity( const ComponentProperties & componentProperties,
+                                    double pressure,
+                                    double temperature,
+                                    std::vector< double > const & composition,
+                                    double Z );
+
+  static double computeMolecularWeight( const ComponentProperties & componentProperties,
+                                        std::vector< double > const & composition );
+
+  static double computeMassDensity( double moleDensity,
+                                    double mw );
+
+  std::vector< double > computeLnFugacitiesCoefficients( std::vector< double > const & composition,
+                                                         double Z,
+                                                         CubicEosMixtureCoefficients const & mixtureCoefficients ) const;
+
+  static std::vector< double > solveCubicPolynomial( double m3,
+                                                     double m2,
+                                                     double m1,
+                                                     double m0 );
+
+  // m functions
+  double m_function_PR( double omega );
+
+  double m_function_SRK( double omega );
+
+public:
+  pvt::PHASE_TYPE getPhase() const
+  {
+    return m_phase;
+  }
+
+  pvt::EOS_TYPE getEosType() const
+  {
+    return m_EOSType;
+  }
 };
 
 }

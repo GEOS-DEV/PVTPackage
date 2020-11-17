@@ -12,36 +12,43 @@
  * ------------------------------------------------------------------------------------------------------------
  */
 
-#include <algorithm>
-#include "Utils/math.hpp"
 #include "BlackOil_Utils.hpp"
 #include "BlackOil_GasModel.hpp"
-#include "MultiphaseSystem/PhaseModel/PhaseProperties.hpp"
+
+#include "Utils/math.hpp"
+
+#include <algorithm>
 
 namespace PVTPackage
 {
 
-BlackOil_GasModel::BlackOil_GasModel(std::vector<std::vector<double>> PVTG, double gas_surface_mass_density, double gas_surface_mw)
-  : min_Pressure(-1), max_Pressure(-1), m_SurfaceMassDensity(0), m_SurfaceMoleDensity(0), m_SurfaceMolecularWeight(gas_surface_mw)
+BlackOil_GasModel::BlackOil_GasModel( const std::vector< std::vector< double > > & PVTG,
+                                      double gasSurfaceMassDensity,
+                                      double gasSurfaceMw )
+  : m_minPressure( -1 ),
+    m_maxPressure( -1 ),
+    m_surfaceMassDensity( 0 ),
+    m_surfaceMoleDensity( 0 ),
+    m_surfaceMolecularWeight( gasSurfaceMw )
 {
 
   //--Fill table
-  CreateTable(PVTG);
+  createTable( PVTG );
 
   //Check Consistency
-  //CheckTableConsistency();
+  //checkTableConsistency();
 
   ////Create missing undersaturated branches
-  //CreateUnderSaturatedProperties();
+  //createUnderSaturatedProperties();
 
   ////Extend existing branches
-  //ExtendUnderSaturatedProperties();
+  //extendUnderSaturatedProperties();
 
   ////Refine Table branches
-  //RefineTable(100);
+  //refineTable(100);
 
   //Check Consistency
-  //CheckTableConsistency();
+  //checkTableConsistency();
 
 
   ///DEBUG PURPOSE - PLOT table for matlab
@@ -56,24 +63,24 @@ BlackOil_GasModel::BlackOil_GasModel(std::vector<std::vector<double>> PVTG, doub
 
 
   //Density
-  m_SurfaceMassDensity = gas_surface_mass_density;
-  m_SurfaceMoleDensity = m_SurfaceMassDensity / m_SurfaceMolecularWeight;
+  m_surfaceMassDensity = gasSurfaceMassDensity;
+  m_surfaceMoleDensity = m_surfaceMassDensity / m_surfaceMolecularWeight;
 
 }
 
-void BlackOil_GasModel::CheckTableConsistency()
+void BlackOil_GasModel::checkTableConsistency() const
 {
   //--Check for the presence of one bubble point
-  ASSERT(m_PVTG.UndersaturatedRv[m_PVTG.NSaturatedPoints - 1].size() > 1, "At least one bubble pressure is required");
+  ASSERT( m_PVTG.UndersaturatedRv[m_PVTG.NSaturatedPoints - 1].size() > 1, "At least one bubble pressure is required" );
 
 
   //Check for saturated region
-  for (size_t i = 0; i < m_PVTG.NSaturatedPoints - 1; ++i)
+  for( std::size_t i = 0; i < m_PVTG.NSaturatedPoints - 1; ++i )
   {
     //Rv must increase with Pdew
     //ASSERT((m_PVTG.Rv[i + 1] - m_PVTG.Rv[i]) > 0, "Rv must increase with Pdew");
     //Bg must decrease with Pdew
-    ASSERT((m_PVTG.SaturatedBg[i + 1] - m_PVTG.SaturatedBg[i]) < 0, "Bg must decrease with Pdew in saturated region");
+    ASSERT( ( m_PVTG.SaturatedBg[i + 1] - m_PVTG.SaturatedBg[i] ) < 0, "Bg must decrease with Pdew in saturated region" );
     //Visc must decrease with Pb
     //ASSERT((m_PVTG.SaturatedViscosity[i + 1] - m_PVTG.SaturatedViscosity[i]) > 0, "Viscosity must increase with Pdew in saturated region");
   }
@@ -81,41 +88,41 @@ void BlackOil_GasModel::CheckTableConsistency()
 
   //Check for under-saturated branches
 
-  for (size_t i = 0; i < m_PVTG.NSaturatedPoints; ++i)
+  for( std::size_t i = 0; i < m_PVTG.NSaturatedPoints; ++i )
   {
 
-    for (size_t j = 0; j < m_PVTG.UndersaturatedRv[i].size() - 1; ++j)
+    for( std::size_t j = 0; j < m_PVTG.UndersaturatedRv[i].size() - 1; ++j )
     {
       //Pressure
-      ASSERT((m_PVTG.UndersaturatedRv[i][j + 1] - m_PVTG.UndersaturatedRv[i][j]) < 0, "Rv must decrease in undersaturated region");
+      ASSERT( ( m_PVTG.UndersaturatedRv[i][j + 1] - m_PVTG.UndersaturatedRv[i][j] ) < 0, "Rv must decrease in undersaturated region" );
     }
   }
-
 }
 
-void BlackOil_GasModel::CreateTable(const std::vector<std::vector<double>>& PVT)
+void BlackOil_GasModel::createTable( const std::vector< std::vector< double > > & PVT )
 {
-
   //Count number of Saturated points
-  size_t nb_sat = 0;
-  for (size_t i = 0; i < PVT.size(); ++i)
+  std::size_t nSaturatedPoints = 0;
+  for( std::size_t i = 0; i < PVT.size(); ++i )
   {
-    if (PVT[i].size() == 4)
-      nb_sat++;
+    if( PVT[i].size() == 4 )
+    {
+      nSaturatedPoints++;
+    }
   }
-  m_PVTG.NSaturatedPoints = nb_sat;
+  m_PVTG.NSaturatedPoints = nSaturatedPoints;
 
   //--Store data in a new structure
-  m_PVTG.Rv.resize(nb_sat);
-  m_PVTG.DewPressure.resize(nb_sat);
-  m_PVTG.SaturatedBg.resize(nb_sat);
-  m_PVTG.SaturatedViscosity.resize(nb_sat);
-  m_PVTG.UndersaturatedRv.resize(nb_sat);
-  m_PVTG.UndersaturatedBg.resize(nb_sat);
-  m_PVTG.UndersaturatedViscosity.resize(nb_sat);
+  m_PVTG.Rv.resize( nSaturatedPoints );
+  m_PVTG.DewPressure.resize( nSaturatedPoints );
+  m_PVTG.SaturatedBg.resize( nSaturatedPoints );
+  m_PVTG.SaturatedViscosity.resize( nSaturatedPoints );
+  m_PVTG.UndersaturatedRv.resize( nSaturatedPoints );
+  m_PVTG.UndersaturatedBg.resize( nSaturatedPoints );
+  m_PVTG.UndersaturatedViscosity.resize( nSaturatedPoints );
 
   auto i_sat = 0;
-  for (size_t i = 0; i < PVT.size(); ++i)
+  for( std::size_t i = 0; i < PVT.size(); ++i )
   {
     //Saturated part
     m_PVTG.DewPressure[i_sat] = PVT[i][0];
@@ -123,74 +130,67 @@ void BlackOil_GasModel::CreateTable(const std::vector<std::vector<double>>& PVT)
     m_PVTG.SaturatedBg[i_sat] = PVT[i][2];
     m_PVTG.SaturatedViscosity[i_sat] = PVT[i][3];
 
-
     //--Undersaturated
     //Add Saturated properties - Pressure= P - Pbub
-    m_PVTG.UndersaturatedRv[i_sat].push_back(0);
-    m_PVTG.UndersaturatedBg[i_sat].push_back(m_PVTG.SaturatedBg[i_sat]);
-    m_PVTG.UndersaturatedViscosity[i_sat].push_back(m_PVTG.SaturatedViscosity[i_sat]);
+    m_PVTG.UndersaturatedRv[i_sat].push_back( 0 );
+    m_PVTG.UndersaturatedBg[i_sat].push_back( m_PVTG.SaturatedBg[i_sat] );
+    m_PVTG.UndersaturatedViscosity[i_sat].push_back( m_PVTG.SaturatedViscosity[i_sat] );
 
-
-    auto branch_size = 0;
+    auto branchSize = 0;
     auto j = i + 1;
-    while (PVT[j].size() == 3)
+    while( PVT[j].size() == 3 )
     {
       ////Assume dry gas, so ignore it
       /*m_PVTG.UndersaturatedRv[i_sat].push_back(PVT[j][0] - m_PVTG.Rv[i_sat]);
       m_PVTG.UndersaturatedBg[i_sat].push_back(PVT[j][1]);
       m_PVTG.UndersaturatedViscosity[i_sat].push_back(PVT[j][2]);*/
-      branch_size++;
+      branchSize++;
       j++;
-      if (j == PVT.size())
+      if( j == PVT.size() )
       {
         break;
       }
     }
 
-    i = i + branch_size;
+    i = i + branchSize;
     i_sat++;
   }
 
-
-
   //Add 1atm value if does not exist yet
-  if (!math::isNearlyEqual(m_PVTG.Rv[0],0.))
+  if( !math::isNearlyEqual( m_PVTG.Rv[0], 0. ) )
   {
-    auto Pref = 101325.0;
-    auto visc = math::LogExtrapolation(m_PVTG.DewPressure[1], m_PVTG.SaturatedViscosity[1], m_PVTG.DewPressure[0], m_PVTG.SaturatedViscosity[0], Pref);
+    auto refPressure = 101325.0;
+    const double visc = math::LogExtrapolation( m_PVTG.DewPressure[1], m_PVTG.SaturatedViscosity[1], m_PVTG.DewPressure[0], m_PVTG.SaturatedViscosity[0], refPressure );
 
-    m_PVTG.Rv.insert(m_PVTG.Rv.begin(), 0.);
-    m_PVTG.DewPressure.insert(m_PVTG.DewPressure.begin(), Pref);
-    m_PVTG.SaturatedBg.insert(m_PVTG.SaturatedBg.begin(),1.0);
-    m_PVTG.SaturatedViscosity.insert(m_PVTG.SaturatedViscosity.begin(), visc);
+    m_PVTG.Rv.insert( m_PVTG.Rv.begin(), 0. );
+    m_PVTG.DewPressure.insert( m_PVTG.DewPressure.begin(), refPressure );
+    m_PVTG.SaturatedBg.insert( m_PVTG.SaturatedBg.begin(), 1.0 );
+    m_PVTG.SaturatedViscosity.insert( m_PVTG.SaturatedViscosity.begin(), visc );
     m_PVTG.NSaturatedPoints++;
 
-    m_PVTG.UndersaturatedRv.insert(m_PVTG.UndersaturatedRv.begin(), { 0 });
-    m_PVTG.UndersaturatedBg.insert(m_PVTG.UndersaturatedBg.begin(), { 1.0 });
-    m_PVTG.UndersaturatedViscosity.insert(m_PVTG.UndersaturatedViscosity.begin(), { visc });
-
+    m_PVTG.UndersaturatedRv.insert( m_PVTG.UndersaturatedRv.begin(), { 0 } );
+    m_PVTG.UndersaturatedBg.insert( m_PVTG.UndersaturatedBg.begin(), { 1.0 } );
+    m_PVTG.UndersaturatedViscosity.insert( m_PVTG.UndersaturatedViscosity.begin(), { visc } );
   }
-
 
   m_PVTG.MaxRelativeRv = 0;
   m_PVTG.MinRelativeRv = 1e8;
 
-  for (size_t i = 0; i < m_PVTG.NSaturatedPoints; ++i)
+  for( std::size_t i = 0; i < m_PVTG.NSaturatedPoints; ++i )
   {
-    double maxRv = *(std::max_element(m_PVTG.UndersaturatedRv[i].begin(), m_PVTG.UndersaturatedRv[i].end()));
-    double minRv = *(std::min_element(m_PVTG.UndersaturatedRv[i].begin(), m_PVTG.UndersaturatedRv[i].end()));
-    m_PVTG.MaxRelativeRv = std::max(maxRv, m_PVTG.MaxRelativeRv);
-    m_PVTG.MinRelativeRv = std::min(minRv, m_PVTG.MinRelativeRv);
+    double maxRv = *( std::max_element( m_PVTG.UndersaturatedRv[i].begin(), m_PVTG.UndersaturatedRv[i].end() ) );
+    double minRv = *( std::min_element( m_PVTG.UndersaturatedRv[i].begin(), m_PVTG.UndersaturatedRv[i].end() ) );
+    m_PVTG.MaxRelativeRv = std::max( maxRv, m_PVTG.MaxRelativeRv );
+    m_PVTG.MinRelativeRv = std::min( minRv, m_PVTG.MinRelativeRv );
   }
 
   //
-  max_Pressure = *(std::max_element(m_PVTG.DewPressure.begin(), m_PVTG.DewPressure.end()));
-  min_Pressure = *(std::min_element(m_PVTG.DewPressure.begin(), m_PVTG.DewPressure.end()));
+  m_maxPressure = *( std::max_element( m_PVTG.DewPressure.begin(), m_PVTG.DewPressure.end() ) );
+  m_minPressure = *( std::min_element( m_PVTG.DewPressure.begin(), m_PVTG.DewPressure.end() ) );
 }
 
-void BlackOil_GasModel::ExtendUnderSaturatedProperties()
+void BlackOil_GasModel::extendUnderSaturatedProperties()
 {
-
   ////Extrapolate Undersaturated properties up to max pressure
   //for (size_t i = 0; i < m_PVTG.NSaturatedPoints; ++i)
   //{
@@ -211,12 +211,11 @@ void BlackOil_GasModel::ExtendUnderSaturatedProperties()
   //	}
 
   //}
-
 }
 
-void BlackOil_GasModel::RefineTable(size_t nlevel)
+void BlackOil_GasModel::refineTable( std::size_t nLevel )
 {
-  (void) nlevel;
+  (void) nLevel;
   //std::vector<double> refine_p;
   //for (size_t i = 0; i < m_PVTG.NSaturatedPoints; ++i)
   //{
@@ -253,78 +252,64 @@ void BlackOil_GasModel::RefineTable(size_t nlevel)
   //	}
 
   //}
-
 }
 
-double BlackOil_GasModel::ComputePdew(double Rv)
+double BlackOil_GasModel::computePdew( double Rv ) const
 {
-  size_t i_lower_branch, i_upper_branch;
-  math::FindSurrondingIndex(m_PVTG.Rv, Rv, i_lower_branch, i_upper_branch);
-  return math::LinearInterpolation(m_PVTG.Rv[i_lower_branch], m_PVTG.DewPressure[i_lower_branch], m_PVTG.Rv[i_upper_branch], m_PVTG.DewPressure[i_upper_branch], Rv);
+  std::size_t i_lower_branch, i_upper_branch;
+  math::FindSurrondingIndex( m_PVTG.Rv, Rv, i_lower_branch, i_upper_branch );
+  return math::LinearInterpolation( m_PVTG.Rv[i_lower_branch], m_PVTG.DewPressure[i_lower_branch], m_PVTG.Rv[i_upper_branch], m_PVTG.DewPressure[i_upper_branch], Rv );
 }
 
-double BlackOil_GasModel::ComputeRv(double Pdew)
+double BlackOil_GasModel::computeRv( double Pdew ) const
 {
-  ASSERT((Pdew<max_Pressure)&(Pdew>min_Pressure), "Pressure out of table range");
-  size_t i_lower_branch, i_upper_branch;
-  math::FindSurrondingIndex(m_PVTG.DewPressure, Pdew, i_lower_branch, i_upper_branch);
-  return math::LinearInterpolation(m_PVTG.DewPressure[i_lower_branch], m_PVTG.Rv[i_lower_branch], m_PVTG.DewPressure[i_upper_branch], m_PVTG.Rv[i_upper_branch], Pdew);
+  ASSERT( ( Pdew < m_maxPressure ) & ( Pdew > m_minPressure ), "Pressure out of table range" );
+  std::size_t i_lower_branch, i_upper_branch;
+  math::FindSurrondingIndex( m_PVTG.DewPressure, Pdew, i_lower_branch, i_upper_branch );
+  return math::LinearInterpolation( m_PVTG.DewPressure[i_lower_branch], m_PVTG.Rv[i_lower_branch], m_PVTG.DewPressure[i_upper_branch], m_PVTG.Rv[i_upper_branch], Pdew );
 }
 
-void BlackOil_GasModel::ComputeSaturatedProperties(double Pdew, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out)
+BlackOilDeadOilProperties BlackOil_GasModel::computeSaturatedProperties( double Pdew,
+                                                                         double oilMoleSurfaceDensity,
+                                                                         double oilMassSurfaceDensity ) const
 {
-  ASSERT((Pdew < max_Pressure)&(Pdew > min_Pressure), "Pressure out of table range");
-  props_out.MoleComposition.value = composition;
-  auto Rv = ComputeRv(Pdew);
-  double Bg, Visc;
-  ComputeSaturatedBgVisc(Rv, Bg, Visc);
-  props_out.Viscosity = Visc;
-  props_out.MoleDensity.value = ComputeMoleDensity(Rv, Bg, oil_mole_surface_density);
-  props_out.MassDensity.value = ComputeMassDensity(Rv, Bg, oil_mass_surface_density);
-  props_out.MolecularWeight.value = props_out.MassDensity.value / props_out.MoleDensity.value;
+  ASSERT( ( Pdew < m_maxPressure ) & ( Pdew > m_minPressure ), "Pressure out of table range" );
+  auto Rv = computeRv( Pdew );
+  double Bg, viscosity;
+  computeSaturatedBgVisc( Rv, Bg, viscosity );
+
+  return BlackOilDeadOilProperties(
+    computeMassDensity( Rv, Bg, oilMassSurfaceDensity ),
+    computeMoleDensity( Rv, Bg, oilMoleSurfaceDensity ),
+    viscosity
+  );
 }
 
-void BlackOil_GasModel::ComputeUnderSaturatedProperties(double P, std::vector<double> composition, double oil_mole_surface_density, double oil_mass_surface_density, PhaseProperties& props_out)
+void BlackOil_GasModel::computeSaturatedBgVisc( double Rv,
+                                                double & Bg,
+                                                double & viscosity ) const
 {
-  ASSERT((P < max_Pressure)&(P > min_Pressure), "Pressure out of table range");
-  props_out.MoleComposition.value = composition;
-  auto Rv = composition[0] / composition[1] * m_SurfaceMoleDensity/oil_mole_surface_density;
-  double Bg, Visc;
-  ComputeUndersaturatedBgVisc(Rv, P, Bg, Visc);
-  props_out.Viscosity = Visc;
-  props_out.MoleDensity.value = ComputeMassDensity(Rv, Bg, oil_mole_surface_density);
-  props_out.MassDensity.value = ComputeMassDensity(Rv, Bg, oil_mass_surface_density);
-  props_out.MolecularWeight.value = props_out.MassDensity.value / props_out.MoleDensity.value;
+  std::size_t i_lower_branch, i_upper_branch;
+  auto const & Rs_vec = m_PVTG.Rv;
+  auto const & Bg_vec = m_PVTG.SaturatedBg;
+  auto const & visc_vec = m_PVTG.SaturatedViscosity;
+  math::FindSurrondingIndex( Rs_vec, Rv, i_lower_branch, i_upper_branch );
+  Bg = math::LinearInterpolation( Rv - Rs_vec[i_lower_branch], Rs_vec[i_upper_branch] - Rv, Bg_vec[i_lower_branch], Bg_vec[i_upper_branch] );
+  viscosity = math::LinearInterpolation( Rv - Rs_vec[i_lower_branch], Rs_vec[i_upper_branch] - Rv, visc_vec[i_lower_branch], visc_vec[i_upper_branch] );
 }
 
-void BlackOil_GasModel::ComputeSaturatedBgVisc(double Rv, double& Bg, double& visc) const
+double BlackOil_GasModel::computeMoleDensity( double Rv,
+                                              double Bg,
+                                              double surfaceOilMoleDensity ) const
 {
-  size_t i_lower_branch, i_upper_branch;
-  auto Rs_vec = m_PVTG.Rv;
-  auto& Bg_vec = m_PVTG.SaturatedBg;
-  auto& visc_vec = m_PVTG.SaturatedViscosity;
-  math::FindSurrondingIndex(Rs_vec, Rv, i_lower_branch, i_upper_branch);
-  Bg = math::LinearInterpolation(Rv - Rs_vec[i_lower_branch], Rs_vec[i_upper_branch] - Rv, Bg_vec[i_lower_branch], Bg_vec[i_upper_branch]);
-  visc = math::LinearInterpolation(Rv - Rs_vec[i_lower_branch], Rs_vec[i_upper_branch] - Rv, visc_vec[i_lower_branch], visc_vec[i_upper_branch]);
-
+  return 1. / Bg * ( m_surfaceMoleDensity + surfaceOilMoleDensity * Rv );
 }
 
-void BlackOil_GasModel::ComputeUndersaturatedBgVisc(double Rv, double P, double& Bg, double& visc)
+double BlackOil_GasModel::computeMassDensity( double Rv,
+                                              double Bg,
+                                              double surfaceOilMassDensity ) const
 {
-  (void) Rv, (void) P, (void) Bg, (void) visc;
-  //TODO Put real undersaturated properties
-  //This function cannot be called
-  // LOGERROR("cannot be called");
-
+  return 1. / Bg * ( m_surfaceMassDensity + surfaceOilMassDensity * Rv );
 }
 
-double BlackOil_GasModel::ComputeMoleDensity(double Rv, double Bg, double surface_oil_mole_density) const
-{
-  return 1. / Bg * (m_SurfaceMoleDensity + surface_oil_mole_density * Rv);
-}
-
-double BlackOil_GasModel::ComputeMassDensity(double Rv, double Bg, double surface_oil_mass_density) const
-{
-  return 1. / Bg * (m_SurfaceMassDensity + surface_oil_mass_density * Rv);
-}
 }

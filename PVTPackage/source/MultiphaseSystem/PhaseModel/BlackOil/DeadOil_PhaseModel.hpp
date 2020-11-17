@@ -14,62 +14,128 @@
 
 #pragma once
 
-#include "Utils/Assert.hpp"
-#include "MultiphaseSystem/PVTEnums.hpp"
-#include <vector>
-#include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
-#include <map>
+#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOilDeadOilProperties.hpp"
 #include "PVDdata.hpp"
 
+#include "Utils/Assert.hpp"
+
+#include "pvt/pvt.hpp"
+
+#include <map>
+#include <vector>
 
 namespace PVTPackage
 {
 
-class DeadOil_PhaseModel final : public PhaseModel
+class DeadOil_PhaseModel final
 {
 public:
+  /**
+   * @brief Parametrized constructof for refactor
+   * FIXME REFACTOR
+   */
+  DeadOil_PhaseModel( pvt::PHASE_TYPE type,
+                      PVDdata const & pvd,
+                      double minPressure,
+                      double maxPressure,
+                      double surfaceMassDensity,
+                      double surfaceMoleDensity,
+                      double surfaceMolecularWeight )
+    : m_type( type ),
+      m_PVD( pvd ),
+      m_minPressure( minPressure ),
+      m_maxPressure( maxPressure ),
+      m_surfaceMassDensity( surfaceMassDensity ),
+      m_surfaceMoleDensity( surfaceMoleDensity ),
+      m_surfaceMolecularWeight( surfaceMolecularWeight )
+  { }
 
-  DeadOil_PhaseModel(PHASE_TYPE type, std::vector<std::vector<double>> PVD, double oil_surface_mass_density, double oil_surface_mw);
-
-  ~DeadOil_PhaseModel() override = default;
+  DeadOil_PhaseModel( pvt::PHASE_TYPE type,
+                      const std::vector< std::vector< double > > & PVD,
+                      double oilSurfaceMassDensity,
+                      double oilSurfaceMw );
 
   //Getter
-  double GetSurfaceMassDensity() { return m_SurfaceMassDensity; }
-  double GetSurfaceMoleDensity() { return m_SurfaceMoleDensity; }
-  double GetSurfaceMolecularWeight() { return m_SurfaceMolecularWeight; }
+  double getSurfaceMassDensity() const
+  {
+    return m_surfaceMassDensity;
+  }
 
-  //Compute
-  void ComputeProperties(double P, PhaseProperties& props_out) const;
+  double getSurfaceMoleDensity() const
+  {
+    return m_surfaceMoleDensity;
+  }
 
+  double getSurfaceMolecularWeight() const
+  {
+    return m_surfaceMolecularWeight;
+  }
 
-protected:
+  BlackOilDeadOilProperties computeProperties( double pressure ) const;
 
+private:
 
   //Phase type
-  PHASE_TYPE m_type;
+  const pvt::PHASE_TYPE m_type;
 
   //PVT data
   PVDdata m_PVD;
 
-  //
-  double min_Pressure{};
-  double max_Pressure{};
+  double m_minPressure{};
+  double m_maxPressure{};
 
-  //
-  double m_SurfaceMassDensity;
-  double m_SurfaceMoleDensity;
-  double m_SurfaceMolecularWeight;
+  double m_surfaceMassDensity;
+  double m_surfaceMoleDensity;
+  double m_surfaceMolecularWeight;
 
-  //
-  void ComputeBandVisc(double P, double& B, double& visc) const;
-  double ComputeMoleDensity(double B) const;
-  double ComputeMassDensity(double B) const;
+  void computeBandVisc( double P,
+                        double & B,
+                        double & visc ) const;
 
+  double computeMoleDensity( double B ) const;
 
-  //Functions
-  void CreateTable(const std::vector<std::vector<double>>& PVD);
-  void CheckTableConsistency();
+  double computeMassDensity( double B ) const;
 
+  void createTable( const std::vector< std::vector< double > > & PVD );
+
+  void checkTableConsistency();
+
+public:
+  /**
+   * @brief Getter for refactor only
+   * FIXME REFACTOR
+   */
+  pvt::PHASE_TYPE getType() const
+  {
+    return m_type;
+  }
+
+  /**
+   * @brief Getter for refactor only
+   * FIXME REFACTOR
+   */
+  PVDdata const & getPvd() const
+  {
+    return m_PVD;
+  }
+
+  /**
+   * @brief Getter for refactor only
+   * FIXME REFACTOR
+   */
+  double getMinPressure() const
+  {
+    return m_minPressure;
+  }
+
+  /**
+   * @brief Getter for refactor only
+   * FIXME REFACTOR
+   */
+  double getMaxPressure() const
+  {
+    return m_maxPressure;
+  }
 };
 
 }

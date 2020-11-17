@@ -14,43 +14,82 @@
 
 #pragma once
 
-#include <vector>
-#include "MultiphaseSystem/PhaseModel/PhaseModel.hpp"
+#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOilDeadOilProperties.hpp"
 #include "PVTWdata.hpp"
+
+#include <vector>
 
 namespace PVTPackage
 {
 
-class BlackOil_WaterModel final : public PhaseModel
+class BlackOil_WaterModel final
 {
 public:
 
-  BlackOil_WaterModel(std::vector<double> PVTW, double water_surface_mass_density, double water_surface_mw);
+  /**
+   * @brief Parameter constructor for refactor only
+   * FIXME REFACTOR
+   */
+  BlackOil_WaterModel( const PVTWdata & PVTW,
+                       double surfaceMassDensity,
+                       double surfaceMoleDensity,
+                       double surfaceMolecularWeight )
+    :
+    m_PVTW( PVTW ),
+    m_surfaceMassDensity( surfaceMassDensity ),
+    m_surfaceMoleDensity( surfaceMoleDensity ),
+    m_surfaceMolecularWeight( surfaceMolecularWeight )
+  {
+    // Left blank
+  }
 
-  ~BlackOil_WaterModel() override = default;
+  BlackOil_WaterModel( const std::vector< double > & PVTW,
+                       double waterSurfaceMassDensity,
+                       double waterSurfaceMolecularWeight );
 
-  //Getter
-  double GetSurfaceMassDensity() { return m_SurfaceMassDensity; }
-  double GetSurfaceMoleDensity() { return m_SurfaceMoleDensity; }
-  double GetSurfaceMolecularWeight() { return m_SurfaceMolecularWeight; }
+  double getSurfaceMolecularWeight() const
+  {
+    return m_surfaceMolecularWeight;
+  }
 
-  //Compute
-  void ComputeProperties(double P, PhaseProperties& props_out);
+  BlackOilDeadOilProperties computeProperties( double pressure ) const;
 
-
-
-protected:
-
+private:
 
   //PVT data
   PVTWdata m_PVTW{};
 
+  double m_surfaceMassDensity;
+  double m_surfaceMoleDensity;
+  double m_surfaceMolecularWeight;
 
-  //
-  double m_SurfaceMassDensity;
-  double m_SurfaceMoleDensity;
-  double m_SurfaceMolecularWeight;
+public:
+  /**
+   * @brief Getter for refactor only
+   * FIXME REFACTOR
+   */
+  double getSurfaceMassDensity() const
+  {
+    return m_surfaceMassDensity;
+  }
 
+  /**
+   * @brief Getter for refactor only
+   * FIXME REFACTOR
+   */
+  double getSurfaceMoleDensity() const
+  {
+    return m_surfaceMoleDensity;
+  }
+
+  /**
+   * @brief Getter for refactor only
+   * FIXME REFACTOR
+   */
+  PVTWdata const & getPvtw() const
+  {
+    return m_PVTW;
+  }
 };
 
 }
