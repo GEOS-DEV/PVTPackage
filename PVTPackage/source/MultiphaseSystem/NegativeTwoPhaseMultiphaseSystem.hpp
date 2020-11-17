@@ -43,15 +43,6 @@ public:
                double temperature,
                std::vector< double > feed ) override;
 
-  const std::vector< NegativeTwoPhaseFlashMultiphaseSystemProperties > & getBatchMultiphaseSystemProperties() const
-  {
-    return m_batchProps;
-  }
-
-  void BatchUpdate( const std::vector< double > & pressure,
-                    const std::vector< double > & temperature,
-                    const std::vector< std::vector< double > > & feed );
-
   const pvt::MultiphaseSystemProperties & getMultiphaseSystemProperties() const override;
 
 private:
@@ -63,8 +54,6 @@ private:
   NegativeTwoPhaseFlash m_negativeTwoPhaseFlash;
 
   NegativeTwoPhaseFlashMultiphaseSystemProperties m_ntpfmsp;
-
-  std::vector< NegativeTwoPhaseFlashMultiphaseSystemProperties > m_batchProps;
 };
 
 }
