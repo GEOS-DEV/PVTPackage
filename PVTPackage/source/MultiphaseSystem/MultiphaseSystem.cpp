@@ -26,7 +26,7 @@ bool MultiphaseSystem::hasSucceeded() const
   return m_stateIndicator == State::SUCCESS;
 }
 
-struct FiniteDifferenceValues
+struct FiniteDifferenceDerivatives
 {
   double dPhaseMoleFraction;
   double dMolecularWeight;
@@ -44,15 +44,14 @@ struct FiniteDifferenceValues
  * @return A structure holding the finite difference computed values.
  *
  * Generic functions (pure code factorisation) that evaluates the derivatives
- * through finite differences process between reference @p sysProps and variation @p diffed.
- * This function then calls @p consumer, which role should mainly to store the computed data where they should be.
+ * through finite differences process between @p reference and @p variation.
  */
-FiniteDifferenceValues updateDerivativeFiniteDifference( const pvt::PHASE_TYPE & phase,
-                                                         const FactorMultiphaseSystemProperties & reference,
-                                                         const FactorMultiphaseSystemProperties & variation,
-                                                         double delta )
+FiniteDifferenceDerivatives updateDerivativeFiniteDifference( const pvt::PHASE_TYPE & phase,
+                                                              const FactorMultiphaseSystemProperties & reference,
+                                                              const FactorMultiphaseSystemProperties & variation,
+                                                              double delta )
 {
-  FiniteDifferenceValues result;
+  FiniteDifferenceDerivatives result;
 
   result.dPhaseMoleFraction = ( variation.getPhaseMoleFraction( phase ).value - reference.getPhaseMoleFraction( phase ).value ) / delta;
   result.dMolecularWeight = ( variation.getMolecularWeight( phase ).value - reference.getMolecularWeight( phase ).value ) / delta;
@@ -71,12 +70,12 @@ FiniteDifferenceValues updateDerivativeFiniteDifference( const pvt::PHASE_TYPE &
 }
 
 void MultiphaseSystem::updateDerivativeDPFiniteDifference( FactorMultiphaseSystemProperties & sysProps,
-                                                           const FactorMultiphaseSystemProperties & diffed,
+                                                           const FactorMultiphaseSystemProperties & perturbedSysProps,
                                                            double dPressure )
 {
   for( const pvt::PHASE_TYPE & phase: sysProps.getPhases() )
   {
-    const FiniteDifferenceValues values = updateDerivativeFiniteDifference( phase, sysProps, diffed, dPressure );
+    const FiniteDifferenceDerivatives values = updateDerivativeFiniteDifference( phase, sysProps, perturbedSysProps, dPressure );
 
     sysProps.setPhaseMoleFractionDP( phase, values.dPhaseMoleFraction );
     sysProps.setMolecularWeightDP( phase, values.dMolecularWeight );
@@ -88,12 +87,12 @@ void MultiphaseSystem::updateDerivativeDPFiniteDifference( FactorMultiphaseSyste
 
 void MultiphaseSystem::updateDerivativeDZFiniteDifference( std::size_t iComponent,
                                                            FactorMultiphaseSystemProperties & sysProps,
-                                                           FactorMultiphaseSystemProperties const & diffed,
+                                                           FactorMultiphaseSystemProperties const & perturbedSysProps,
                                                            double dz )
 {
   for( const pvt::PHASE_TYPE & phase: sysProps.getPhases() )
   {
-    const FiniteDifferenceValues values = updateDerivativeFiniteDifference( phase, sysProps, diffed, dz );
+    const FiniteDifferenceDerivatives values = updateDerivativeFiniteDifference( phase, sysProps, perturbedSysProps, dz );
 
     sysProps.setPhaseMoleFractionDZ( phase, iComponent, values.dPhaseMoleFraction );
     sysProps.setMolecularWeightDZ( phase, iComponent, values.dMolecularWeight );
@@ -194,12 +193,12 @@ bool CompositionalMultiphaseSystem::areComponentDataConsistent( std::vector< std
 }
 
 void CompositionalMultiphaseSystem::updateDerivativeDTFiniteDifference( CompositionalMultiphaseSystemProperties & sysProps,
-                                                                        const CompositionalMultiphaseSystemProperties & diffed,
+                                                                        const CompositionalMultiphaseSystemProperties & perturbedSysProps,
                                                                         double dTemperature )
 {
   for( const pvt::PHASE_TYPE & phase: sysProps.getPhases() )
   {
-    const FiniteDifferenceValues values = updateDerivativeFiniteDifference( phase, sysProps, diffed, dTemperature );
+    const FiniteDifferenceDerivatives values = updateDerivativeFiniteDifference( phase, sysProps, perturbedSysProps, dTemperature );
 
     sysProps.setPhaseMoleFractionDT( phase, values.dPhaseMoleFraction );
     sysProps.setMolecularWeightDT( phase, values.dMolecularWeight );

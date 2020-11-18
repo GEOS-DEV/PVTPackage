@@ -101,12 +101,12 @@ protected:
 private:
 
   static void updateDerivativeDPFiniteDifference( FactorMultiphaseSystemProperties & sysProps,
-                                                  const FactorMultiphaseSystemProperties & diffed,
+                                                  const FactorMultiphaseSystemProperties & perturbedSysProps,
                                                   double dPressure );
 
   static void updateDerivativeDZFiniteDifference( std::size_t iComponent,
                                                   FactorMultiphaseSystemProperties & sysProps,
-                                                  const FactorMultiphaseSystemProperties & diffed,
+                                                  const FactorMultiphaseSystemProperties & perturbedSysProps,
                                                   double dz );
 };
 
@@ -155,7 +155,7 @@ protected:
 private:
 
   static void updateDerivativeDTFiniteDifference( CompositionalMultiphaseSystemProperties & sysProps,
-                                                  const CompositionalMultiphaseSystemProperties & diffed,
+                                                  const CompositionalMultiphaseSystemProperties & perturbedSysProps,
                                                   double dTemperature );
 };
 
