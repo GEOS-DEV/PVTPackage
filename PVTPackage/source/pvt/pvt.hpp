@@ -204,26 +204,26 @@ public:
    * @brief Builds a live oil instance of a multiphase system.
    * @param phases The considered phases in the system.
    * @param tableFileNames The file names containing the table.
-   * @param surfaceDensities Surface densities.
+   * @param surfaceMassDensities Surface mass densities.
    * @param molarWeights molar weights.
    * @return A std::unique_ptr holding the system. The smart ptr may hold nullptr if something went wrong.
    */
   static std::unique_ptr< MultiphaseSystem > buildLiveOil( const std::vector< pvt::PHASE_TYPE > & phases,
                                                            const std::vector< std::string > & tableFileNames,
-                                                           const std::vector< double > & surfaceDensities,
+                                                           const std::vector< double > & surfaceMassDensities,
                                                            const std::vector< double > & molarWeights );
 
   /**
    * @brief Builds a dead oil instance of a multiphase system.
    * @param phases The considered phases in the system.
    * @param tableFileNames The file names containing the table.
-   * @param surfaceDensities Surface densities.
+   * @param surfaceMassDensities Surface mass densities.
    * @param molarWeights molar weights.
    * @return A std::unique_ptr holding the system. The smart ptr may hold nullptr if something went wrong.
    */
   static std::unique_ptr< MultiphaseSystem > buildDeadOil( const std::vector< pvt::PHASE_TYPE > & phases,
                                                            const std::vector< std::string > & tableFileNames,
-                                                           const std::vector< double > & surfaceDensities,
+                                                           const std::vector< double > & surfaceMassDensities,
                                                            const std::vector< double > & molarWeights );
 };
 

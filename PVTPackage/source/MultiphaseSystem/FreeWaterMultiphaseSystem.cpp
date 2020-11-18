@@ -50,8 +50,8 @@ FreeWaterMultiphaseSystem::FreeWaterMultiphaseSystem( const std::vector< pvt::PH
                                                       const std::vector< pvt::EOS_TYPE > & eosTypes,
                                                       const ComponentProperties & componentProperties )
   :
-  m_freeWaterFlash( componentProperties ),
-  m_fwfmsp( phases, eosTypes, componentProperties )
+  m_freeWaterFlash( phases, eosTypes, componentProperties ),
+  m_fwfmsp( phases, componentProperties.NComponents )
 {
 
 }

@@ -56,8 +56,8 @@ NegativeTwoPhaseMultiphaseSystem::NegativeTwoPhaseMultiphaseSystem( const std::v
                                                                     const std::vector< pvt::EOS_TYPE > & eosTypes,
                                                                     const ComponentProperties & componentProperties )
   :
-  m_negativeTwoPhaseFlash( componentProperties ),
-  m_ntpfmsp( phases, eosTypes, componentProperties )
+  m_negativeTwoPhaseFlash( phases, eosTypes, componentProperties ),
+  m_ntpfmsp( phases, componentProperties.NComponents )
 {
 
 }

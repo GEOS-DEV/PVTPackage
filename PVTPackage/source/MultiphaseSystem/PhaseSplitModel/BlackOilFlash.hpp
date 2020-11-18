@@ -15,6 +15,10 @@
 #pragma once
 
 #include "MultiphaseSystem/MultiphaseSystemProperties/BlackOilFlashMultiphaseSystemProperties.hpp"
+#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_OilModel.hpp"
+#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_GasModel.hpp"
+#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
+
 
 namespace PVTPackage
 {
@@ -23,9 +27,25 @@ class BlackOilFlash
 {
 public:
 
-  BlackOilFlash() = default;
+  BlackOilFlash( const std::vector< std::vector< double > > & PVTO,
+                 double oilSurfaceMassDensity,
+                 double oilSurfaceMolecularWeight,
+                 const std::vector< std::vector< double > > & PVTG,
+                 double gasSurfaceMassDensity,
+                 double gasSurfaceMolecularWeight,
+                 const std::vector< double > & PVTW,
+                 double waterSurfaceMassDensity,
+                 double waterSurfaceMolecularWeight );
 
-  static bool computeEquilibrium( BlackOilFlashMultiphaseSystemProperties & sysProperties );
+
+  bool computeEquilibrium( BlackOilFlashMultiphaseSystemProperties & sysProperties ) const;
+
+private:
+
+  BlackOil_OilModel m_oilPhaseModel;
+  BlackOil_GasModel m_gasPhaseModel;
+  BlackOil_WaterModel m_waterPhaseModel;
+
 };
 
 }

@@ -21,13 +21,15 @@
 namespace PVTPackage
 {
 
-TrivialFlash::TrivialFlash( const ComponentProperties & componentProperties )
-  : CompositionalFlash( componentProperties )
+TrivialFlash::TrivialFlash( const std::vector< pvt::PHASE_TYPE > & phases,
+                            const std::vector< pvt::EOS_TYPE > & eosTypes,
+                            ComponentProperties const & componentProperties )
+  : CompositionalFlash( phases, eosTypes, componentProperties )
 {
 
 }
 
-bool TrivialFlash::computeEquilibrium( TrivialFlashMultiphaseSystemProperties & sysProps )
+bool TrivialFlash::computeEquilibrium( TrivialFlashMultiphaseSystemProperties & sysProps ) const
 {
   const double & pressure = sysProps.getPressure();
   const double & temperature = sysProps.getTemperature();
@@ -36,26 +38,25 @@ bool TrivialFlash::computeEquilibrium( TrivialFlashMultiphaseSystemProperties & 
   ASSERT( std::fabs( math::sum_array( feed ) - 1 ) < 1e-12, "Feed sum must be 1" );
 
   // FIXME These componentsProperties seem the same as EOSPhaseModels'. They should no go to the data part.
-  const ComponentProperties & componentsProperties = sysProps.getComponentProperties();
-
-  const std::size_t nComponents = componentsProperties.NComponents;
+  const std::size_t nComponents = getNComponents();
 
   std::vector< double > gasMoleComposition = std::vector< double >( nComponents, 0. );
   std::vector< double > oilMoleComposition = std::vector< double >( nComponents, 0. );
   std::vector< double > waterMoleComposition = std::vector< double >( nComponents, 0. );
 
-  std::vector< double > kGasOil = computeWilsonGasLiquidKvalue( componentsProperties, pressure, temperature );
-  std::vector< double > kWaterGas = computeWaterGasKvalue( componentsProperties, pressure, temperature );
-  std::vector< double > kWaterOil = computeWaterOilKvalue( componentsProperties, pressure, temperature );
+  std::vector< double > kGasOil = computeWilsonGasLiquidKvalue( pressure, temperature );
+  std::vector< double > kWaterGas = computeWaterGasKvalue( pressure, temperature );
+  std::vector< double > kWaterOil = computeWaterOilKvalue( pressure, temperature );
 
   //Trivial split
   double vOil = 0.;
   double vGas = 0.;
   double vWater = 0.;
 
+  const std::size_t waterIndex = getWaterIndex();
   for( std::size_t i = 0; i != nComponents; ++i )
   {
-    if( i != componentsProperties.WaterIndex )
+    if( i != waterIndex )
     {
       //gas-oil
       if( kGasOil[i] > 1 )
@@ -103,7 +104,7 @@ bool TrivialFlash::computeEquilibrium( TrivialFlashMultiphaseSystemProperties & 
 
   for( const pvt::PHASE_TYPE & phase: sysProps.getPhases() )
   {
-    const CubicEoSPhaseModel & model = sysProps.getCubicEoSPhaseModel( phase );
+    const CubicEoSPhaseModel & model = getCubicEoSPhaseModel( phase );
     const std::vector< double > & moleComposition = sysProps.getMoleComposition( phase ).value;
     const auto props = model.computeAllProperties( pressure, temperature, moleComposition );
 

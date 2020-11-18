@@ -18,10 +18,9 @@ namespace PVTPackage
 {
 
 TrivialFlashMultiphaseSystemProperties::TrivialFlashMultiphaseSystemProperties( const std::vector< pvt::PHASE_TYPE > & phases,
-                                                                                const std::vector< pvt::EOS_TYPE > & eosTypes,
-                                                                                const ComponentProperties & componentProperties )
+                                                                                std::size_t nComponents )
   :
-  CompositionalMultiphaseSystemProperties( phases, eosTypes, componentProperties )
+  CompositionalMultiphaseSystemProperties( phases, nComponents )
 {
 
 }

@@ -21,10 +21,17 @@
 namespace PVTPackage
 {
 
-CompositionalFlash::CompositionalFlash( const ComponentProperties & componentProperties )
-  : m_ComponentsProperties( componentProperties )
+CompositionalFlash::CompositionalFlash( const std::vector< pvt::PHASE_TYPE > & phases,
+                                        const std::vector< pvt::EOS_TYPE > & eosTypes,
+                                        ComponentProperties const & componentProperties )
+  : m_componentProperties( componentProperties ) // FIXME still usefull?
 {
-
+  for( std::size_t i = 0; i != phases.size(); ++i )
+  {
+    m_phaseModels.insert(
+      { phases[i], CubicEoSPhaseModel( m_componentProperties, eosTypes[i], phases[i] ) }
+    );
+  }
 }
 
 double CompositionalFlash::solveRachfordRiceEquation( const std::vector< double > & kValues,
@@ -177,14 +184,13 @@ double CompositionalFlash::dRachfordRiceFunction_dx( const std::vector< double >
   return val;
 }
 
-std::vector< double > CompositionalFlash::computeWilsonGasLiquidKvalue( ComponentProperties const & componentsProperties,
-                                                                        double pressure,
-                                                                        double temperature )
+std::vector< double > CompositionalFlash::computeWilsonGasLiquidKvalue( double pressure,
+                                                                        double temperature ) const
 {
-  const auto nbc = componentsProperties.NComponents;
-  const auto & Tc = componentsProperties.Tc;
-  const auto & Pc = componentsProperties.Pc;
-  const auto & Omega = componentsProperties.Omega;
+  const auto nbc = m_componentProperties.NComponents;
+  const auto & Tc = m_componentProperties.Tc;
+  const auto & Pc = m_componentProperties.Pc;
+  const auto & Omega = m_componentProperties.Omega;
 
   std::vector< double > Kval( nbc );
 
@@ -197,24 +203,37 @@ std::vector< double > CompositionalFlash::computeWilsonGasLiquidKvalue( Componen
   return Kval;
 }
 
-std::vector< double > CompositionalFlash::computeWaterGasKvalue( ComponentProperties const & componentsProperties,
-                                                                 double pressure,
-                                                                 double temperature )
+std::vector< double > CompositionalFlash::computeWaterGasKvalue( double pressure,
+                                                                 double temperature ) const
 {
-  const auto nbc = componentsProperties.NComponents;
-  const auto water_index = componentsProperties.WaterIndex;
+  const auto nbc = m_componentProperties.NComponents;
+  const auto water_index = m_componentProperties.WaterIndex;
   std::vector< double > Kval( nbc, 0 );
   Kval[water_index] = exp( -4844.168051 / temperature + 12.93022442 ) * 1e5 / pressure;
   return Kval;
 }
 
-std::vector< double > CompositionalFlash::computeWaterOilKvalue( ComponentProperties const & componentsProperties,
-                                                                 double pressure,
-                                                                 double temperature )
+std::vector< double > CompositionalFlash::computeWaterOilKvalue( double pressure,
+                                                                 double temperature ) const
 {
   (void) pressure, (void) temperature;
-  const auto nbc = componentsProperties.NComponents;
+  const auto nbc = m_componentProperties.NComponents;
   return std::vector< double >( nbc, 0 );
+}
+
+const CubicEoSPhaseModel & CompositionalFlash::getCubicEoSPhaseModel( pvt::PHASE_TYPE const & phase ) const
+{
+  return m_phaseModels.at( phase );
+}
+
+std::size_t CompositionalFlash::getNComponents() const
+{
+  return m_componentProperties.NComponents;
+}
+
+std::size_t CompositionalFlash::getWaterIndex() const
+{
+  return m_componentProperties.WaterIndex;
 }
 
 }

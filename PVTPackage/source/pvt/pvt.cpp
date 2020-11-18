@@ -74,18 +74,18 @@ std::unique_ptr< MultiphaseSystem > MultiphaseSystemBuilder::buildCompositional(
 
 std::unique_ptr< MultiphaseSystem > MultiphaseSystemBuilder::buildLiveOil( const std::vector< pvt::PHASE_TYPE > & phases,
                                                                            const std::vector< std::string > & tableFileNames,
-                                                                           const std::vector< double > & surfaceDensities,
+                                                                           const std::vector< double > & surfaceMassDensities,
                                                                            const std::vector< double > & molarWeights )
 {
-  return PVTPackage::BlackOilMultiphaseSystem::build( phases, tableFileNames, surfaceDensities, molarWeights );
+  return PVTPackage::BlackOilMultiphaseSystem::build( phases, tableFileNames, surfaceMassDensities, molarWeights );
 }
 
 std::unique_ptr< MultiphaseSystem > MultiphaseSystemBuilder::buildDeadOil( const std::vector< pvt::PHASE_TYPE > & phases,
                                                                            const std::vector< std::string > & tableFileNames,
-                                                                           const std::vector< double > & surfaceDensities,
+                                                                           const std::vector< double > & surfaceMassDensities,
                                                                            const std::vector< double > & molarWeights )
 {
-  return PVTPackage::DeadOilMultiphaseSystem::build( phases, tableFileNames, surfaceDensities, molarWeights );
+  return PVTPackage::DeadOilMultiphaseSystem::build( phases, tableFileNames, surfaceMassDensities, molarWeights );
 }
 
 }

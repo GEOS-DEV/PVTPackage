@@ -17,21 +17,9 @@
 namespace PVTPackage
 {
 
-BlackOilFlashMultiphaseSystemProperties::BlackOilFlashMultiphaseSystemProperties( std::size_t nComponents,
-                                                                                  const std::vector< std::vector< double > > & PVTO,
-                                                                                  double oilSurfaceMassDensity,
-                                                                                  double oilSurfaceMolecularWeight,
-                                                                                  const std::vector< std::vector< double > > & PVTG,
-                                                                                  double gasSurfaceMassDensity,
-                                                                                  double gasSurfaceMolecularWeight,
-                                                                                  const std::vector< double > & PVTW,
-                                                                                  double waterSurfaceMassDensity,
-                                                                                  double waterSurfaceMolecularWeight )
+BlackOilFlashMultiphaseSystemProperties::BlackOilFlashMultiphaseSystemProperties( std::size_t nComponents )
   :
-  BlackOilDeadOilMultiphaseSystemProperties( nComponents ),
-  m_oilPhaseModel( PVTO, oilSurfaceMassDensity, oilSurfaceMolecularWeight ),
-  m_gasPhaseModel( PVTG, gasSurfaceMassDensity, gasSurfaceMolecularWeight ),
-  m_waterPhaseModel( PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight )
+  BlackOilDeadOilMultiphaseSystemProperties( nComponents )
 {
   for( pvt::PHASE_TYPE pt: getPhases() )
   {
@@ -39,21 +27,6 @@ BlackOilFlashMultiphaseSystemProperties::BlackOilFlashMultiphaseSystemProperties
   }
 
   m_moleComposition.at( pvt::PHASE_TYPE::LIQUID_WATER_RICH ).value = { 0., 0., 1. };
-}
-
-BlackOil_GasModel const & BlackOilFlashMultiphaseSystemProperties::getGasPhaseModel() const
-{
-  return m_gasPhaseModel;
-}
-
-BlackOil_WaterModel const & BlackOilFlashMultiphaseSystemProperties::getWaterPhaseModel() const
-{
-  return m_waterPhaseModel;
-}
-
-BlackOil_OilModel const & BlackOilFlashMultiphaseSystemProperties::getOilPhaseModel() const
-{
-  return m_oilPhaseModel;
 }
 
 void BlackOilFlashMultiphaseSystemProperties::setOilFraction( double const & fraction )

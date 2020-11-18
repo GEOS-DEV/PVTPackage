@@ -23,6 +23,14 @@
 namespace PVTPackage
 {
 
+FreeWaterFlash::FreeWaterFlash( const std::vector< pvt::PHASE_TYPE > & phases,
+                                const std::vector< pvt::EOS_TYPE > & eosTypes,
+                                ComponentProperties const & componentProperties )
+  : CompositionalFlash( phases, eosTypes, componentProperties )
+{
+  m_WaterIndex = componentProperties.WaterIndex;
+}
+
 bool FreeWaterFlash::isThreePhase( const std::vector< double > & kValues,
                                    const std::vector< double > & feed,
                                    const std::list< std::size_t > & nonZeroIndex,
@@ -258,7 +266,7 @@ double FreeWaterFlash::solveModifiedRachfordRiceEquation( const std::vector< dou
   return gas_phase_mole_fraction = Newton_value;
 }
 
-bool FreeWaterFlash::computeEquilibrium( FreeWaterFlashMultiphaseSystemProperties & sysProps )
+bool FreeWaterFlash::computeEquilibrium( FreeWaterFlashMultiphaseSystemProperties & sysProps ) const
 {
   // Equilibrium convergence parameters
   const int max_SSI_iterations = 100;
@@ -270,11 +278,10 @@ bool FreeWaterFlash::computeEquilibrium( FreeWaterFlashMultiphaseSystemPropertie
 
   ASSERT( std::fabs( math::sum_array( feed ) - 1.0 ) < 1e-12, "Feed sum must be 1" );
 
-  const ComponentProperties & componentProperties = sysProps.getComponentProperties();
-  const std::size_t nComponents = componentProperties.NComponents;
+  const std::size_t nComponents = getNComponents();
 
   // Water
-  const std::size_t waterIndex = componentProperties.WaterIndex;
+  const std::size_t waterIndex = getWaterIndex();
   const auto & waterFeed = feed[waterIndex];
 
   const std::vector< double > & oilLnFugacity = sysProps.getOilLnFugacity();
@@ -284,9 +291,9 @@ bool FreeWaterFlash::computeEquilibrium( FreeWaterFlashMultiphaseSystemPropertie
   std::vector< double > fugacityRatios( nComponents ), fugacityRatiosW( nComponents );
 
   // Compute Equilibrium ratios
-  std::vector< double > kGasLiquid = computeWilsonGasLiquidKvalue( componentProperties, pressure, temperature );
+  std::vector< double > kGasLiquid = computeWilsonGasLiquidKvalue( pressure, temperature );
   kGasLiquid[waterIndex] = std::numeric_limits< double >::max(); //std::numeric_limits<double>::infinity(); //No water in oil
-  double kWater_GasWater = computeWaterGasKvalue( componentProperties, pressure, temperature )[waterIndex];
+  double kWater_GasWater = computeWaterGasKvalue( pressure, temperature )[waterIndex];
   const double kWater_OilWater = 0.0;
 
   // Check for machine-zero feed values
@@ -371,7 +378,7 @@ bool FreeWaterFlash::computeEquilibrium( FreeWaterFlashMultiphaseSystemPropertie
     // Compute phase fugacity
     for( const pvt::PHASE_TYPE phase: sysProps.getPhases() )
     {
-      const CubicEoSPhaseModel & model = sysProps.getCubicEoSPhaseModel( phase );
+      const CubicEoSPhaseModel & model = getCubicEoSPhaseModel( phase );
       const auto props = model.computeAllProperties( pressure, temperature, moleComposition.at( phase ) );
       sysProps.setModelProperties( phase, props );
     }
@@ -444,7 +451,7 @@ bool FreeWaterFlash::computeEquilibrium( FreeWaterFlashMultiphaseSystemPropertie
       }
 
       // Update phase properties since adjusting composition
-      const CubicEoSPhaseModel & model = sysProps.getCubicEoSPhaseModel( phase );
+      const CubicEoSPhaseModel & model = getCubicEoSPhaseModel( phase );
       const auto props = model.computeAllProperties( pressure, temperature, moleComposition.at( phase ) );
       sysProps.setModelProperties( phase, props );
     }
@@ -471,7 +478,7 @@ bool FreeWaterFlash::computeEquilibrium( FreeWaterFlashMultiphaseSystemPropertie
       }
 
       // Update phase properties since adjusting composition
-      const CubicEoSPhaseModel & model = sysProps.getCubicEoSPhaseModel( phase );
+      const CubicEoSPhaseModel & model = getCubicEoSPhaseModel( phase );
       const auto props = model.computeAllProperties( pressure, temperature, moleComposition.at( phase ) );
       sysProps.setModelProperties( phase, props );
     }

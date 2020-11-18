@@ -30,22 +30,22 @@ BlackOilMultiphaseSystem::BlackOilMultiphaseSystem( const std::vector< pvt::PHAS
                                                     double waterSurfaceMassDensity,
                                                     double waterSurfaceMolecularWeight )
   :
-  m_bofmsp( phases.size(),
-            PVTO, oilSurfaceMassDensity, oilSurfaceMolecularWeight,
-            PVTG, gasSurfaceMassDensity, gasSurfaceMolecularWeight,
-            PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight )
+  m_blackOilFlash( PVTO, oilSurfaceMassDensity, oilSurfaceMolecularWeight,
+                   PVTG, gasSurfaceMassDensity, gasSurfaceMolecularWeight,
+                   PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight ),
+  m_bofmsp( phases.size() )
 {
 
 }
 
 std::unique_ptr< BlackOilMultiphaseSystem > BlackOilMultiphaseSystem::build( const std::vector< pvt::PHASE_TYPE > & phases,
                                                                              const std::vector< std::string > & tableFileNames,
-                                                                             const std::vector< double > & surfaceDensities,
+                                                                             const std::vector< double > & surfaceMassDensities,
                                                                              const std::vector< double > & molarWeights )
 {
   // TODO Check consistency between PVTO and PVTG
   // props.oilTable, props.gasTable and props.waterTable respectively contain PVTO, PVTG and PVTW
-  const Properties & props = buildTables( phases, tableFileNames, surfaceDensities, molarWeights );
+  const Properties & props = buildTables( phases, tableFileNames, surfaceMassDensities, molarWeights );
 
   // I am not using std::make_unique because I want the constructor to be private.
   auto * ptr = new BlackOilMultiphaseSystem( phases,

@@ -16,8 +16,6 @@
 #define PVTPACKAGE_TRIVIALFLASHMULTIPHASESYSTEMPROPERTIES_HPP
 
 #include "MultiphaseSystem/MultiphaseSystemProperties/CompositionalMultiphaseSystemProperties.hpp"
-#include "MultiphaseSystem/ComponentProperties.hpp"
-#include "MultiphaseSystem/PhaseModel/CubicEOS/CubicEoSPhaseModel.hpp"
 
 #include "pvt/pvt.hpp"
 
@@ -32,8 +30,7 @@ class TrivialFlashMultiphaseSystemProperties final : public CompositionalMultiph
 public:
 
   TrivialFlashMultiphaseSystemProperties( const std::vector< pvt::PHASE_TYPE > & phases,
-                                          const std::vector< pvt::EOS_TYPE > & eosTypes,
-                                          const ComponentProperties & componentProperties );
+                                          std::size_t nComponents );
 
   ~TrivialFlashMultiphaseSystemProperties() override = default;
 

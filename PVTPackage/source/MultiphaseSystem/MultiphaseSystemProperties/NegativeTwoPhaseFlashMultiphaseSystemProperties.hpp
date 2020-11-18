@@ -16,7 +16,6 @@
 #define PVTPACKAGE_NEGATIVETWOPHASEFLASHMULTIPHASESYSTEMPROPERTIES_HPP
 
 #include "MultiphaseSystem/MultiphaseSystemProperties/CompositionalMultiphaseSystemProperties.hpp"
-#include "MultiphaseSystem/ComponentProperties.hpp"
 
 #include "pvt/pvt.hpp"
 
@@ -31,8 +30,7 @@ class NegativeTwoPhaseFlashMultiphaseSystemProperties final : public Composition
 public:
 
   NegativeTwoPhaseFlashMultiphaseSystemProperties( const std::vector< pvt::PHASE_TYPE > & phases,
-                                                   const std::vector< pvt::EOS_TYPE > & eosTypes,
-                                                   const ComponentProperties & cp );
+                                                   std::size_t nComponents );
 
   ~NegativeTwoPhaseFlashMultiphaseSystemProperties() override = default;
 

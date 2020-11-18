@@ -25,7 +25,13 @@
 namespace PVTPackage
 {
 
-bool NegativeTwoPhaseFlash::computeEquilibrium( NegativeTwoPhaseFlashMultiphaseSystemProperties & sysProps )
+NegativeTwoPhaseFlash::NegativeTwoPhaseFlash( const std::vector< pvt::PHASE_TYPE > & phases,
+                                              const std::vector< pvt::EOS_TYPE > & eosTypes,
+                                              ComponentProperties const & componentProperties )
+  : CompositionalFlash( phases, eosTypes, componentProperties )
+{ }
+
+bool NegativeTwoPhaseFlash::computeEquilibrium( NegativeTwoPhaseFlashMultiphaseSystemProperties & sysProps ) const
 {
   // Equilibrium convergence parameters
   const int max_SSI_iterations = 100;
@@ -37,11 +43,10 @@ bool NegativeTwoPhaseFlash::computeEquilibrium( NegativeTwoPhaseFlashMultiphaseS
 
   ASSERT( std::fabs( math::sum_array( feed ) - 1.0 ) < 1e-12, "Feed sum must be 1" );
 
-  const ComponentProperties & componentProperties = sysProps.getComponentProperties();
-  const std::size_t nComponents = componentProperties.NComponents;
+  const std::size_t nComponents = getNComponents();
 
   std::vector< double > fugacityRatios( nComponents );
-  std::vector< double > kGasOil = computeWilsonGasLiquidKvalue( componentProperties, pressure, temperature );
+  std::vector< double > kGasOil = computeWilsonGasLiquidKvalue( pressure, temperature );
 
   //Check for machine-zero feed values
   const double epsilon = std::numeric_limits< double >::epsilon();
@@ -83,7 +88,7 @@ bool NegativeTwoPhaseFlash::computeEquilibrium( NegativeTwoPhaseFlashMultiphaseS
     // Compute phase fugacity
     for( const pvt::PHASE_TYPE & phase: sysProps.getPhases() )
     {
-      const CubicEoSPhaseModel & model = sysProps.getCubicEoSPhaseModel( phase );
+      const CubicEoSPhaseModel & model = getCubicEoSPhaseModel( phase );
       const auto props = model.computeAllProperties( pressure, temperature, moleComposition.at( phase ) );
       sysProps.setModelProperties( phase, props );
     }
@@ -136,7 +141,7 @@ bool NegativeTwoPhaseFlash::computeEquilibrium( NegativeTwoPhaseFlashMultiphaseS
     }
 
     // Update phase properties since adjusting composition
-    const CubicEoSPhaseModel & model = sysProps.getCubicEoSPhaseModel( phase );
+    const CubicEoSPhaseModel & model = getCubicEoSPhaseModel( phase );
     const auto props = model.computeAllProperties( pressure, temperature, moleComposition.at( phase ) );
     sysProps.setModelProperties( phase, props );
   }

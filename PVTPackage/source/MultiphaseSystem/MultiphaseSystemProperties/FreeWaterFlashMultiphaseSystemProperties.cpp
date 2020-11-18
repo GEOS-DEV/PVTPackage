@@ -18,10 +18,9 @@ namespace PVTPackage
 {
 
 FreeWaterFlashMultiphaseSystemProperties::FreeWaterFlashMultiphaseSystemProperties( const std::vector< pvt::PHASE_TYPE > & phases,
-                                                                                    const std::vector< pvt::EOS_TYPE > & eosTypes,
-                                                                                    const ComponentProperties & cp )
+                                                                                    std::size_t nComponents )
   :
-  CompositionalMultiphaseSystemProperties( phases, eosTypes, cp )
+  CompositionalMultiphaseSystemProperties( phases, nComponents )
 {
 
 }

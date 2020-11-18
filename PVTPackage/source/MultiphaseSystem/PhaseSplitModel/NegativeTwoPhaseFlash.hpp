@@ -27,22 +27,11 @@ class NegativeTwoPhaseFlash final : private CompositionalFlash
 {
 public:
 
-  NegativeTwoPhaseFlash( const ComponentProperties & componentProperties )
-    : CompositionalFlash( componentProperties )
-  { }
+  NegativeTwoPhaseFlash( const std::vector< pvt::PHASE_TYPE > & phases,
+                         const std::vector< pvt::EOS_TYPE > & eosTypes,
+                         ComponentProperties const & componentProperties );
 
-  /**
-   * @brief Temporary access to component properties used for the computation.
-   * @return Reference to const.
-   *
-   * This member is added for debugging purpose. It should be removed.
-   */
-  const ComponentProperties & getComponentProperties() const
-  {
-    return this->m_ComponentsProperties;
-  }
-
-  static bool computeEquilibrium( NegativeTwoPhaseFlashMultiphaseSystemProperties & sysProps );
+  bool computeEquilibrium( NegativeTwoPhaseFlashMultiphaseSystemProperties & sysProps ) const;
 };
 
 }

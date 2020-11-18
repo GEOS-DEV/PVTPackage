@@ -101,12 +101,12 @@ protected:
 private:
 
   static void updateDerivativeDPFiniteDifference( FactorMultiphaseSystemProperties & sysProps,
-                                                  const FactorMultiphaseSystemProperties & diffed,
+                                                  const FactorMultiphaseSystemProperties & perturbedSysProps,
                                                   double dPressure );
 
   static void updateDerivativeDZFiniteDifference( std::size_t iComponent,
                                                   FactorMultiphaseSystemProperties & sysProps,
-                                                  const FactorMultiphaseSystemProperties & diffed,
+                                                  const FactorMultiphaseSystemProperties & perturbedSysProps,
                                                   double dz );
 };
 
@@ -155,7 +155,7 @@ protected:
 private:
 
   static void updateDerivativeDTFiniteDifference( CompositionalMultiphaseSystemProperties & sysProps,
-                                                  const CompositionalMultiphaseSystemProperties & diffed,
+                                                  const CompositionalMultiphaseSystemProperties & perturbedSysProps,
                                                   double dTemperature );
 };
 
@@ -192,7 +192,7 @@ protected:
 
   static Properties buildTables( const std::vector< pvt::PHASE_TYPE > & phases,
                                  const std::vector< std::string > & tableFileNames,
-                                 const std::vector< double > & surfaceDensities,
+                                 const std::vector< double > & surfaceMassDensities,
                                  const std::vector< double > & molarWeights );
 };
 

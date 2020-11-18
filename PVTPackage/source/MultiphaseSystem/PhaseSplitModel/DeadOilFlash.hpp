@@ -15,6 +15,8 @@
 #pragma once
 
 #include "MultiphaseSystem/MultiphaseSystemProperties/DeadOilFlashMultiphaseSystemProperties.hpp"
+#include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
+#include "MultiphaseSystem/PhaseModel/BlackOil/DeadOil_PhaseModel.hpp"
 
 namespace PVTPackage
 {
@@ -23,9 +25,29 @@ class DeadOilFlash
 {
 public:
 
-  DeadOilFlash() = default;
+  DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
+                double oilSurfaceMassDensity,
+                double oilSurfaceMolecularWeight,
+                std::vector< std::vector< double > > const & PVDG,
+                double gasSurfaceMassDensity,
+                double gasSurfaceMolecularWeight,
+                std::vector< double > const & PVTW,
+                double waterSurfaceMassDensity,
+                double waterSurfaceMolecularWeight );
 
-  static bool computeEquilibrium( DeadOilFlashMultiphaseSystemProperties & sysProps );
+  DeadOil_PhaseModel const & getOilPhaseModel() const;
+
+  DeadOil_PhaseModel const & getGasPhaseModel() const;
+
+  BlackOil_WaterModel const & getWaterPhaseModel() const;
+
+  bool computeEquilibrium( DeadOilFlashMultiphaseSystemProperties & sysProps ) const;
+
+private:
+
+  DeadOil_PhaseModel m_oilPhaseModel;
+  DeadOil_PhaseModel m_gasPhaseModel;
+  BlackOil_WaterModel m_waterPhaseModel;
 };
 
 }
