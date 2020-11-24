@@ -16,6 +16,8 @@
 
 #include "pvt/pvt.hpp"
 
+#include <algorithm>
+
 namespace PVTPackage
 {
 
@@ -33,7 +35,7 @@ DeadOilMultiphaseSystem::DeadOilMultiphaseSystem( const std::vector< pvt::PHASE_
   m_deadOilFlash( PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight,
                   PVDG, gasSurfaceMassDensity, gasSurfaceMolecularWeight,
                   PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight ),
-  m_dofmsp( phases.size() )
+  m_dofmsp( phases )
 {
 
 }
@@ -62,6 +64,16 @@ std::unique_ptr< DeadOilMultiphaseSystem > DeadOilMultiphaseSystem::build( const
                                                                            const std::vector< double > & surfaceDensities,
                                                                            const std::vector< double > & molarWeights )
 {
+  const bool containsOil = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::OIL ) != phases.end();
+  const bool containsGas = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::GAS ) != phases.end();
+  const bool containsWater = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::LIQUID_WATER_RICH ) != phases.end();  
+
+  if( !( (containsOil && containsGas) || (containsOil && containsWater) ) )
+  {    
+    const std::string msg = "Three types of DO systems are allowed: Oil-Water-Gas, Oil-Water, and Oil-Gas";
+    LOGERROR( msg );
+  }
+   
   // props.oilTable, props.gasTable and props.waterTable respectively contain PVDO, PVDG and PVTW
   const Properties & props = buildTables( phases, tableFileNames, surfaceDensities, molarWeights );
 

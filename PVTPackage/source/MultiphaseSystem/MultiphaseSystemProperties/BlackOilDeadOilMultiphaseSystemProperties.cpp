@@ -23,9 +23,9 @@
 namespace PVTPackage
 {
 
-BlackOilDeadOilMultiphaseSystemProperties::BlackOilDeadOilMultiphaseSystemProperties( std::size_t nComponents )
+BlackOilDeadOilMultiphaseSystemProperties::BlackOilDeadOilMultiphaseSystemProperties( std::vector< pvt::PHASE_TYPE > const & phases )
   :
-  FactorMultiphaseSystemProperties( { pvt::PHASE_TYPE::OIL, pvt::PHASE_TYPE::GAS, pvt::PHASE_TYPE::LIQUID_WATER_RICH }, nComponents )
+  FactorMultiphaseSystemProperties( phases, phases.size() )
 {
 
 }
@@ -33,9 +33,9 @@ BlackOilDeadOilMultiphaseSystemProperties::BlackOilDeadOilMultiphaseSystemProper
 void BlackOilDeadOilMultiphaseSystemProperties::setModelProperties( pvt::PHASE_TYPE const & phase,
                                                                     BlackOilDeadOilProperties const & props )
 {
-  // FIXME Viscosity is never used so I do not store it.
   m_massDensity.at( phase ).value = props.massDensity;
   m_moleDensity.at( phase ).value = props.moleDensity;
+  m_viscosity.at( phase ).value = props.viscosity;
   m_molecularWeight.at( phase ).value = props.massDensity / props.moleDensity;
 }
 

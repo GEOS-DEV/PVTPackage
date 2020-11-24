@@ -131,6 +131,14 @@ public:
   virtual const ScalarPropertyAndDerivatives< double > & getMoleDensity( PHASE_TYPE const & phase ) const = 0;
 
   /**
+   * @brief Viscosity data (and derivatives) for given @p phase.
+   * @param phase The required phase (oil, gas, water).
+   * @return The data as a ref to const.
+   * @throw std::out_of_range if @p phase does not exist.
+   */
+  virtual const ScalarPropertyAndDerivatives< double > & getViscosity( PHASE_TYPE const & phase ) const = 0;
+
+  /**
    * @brief Molecular weight data (and derivatives) for given @p phase.
    * @param phase The required phase (oil, gas, water).
    * @return The data as a ref to const.

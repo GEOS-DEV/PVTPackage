@@ -31,19 +31,25 @@ DeadOil_PhaseModel::DeadOil_PhaseModel( pvt::PHASE_TYPE type,
     m_surfaceMoleDensity( 0 ),
     m_surfaceMolecularWeight( oilSurfaceMw )
 {
+  // if the phase is present, PVTD.size() > 0
+  // if the phase is absent (for two-phase dead-oil), PVD.size() == 0 => we skip initialization
+  if( PVD.size() > 0 )
+  {    
+  
+    // Fill table
+    createTable( PVD );
 
-  //--Fill table
-  createTable( PVD );
+    // Check consistency
+    checkTableConsistency();
 
-  //Check Consistency
-  checkTableConsistency();
+    // Check consistency
+    checkTableConsistency();
 
-  //Check Consistency
-  checkTableConsistency();
-
-  //Density
-  m_surfaceMassDensity = oilSurfaceMassDensity;
-  m_surfaceMoleDensity = m_surfaceMassDensity / m_surfaceMolecularWeight;
+    // Compute density
+    m_surfaceMassDensity = oilSurfaceMassDensity;
+    m_surfaceMoleDensity = m_surfaceMassDensity / m_surfaceMolecularWeight;
+    
+  }
 }
 
 void DeadOil_PhaseModel::checkTableConsistency()
@@ -87,15 +93,7 @@ void DeadOil_PhaseModel::createTable( const std::vector< std::vector< double>> &
     m_PVD.Viscosity[i] = PVD[i][2];
   }
 
-  //Add 1atm value if does not exist yet
-  auto Pref = 101325.0;
-  if( !math::isNearlyEqual( m_PVD.Pressure[0], Pref ) )
-  {
-    m_PVD.Pressure.insert( m_PVD.Pressure.begin(), Pref );
-    m_PVD.NPoints++;
-  }
-
-  //
+  // find the min and max pressure in the table
   m_maxPressure = *( std::max_element( m_PVD.Pressure.begin(), m_PVD.Pressure.end() ) );
   m_minPressure = *( std::min_element( m_PVD.Pressure.begin(), m_PVD.Pressure.end() ) );
 }

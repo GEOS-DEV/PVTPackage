@@ -65,6 +65,7 @@ void CompositionalMultiphaseSystemProperties::setModelProperties( const pvt::PHA
 {
   m_massDensity.at( phase ).value = properties.massDensity;
   m_moleDensity.at( phase ).value = properties.moleDensity;
+  m_viscosity.at( phase ).value = properties.viscosity;
   m_molecularWeight.at( phase ).value = properties.molecularWeight;
   // FIXME not so sure that all models use those two following data.
   m_compressibilityFactor.at( phase ) = properties.compressibilityFactor;
@@ -95,6 +96,12 @@ void CompositionalMultiphaseSystemProperties::setMassDensityDT( pvt::PHASE_TYPE 
                                                                 double const & value )
 {
   m_massDensity.at( phase ).dT = value;
+}
+
+void CompositionalMultiphaseSystemProperties::setViscosityDT( pvt::PHASE_TYPE const & phase,
+							      double const & value )
+{
+  m_viscosity.at( phase ).dT = value;
 }
 
 void CompositionalMultiphaseSystemProperties::setMoleCompositionDT( pvt::PHASE_TYPE const & phase,

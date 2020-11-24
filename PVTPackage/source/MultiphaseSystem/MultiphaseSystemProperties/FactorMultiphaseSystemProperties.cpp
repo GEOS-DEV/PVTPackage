@@ -27,6 +27,7 @@ FactorMultiphaseSystemProperties::FactorMultiphaseSystemProperties( std::vector<
     m_massDensity.insert( { pt, pvt::ScalarPropertyAndDerivatives< double >( nComponents ) } );
     m_moleComposition.insert( { pt, pvt::VectorPropertyAndDerivatives< double >( nComponents, nComponents ) } );
     m_moleDensity.insert( { pt, pvt::ScalarPropertyAndDerivatives< double >( nComponents ) } );
+    m_viscosity.insert( {pt, pvt::ScalarPropertyAndDerivatives< double >( nComponents ) } ); 
     m_molecularWeight.insert( { pt, pvt::ScalarPropertyAndDerivatives< double >( nComponents ) } );
     m_phaseMoleFraction.insert( { pt, pvt::ScalarPropertyAndDerivatives< double >( nComponents ) } );
   }
@@ -47,6 +48,11 @@ pvt::ScalarPropertyAndDerivatives< double > const & FactorMultiphaseSystemProper
   return m_moleDensity.at( phase );
 }
 
+pvt::ScalarPropertyAndDerivatives< double > const & FactorMultiphaseSystemProperties::getViscosity( pvt::PHASE_TYPE const & phase ) const
+{
+  return m_viscosity.at( phase );
+}
+  
 pvt::ScalarPropertyAndDerivatives< double > const & FactorMultiphaseSystemProperties::getMolecularWeight( pvt::PHASE_TYPE const & phase ) const
 {
   return m_molecularWeight.at( phase );
@@ -119,6 +125,12 @@ void FactorMultiphaseSystemProperties::setMassDensityDP( pvt::PHASE_TYPE const &
   m_massDensity.at( phase ).dP = value;
 }
 
+void FactorMultiphaseSystemProperties::setViscosityDP( pvt::PHASE_TYPE const & phase,
+						       double const & value )
+{
+  m_viscosity.at( phase ).dP = value;
+}
+  
 void FactorMultiphaseSystemProperties::setMoleCompositionDP( pvt::PHASE_TYPE const & phase,
                                                              std::vector< double > const & value )
 {
@@ -153,6 +165,13 @@ void FactorMultiphaseSystemProperties::setMassDensityDZ( pvt::PHASE_TYPE const &
                                                          double const & value )
 {
   m_massDensity.at( phase ).dz[i] = value;
+}
+
+void FactorMultiphaseSystemProperties::setViscosityDZ( pvt::PHASE_TYPE const & phase,
+						       std::size_t i,
+						       double const & value )
+{
+  m_viscosity.at( phase ).dz[i] = value;
 }
 
 void FactorMultiphaseSystemProperties::setMoleCompositionDZ( pvt::PHASE_TYPE const & phase,

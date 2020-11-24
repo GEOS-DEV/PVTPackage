@@ -31,6 +31,8 @@ public:
 
   pvt::ScalarPropertyAndDerivatives< double > const & getMassDensity( pvt::PHASE_TYPE const & phase ) const final;
 
+  pvt::ScalarPropertyAndDerivatives< double > const & getViscosity( pvt::PHASE_TYPE const & phase ) const final;
+  
   pvt::VectorPropertyAndDerivatives< double > const & getMoleComposition( pvt::PHASE_TYPE const & phase ) const final;
 
   pvt::ScalarPropertyAndDerivatives< double > const & getMoleDensity( pvt::PHASE_TYPE const & phase ) const final;
@@ -61,6 +63,9 @@ public:
   void setMassDensityDP( pvt::PHASE_TYPE const & phase,
                          double const & value );
 
+  void setViscosityDP( pvt::PHASE_TYPE const & phase,
+		       double const & value );
+  
   void setMoleCompositionDP( pvt::PHASE_TYPE const & phase,
                              std::vector< double > const & value );
 
@@ -80,6 +85,10 @@ public:
                          std::size_t i,
                          double const & value );
 
+  void setViscosityDZ( pvt::PHASE_TYPE const & phase,
+		       std::size_t i,
+		       double const & value );
+  
   void setMoleCompositionDZ( pvt::PHASE_TYPE const & phase,
                              std::size_t i,
                              std::vector< double > const & value );
@@ -89,9 +98,10 @@ protected:
   std::map< pvt::PHASE_TYPE, pvt::ScalarPropertyAndDerivatives< double > > m_massDensity;
   std::map< pvt::PHASE_TYPE, pvt::VectorPropertyAndDerivatives< double > > m_moleComposition;
   std::map< pvt::PHASE_TYPE, pvt::ScalarPropertyAndDerivatives< double > > m_moleDensity;
+  std::map< pvt::PHASE_TYPE, pvt::ScalarPropertyAndDerivatives< double > > m_viscosity;  
   std::map< pvt::PHASE_TYPE, pvt::ScalarPropertyAndDerivatives< double > > m_molecularWeight;
   std::map< pvt::PHASE_TYPE, pvt::ScalarPropertyAndDerivatives< double > > m_phaseMoleFraction;
-
+  
   void setPhaseMoleFraction( pvt::PHASE_TYPE const & phase,
                              const double & phaseMoleFraction );
 

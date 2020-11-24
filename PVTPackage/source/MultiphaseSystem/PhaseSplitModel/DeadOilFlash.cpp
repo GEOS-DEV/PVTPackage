@@ -17,6 +17,8 @@
 #include "MultiphaseSystem/PhaseModel/BlackOil/BlackOil_WaterModel.hpp"
 #include "MultiphaseSystem/PhaseModel/BlackOil/DeadOil_PhaseModel.hpp"
 
+#include <algorithm>
+
 namespace PVTPackage
 {
 
@@ -34,7 +36,6 @@ DeadOilFlash::DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
   m_gasPhaseModel( pvt::PHASE_TYPE::GAS, PVDG, gasSurfaceMassDensity, gasSurfaceMolecularWeight ),
   m_waterPhaseModel( PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight )
 {
-
 }
 
 DeadOil_PhaseModel const & DeadOilFlash::getOilPhaseModel() const
@@ -54,23 +55,46 @@ BlackOil_WaterModel const & DeadOilFlash::getWaterPhaseModel() const
 
 bool DeadOilFlash::computeEquilibrium( DeadOilFlashMultiphaseSystemProperties & sysProps ) const
 {
+  // OIL  
   const auto & pressure = sysProps.getPressure();
 
-  const DeadOil_PhaseModel & oilPhaseModel = getOilPhaseModel();
-  const DeadOil_PhaseModel & gasPhaseModel = getGasPhaseModel();
-  const BlackOil_WaterModel & waterPhaseModel = getWaterPhaseModel();
-
-  // OIL
+  const DeadOil_PhaseModel & oilPhaseModel = getOilPhaseModel();  
   auto const oilProps = oilPhaseModel.computeProperties( pressure );
   sysProps.setOilModelProperties( oilProps );
 
-  // GAS
-  auto const gasProps = gasPhaseModel.computeProperties( pressure );
-  sysProps.setGasModelProperties( gasProps );
+  size_t const nPhases = sysProps.getPhases().size();
 
-  // WATER
-  auto const waterProps = waterPhaseModel.computeProperties( pressure );
-  sysProps.setWaterModelProperties( waterProps );
+  if( nPhases == 3 )
+  {  
+    // GAS
+    const DeadOil_PhaseModel & gasPhaseModel = getGasPhaseModel();
+    auto const gasProps = gasPhaseModel.computeProperties( pressure );
+    sysProps.setGasModelProperties( gasProps );
+
+    // WATER
+    const BlackOil_WaterModel & waterPhaseModel = getWaterPhaseModel();
+    auto const waterProps = waterPhaseModel.computeProperties( pressure );
+    sysProps.setWaterModelProperties( waterProps );
+  }
+  else // nPhases = 2
+  {
+    // the system is either oil-water or oil-gas
+    bool const containsGas = std::find( sysProps.getPhases().cbegin(),
+					sysProps.getPhases().cend(),
+					pvt::PHASE_TYPE::GAS ) != sysProps.getPhases().end();
+    if( containsGas )
+    {
+      const DeadOil_PhaseModel & gasPhaseModel = getGasPhaseModel();
+      auto const gasProps = gasPhaseModel.computeProperties( pressure );
+      sysProps.setGasModelProperties( gasProps );
+    }
+    else
+    {
+      const BlackOil_WaterModel & waterPhaseModel = getWaterPhaseModel();
+      auto const waterProps = waterPhaseModel.computeProperties( pressure );
+      sysProps.setWaterModelProperties( waterProps );
+    }
+  }
 
   return true;
 }

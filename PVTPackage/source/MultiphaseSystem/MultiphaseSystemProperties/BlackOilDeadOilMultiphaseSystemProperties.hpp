@@ -27,7 +27,7 @@ class BlackOilDeadOilMultiphaseSystemProperties : public FactorMultiphaseSystemP
 {
 public:
 
-  explicit BlackOilDeadOilMultiphaseSystemProperties( std::size_t nComponents );
+  explicit BlackOilDeadOilMultiphaseSystemProperties( std::vector< pvt::PHASE_TYPE > const & phases );
 
   void setOilModelProperties( BlackOilDeadOilProperties const & props );
 
@@ -42,9 +42,7 @@ private:
    * @param phase The phase for which we want to set properties.
    * @param properties The new values.
    *
-   * Mainly defines mass density, mole density and molecular weight.
-   *
-   * @note Viscosity may be provided, but it's not stored since it's never used.
+   * Mainly defines mass density, mole density, viscosity, and molecular weight.
    */
   void setModelProperties( pvt::PHASE_TYPE const & phase,
                            BlackOilDeadOilProperties const & props );
