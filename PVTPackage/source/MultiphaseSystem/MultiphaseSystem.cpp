@@ -141,20 +141,12 @@ TableReader::Properties TableReader::buildTables( const std::vector< pvt::PHASE_
 {
   // Check if both oil and gas are defined
   const bool containsOil = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::OIL ) != phases.end();
-  const bool containsGas = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::GAS ) != phases.end();
-  ASSERT( containsOil or containsGas, "Both oil and gas phase must be defined for neither DeadOil nor BlackOil model" );
+  ASSERT( containsOil, "The oil phase must be defined for all PVT models" );
 
   // Reading data from files
   const std::vector< std::vector< std::vector< double > > > phaseTables = readTables( phases, tableFileNames );
 
   Properties result;
-  // initialize result, in case the water or gas tables are not provided (for the two-phase case)
-  result.oilSurfaceMassDensity       = 0.0;
-  result.oilSurfaceMolecularWeight   = 0.0;
-  result.gasSurfaceMassDensity       = 0.0;
-  result.gasSurfaceMolecularWeight   = 0.0;
-  result.waterSurfaceMassDensity     = 0.0;
-  result.waterSurfaceMolecularWeight = 0.0;
   
   for( std::size_t i = 0; i != phases.size(); ++i )
   {

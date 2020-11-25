@@ -22,6 +22,15 @@
 namespace PVTPackage
 {
 
+DeadOil_PhaseModel::DeadOil_PhaseModel( pvt::PHASE_TYPE type )
+  : m_type( type ),
+    m_surfaceMassDensity( 0 ),
+    m_surfaceMoleDensity( 0 ),
+    m_surfaceMolecularWeight( 0 )
+{
+  // constructor called by DeadOilFlash if the (gas) phase is absent  
+}
+  
 DeadOil_PhaseModel::DeadOil_PhaseModel( pvt::PHASE_TYPE type,
                                         const std::vector< std::vector< double > > & PVD,
                                         double oilSurfaceMassDensity,
@@ -31,25 +40,24 @@ DeadOil_PhaseModel::DeadOil_PhaseModel( pvt::PHASE_TYPE type,
     m_surfaceMoleDensity( 0 ),
     m_surfaceMolecularWeight( oilSurfaceMw )
 {
-  // if the phase is present, PVTD.size() > 0
-  // if the phase is absent (for two-phase dead-oil), PVD.size() == 0 => we skip initialization
-  if( PVD.size() > 0 )
-  {    
-  
-    // Fill table
-    createTable( PVD );
-
-    // Check consistency
-    checkTableConsistency();
-
-    // Check consistency
-    checkTableConsistency();
-
-    // Compute density
-    m_surfaceMassDensity = oilSurfaceMassDensity;
-    m_surfaceMoleDensity = m_surfaceMassDensity / m_surfaceMolecularWeight;
-    
+  // if the phase is present, PVTD.size() == 3
+  if( PVD[0].size() != 3 )
+  {
+    LOGERROR( "The PVD table must contain 3 columns" );
   }
+
+  // Fill table
+  createTable( PVD );
+
+  // Check consistency
+  checkTableConsistency();
+
+  // Check consistency
+  checkTableConsistency();
+  
+  // Compute density
+  m_surfaceMassDensity = oilSurfaceMassDensity;
+  m_surfaceMoleDensity = m_surfaceMassDensity / m_surfaceMolecularWeight;
 }
 
 void DeadOil_PhaseModel::checkTableConsistency()

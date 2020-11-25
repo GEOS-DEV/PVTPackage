@@ -126,7 +126,7 @@ void FactorMultiphaseSystemProperties::setMassDensityDP( pvt::PHASE_TYPE const &
 }
 
 void FactorMultiphaseSystemProperties::setViscosityDP( pvt::PHASE_TYPE const & phase,
-						       double const & value )
+                                                       double const & value )
 {
   m_viscosity.at( phase ).dP = value;
 }
@@ -168,8 +168,8 @@ void FactorMultiphaseSystemProperties::setMassDensityDZ( pvt::PHASE_TYPE const &
 }
 
 void FactorMultiphaseSystemProperties::setViscosityDZ( pvt::PHASE_TYPE const & phase,
-						       std::size_t i,
-						       double const & value )
+                                                       std::size_t i,
+                                                       double const & value )
 {
   m_viscosity.at( phase ).dz[i] = value;
 }

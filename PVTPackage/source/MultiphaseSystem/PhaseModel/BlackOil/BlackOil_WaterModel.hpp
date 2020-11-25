@@ -43,6 +43,8 @@ public:
     // Left blank
   }
 
+  BlackOil_WaterModel();
+  
   BlackOil_WaterModel( const std::vector< double > & PVTW,
                        double waterSurfaceMassDensity,
                        double waterSurfaceMolecularWeight );

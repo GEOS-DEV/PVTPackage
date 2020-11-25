@@ -14,11 +14,21 @@
 
 #include "BlackOil_WaterModel.hpp"
 
+#include "Utils/Logger.hpp"
 #include <cmath>
 
 namespace PVTPackage
 {
 
+BlackOil_WaterModel::BlackOil_WaterModel()
+  :
+  m_surfaceMassDensity( 0.0 ),
+  m_surfaceMoleDensity( 0.0 ),
+  m_surfaceMolecularWeight( 0.0 )
+{
+  // constructor called in DeadOilFlash if water is absent
+}
+  
 BlackOil_WaterModel::BlackOil_WaterModel( const std::vector< double > & PVTW,
                                           double waterSurfaceMassDensity,
                                           double waterSurfaceMolecularWeight )
@@ -28,16 +38,18 @@ BlackOil_WaterModel::BlackOil_WaterModel( const std::vector< double > & PVTW,
 {
   // if water is present, PVTW.size() == 4
   // if water is absent (for two-phase dead-oil), PVTW.size() == 0 => we skip initialization
-  if( PVTW.size() == 4 )
-  {    
-    m_PVTW.ReferencePressure = PVTW[0];
-    m_PVTW.Bw = PVTW[1];
-    m_PVTW.Compressibility = PVTW[2];
-    m_PVTW.Viscosity = PVTW[3];
-
-    //Density
-    m_surfaceMoleDensity = m_surfaceMassDensity / m_surfaceMolecularWeight;
+  if( PVTW.size() != 4 )
+  {
+    LOGERROR( "The water PVT table must contain 4 columns" );
   }
+
+  m_PVTW.ReferencePressure = PVTW[0];
+  m_PVTW.Bw = PVTW[1];
+  m_PVTW.Compressibility = PVTW[2];
+  m_PVTW.Viscosity = PVTW[3];
+
+  //Density
+  m_surfaceMoleDensity = m_surfaceMassDensity / m_surfaceMolecularWeight;
 }
 
 BlackOilDeadOilProperties BlackOil_WaterModel::computeProperties( double pressure ) const

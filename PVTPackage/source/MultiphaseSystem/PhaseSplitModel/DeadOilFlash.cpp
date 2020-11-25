@@ -38,6 +38,32 @@ DeadOilFlash::DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
 {
 }
 
+DeadOilFlash::DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
+                            double oilSurfaceMassDensity,
+                            double oilSurfaceMolecularWeight,
+                            std::vector< std::vector< double > > const & PVDG,
+                            double gasSurfaceMassDensity,
+                            double gasSurfaceMolecularWeight )
+  :
+  m_oilPhaseModel( pvt::PHASE_TYPE::OIL, PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight ),
+  m_gasPhaseModel( pvt::PHASE_TYPE::GAS, PVDG, gasSurfaceMassDensity, gasSurfaceMolecularWeight ),
+  m_waterPhaseModel()  
+{
+}
+
+DeadOilFlash::DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
+                            double oilSurfaceMassDensity,
+                            double oilSurfaceMolecularWeight,
+                            std::vector< double > const & PVTW,
+                            double waterSurfaceMassDensity,
+                            double waterSurfaceMolecularWeight )
+  :
+  m_oilPhaseModel( pvt::PHASE_TYPE::OIL, PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight ),
+  m_gasPhaseModel( pvt::PHASE_TYPE::GAS ),  
+  m_waterPhaseModel( PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight )
+{
+}
+  
 DeadOil_PhaseModel const & DeadOilFlash::getOilPhaseModel() const
 {
   return m_oilPhaseModel;
@@ -55,45 +81,39 @@ BlackOil_WaterModel const & DeadOilFlash::getWaterPhaseModel() const
 
 bool DeadOilFlash::computeEquilibrium( DeadOilFlashMultiphaseSystemProperties & sysProps ) const
 {
-  // OIL  
   const auto & pressure = sysProps.getPressure();
 
+  bool const containsGas = std::find( sysProps.getPhases().cbegin(),
+                                      sysProps.getPhases().cend(),
+                                      pvt::PHASE_TYPE::GAS ) != sysProps.getPhases().cend();
+  bool const containsWater = std::find( sysProps.getPhases().cbegin(),
+                                        sysProps.getPhases().cend(),
+                                        pvt::PHASE_TYPE::LIQUID_WATER_RICH ) != sysProps.getPhases().cend();
+
+  if( containsGas == containsWater )
+  {
+
+  }
+  
+  // OIL
   const DeadOil_PhaseModel & oilPhaseModel = getOilPhaseModel();  
   auto const oilProps = oilPhaseModel.computeProperties( pressure );
   sysProps.setOilModelProperties( oilProps );
 
-  size_t const nPhases = sysProps.getPhases().size();
-
-  if( nPhases == 3 )
-  {  
-    // GAS
+  // GAS
+  if( containsGas )
+  {
     const DeadOil_PhaseModel & gasPhaseModel = getGasPhaseModel();
     auto const gasProps = gasPhaseModel.computeProperties( pressure );
     sysProps.setGasModelProperties( gasProps );
+  }
 
-    // WATER
+  // WATER
+  if( containsWater )
+  {
     const BlackOil_WaterModel & waterPhaseModel = getWaterPhaseModel();
     auto const waterProps = waterPhaseModel.computeProperties( pressure );
     sysProps.setWaterModelProperties( waterProps );
-  }
-  else // nPhases = 2
-  {
-    // the system is either oil-water or oil-gas
-    bool const containsGas = std::find( sysProps.getPhases().cbegin(),
-					sysProps.getPhases().cend(),
-					pvt::PHASE_TYPE::GAS ) != sysProps.getPhases().end();
-    if( containsGas )
-    {
-      const DeadOil_PhaseModel & gasPhaseModel = getGasPhaseModel();
-      auto const gasProps = gasPhaseModel.computeProperties( pressure );
-      sysProps.setGasModelProperties( gasProps );
-    }
-    else
-    {
-      const BlackOil_WaterModel & waterPhaseModel = getWaterPhaseModel();
-      auto const waterProps = waterPhaseModel.computeProperties( pressure );
-      sysProps.setWaterModelProperties( waterProps );
-    }
   }
 
   return true;

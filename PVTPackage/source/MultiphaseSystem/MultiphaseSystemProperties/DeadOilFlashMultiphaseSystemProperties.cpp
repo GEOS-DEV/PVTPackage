@@ -54,7 +54,7 @@ DeadOilFlashMultiphaseSystemProperties::DeadOilFlashMultiphaseSystemProperties( 
     m_moleComposition.at( pvt::PHASE_TYPE::OIL ).value = { 1., 0. };
     m_lnFugacity.at( pvt::PHASE_TYPE::OIL ).value = { std::log( 1. ), std::log( 1. ) };
 
-    bool const containsGas = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::GAS ) != phases.end();
+    bool const containsGas = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::GAS ) != phases.cend();
     if( containsGas )
     {      
       m_moleComposition.at( pvt::PHASE_TYPE::GAS ).value = { 0., 1. };

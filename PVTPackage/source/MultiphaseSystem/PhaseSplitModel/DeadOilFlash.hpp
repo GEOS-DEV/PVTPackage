@@ -35,6 +35,20 @@ public:
                 double waterSurfaceMassDensity,
                 double waterSurfaceMolecularWeight );
 
+  DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
+                double oilSurfaceMassDensity,
+                double oilSurfaceMolecularWeight,
+                std::vector< std::vector< double > > const & PVDG,
+                double gasSurfaceMassDensity,
+                double gasSurfaceMolecularWeight );
+
+  DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
+                double oilSurfaceMassDensity,
+                double oilSurfaceMolecularWeight,
+                std::vector< double > const & PVTW,
+                double waterSurfaceMassDensity,
+                double waterSurfaceMolecularWeight );
+  
   DeadOil_PhaseModel const & getOilPhaseModel() const;
 
   DeadOil_PhaseModel const & getGasPhaseModel() const;

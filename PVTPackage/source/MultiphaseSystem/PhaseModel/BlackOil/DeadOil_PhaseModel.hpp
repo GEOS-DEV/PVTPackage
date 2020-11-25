@@ -55,6 +55,8 @@ public:
                       double oilSurfaceMassDensity,
                       double oilSurfaceMw );
 
+  DeadOil_PhaseModel( pvt::PHASE_TYPE type );
+  
   //Getter
   double getSurfaceMassDensity() const
   {
