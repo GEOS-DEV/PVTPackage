@@ -25,6 +25,9 @@ class DeadOilFlash
 {
 public:
 
+  /**
+   * @brief Constructor for the three-phase Dead-Oil model
+   */  
   DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
                 double oilSurfaceMassDensity,
                 double oilSurfaceMolecularWeight,
@@ -35,6 +38,9 @@ public:
                 double waterSurfaceMassDensity,
                 double waterSurfaceMolecularWeight );
 
+  /**
+   * @brief Constructor for the two-phase oil-gas Dead-Oil model
+   */  
   DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
                 double oilSurfaceMassDensity,
                 double oilSurfaceMolecularWeight,
@@ -42,6 +48,9 @@ public:
                 double gasSurfaceMassDensity,
                 double gasSurfaceMolecularWeight );
 
+  /**
+   * @brief Constructor for the two-phase oil-water Dead-Oil model
+   */  
   DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
                 double oilSurfaceMassDensity,
                 double oilSurfaceMolecularWeight,

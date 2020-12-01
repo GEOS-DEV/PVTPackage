@@ -96,13 +96,6 @@ std::unique_ptr< DeadOilMultiphaseSystem > DeadOilMultiphaseSystem::build( const
   const bool containsGas = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::GAS ) != phases.cend();
   const bool containsWater = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::LIQUID_WATER_RICH ) != phases.cend();  
 
-  const bool isValid = containsOil && ( containsGas || containsWater );
-  if( !isValid )  
-  {    
-    const std::string msg = "Three types of DO systems are allowed: Oil-Water-Gas, Oil-Water, and Oil-Gas";
-    LOGERROR( msg );
-  }
-   
   // props.oilTable, props.gasTable and props.waterTable respectively contain PVDO, PVDG and PVTW
   const Properties & props = buildTables( phases, tableFileNames, surfaceDensities, molarWeights );
 
@@ -122,12 +115,18 @@ std::unique_ptr< DeadOilMultiphaseSystem > DeadOilMultiphaseSystem::build( const
                                               props.gasTable, props.gasSurfaceMassDensity, props.gasSurfaceMolecularWeight );
     return std::unique_ptr< DeadOilMultiphaseSystem >( ptr );
   }
-  else // containsOil && containsWater
+  else if( containsOil && containsWater )
   {
     auto * ptr = new DeadOilMultiphaseSystem( phases,
                                               props.oilTable, props.oilSurfaceMassDensity, props.oilSurfaceMolecularWeight,
                                               props.waterTable, props.waterSurfaceMassDensity, props.waterSurfaceMolecularWeight );
     return std::unique_ptr< DeadOilMultiphaseSystem >( ptr );    
+  }
+  else
+  {
+    // FIXME: add a pvt::PHASE_TYPE -> string converter to log the provided phases
+    const std::string msg = "Three types of DO systems are allowed: Oil-Water-Gas, Oil-Water, and Oil-Gas";
+    LOGERROR( msg );
   }
 }
 

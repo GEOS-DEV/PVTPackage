@@ -64,7 +64,7 @@ public:
                          double const & value );
 
   void setViscosityDP( pvt::PHASE_TYPE const & phase,
-		       double const & value );
+                       double const & value );
   
   void setMoleCompositionDP( pvt::PHASE_TYPE const & phase,
                              std::vector< double > const & value );
@@ -86,8 +86,8 @@ public:
                          double const & value );
 
   void setViscosityDZ( pvt::PHASE_TYPE const & phase,
-		       std::size_t i,
-		       double const & value );
+                       std::size_t i,
+                       double const & value );
   
   void setMoleCompositionDZ( pvt::PHASE_TYPE const & phase,
                              std::size_t i,

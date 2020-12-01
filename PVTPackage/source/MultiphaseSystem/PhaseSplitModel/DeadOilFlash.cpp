@@ -90,11 +90,6 @@ bool DeadOilFlash::computeEquilibrium( DeadOilFlashMultiphaseSystemProperties & 
                                         sysProps.getPhases().cend(),
                                         pvt::PHASE_TYPE::LIQUID_WATER_RICH ) != sysProps.getPhases().cend();
 
-  if( containsGas == containsWater )
-  {
-
-  }
-  
   // OIL
   const DeadOil_PhaseModel & oilPhaseModel = getOilPhaseModel();  
   auto const oilProps = oilPhaseModel.computeProperties( pressure );

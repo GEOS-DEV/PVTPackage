@@ -40,7 +40,9 @@ public:
 
 private:
 
-  // Three-phase dead-oil 
+  /**
+   * @brief Constructor for the three-phase Dead-Oil system
+   */
   DeadOilMultiphaseSystem( const std::vector< pvt::PHASE_TYPE > & phases,
                            const std::vector< std::vector< double > > & PVDO,
                            double oilSurfaceMassDensity,
@@ -52,7 +54,9 @@ private:
                            double waterSurfaceMassDensity,
                            double waterSurfaceMolecularWeight );
 
-  // Two-phase oil-gas dead-oil
+  /**
+   * @brief Constructor for the two-phase oil-gas Dead-Oil system
+   */
   DeadOilMultiphaseSystem( const std::vector< pvt::PHASE_TYPE > & phases,
                            const std::vector< std::vector< double > > & PVDO,
                            double oilSurfaceMassDensity,
@@ -61,7 +65,9 @@ private:
                            double gasSurfaceMassDensity,
                            double gasSurfaceMolecularWeight );
 
-  // Two-phase oil-water dead-oil
+  /**
+   * @brief Constructor for the two-phase oil-water Dead-Oil system
+   */
   DeadOilMultiphaseSystem( const std::vector< pvt::PHASE_TYPE > & phases,
                            const std::vector< std::vector< double > > & PVDO,
                            double oilSurfaceMassDensity,

@@ -21,7 +21,7 @@ BlackOilFlashMultiphaseSystemProperties::BlackOilFlashMultiphaseSystemProperties
   :
   BlackOilDeadOilMultiphaseSystemProperties( phases )
 {
-  size_t const nComponents = phases.size();
+  size_t const nComponents = getNComponents();
   
   for( pvt::PHASE_TYPE pt: getPhases() )
   {
