@@ -69,8 +69,8 @@ public:
 private:
 
   DeadOil_PhaseModel m_oilPhaseModel;
-  DeadOil_PhaseModel m_gasPhaseModel;
-  BlackOil_WaterModel m_waterPhaseModel;
+  std::unique_ptr< DeadOil_PhaseModel > m_gasPhaseModel;
+  std::unique_ptr< BlackOil_WaterModel > m_waterPhaseModel;
 };
 
 }

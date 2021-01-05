@@ -32,10 +32,12 @@ DeadOilFlash::DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
                             double waterSurfaceMassDensity,
                             double waterSurfaceMolecularWeight )
   :
-  m_oilPhaseModel( pvt::PHASE_TYPE::OIL, PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight ),
-  m_gasPhaseModel( pvt::PHASE_TYPE::GAS, PVDG, gasSurfaceMassDensity, gasSurfaceMolecularWeight ),
-  m_waterPhaseModel( PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight )
+  m_oilPhaseModel( pvt::PHASE_TYPE::OIL, PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight )
 {
+  DeadOil_PhaseModel * ptr1 = new DeadOil_PhaseModel( pvt::PHASE_TYPE::GAS, PVDG, gasSurfaceMassDensity, gasSurfaceMolecularWeight );
+  m_gasPhaseModel = std::unique_ptr< DeadOil_PhaseModel >( ptr1 );
+  BlackOil_WaterModel * ptr2 = new BlackOil_WaterModel( PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight );
+  m_waterPhaseModel = std::unique_ptr< BlackOil_WaterModel >( ptr2 );      
 }
 
 DeadOilFlash::DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
@@ -45,10 +47,10 @@ DeadOilFlash::DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
                             double gasSurfaceMassDensity,
                             double gasSurfaceMolecularWeight )
   :
-  m_oilPhaseModel( pvt::PHASE_TYPE::OIL, PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight ),
-  m_gasPhaseModel( pvt::PHASE_TYPE::GAS, PVDG, gasSurfaceMassDensity, gasSurfaceMolecularWeight ),
-  m_waterPhaseModel()  
+  m_oilPhaseModel( pvt::PHASE_TYPE::OIL, PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight )
 {
+  DeadOil_PhaseModel * ptr = new DeadOil_PhaseModel( pvt::PHASE_TYPE::GAS, PVDG, gasSurfaceMassDensity, gasSurfaceMolecularWeight );
+  m_gasPhaseModel = std::unique_ptr< DeadOil_PhaseModel >( ptr );
 }
 
 DeadOilFlash::DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
@@ -58,10 +60,10 @@ DeadOilFlash::DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
                             double waterSurfaceMassDensity,
                             double waterSurfaceMolecularWeight )
   :
-  m_oilPhaseModel( pvt::PHASE_TYPE::OIL, PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight ),
-  m_gasPhaseModel( pvt::PHASE_TYPE::GAS ),  
-  m_waterPhaseModel( PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight )
+  m_oilPhaseModel( pvt::PHASE_TYPE::OIL, PVDO, oilSurfaceMassDensity, oilSurfaceMolecularWeight )
 {
+  BlackOil_WaterModel * ptr = new BlackOil_WaterModel( PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight );
+  m_waterPhaseModel = std::unique_ptr< BlackOil_WaterModel >( ptr );    
 }
   
 DeadOil_PhaseModel const & DeadOilFlash::getOilPhaseModel() const
@@ -71,12 +73,12 @@ DeadOil_PhaseModel const & DeadOilFlash::getOilPhaseModel() const
 
 DeadOil_PhaseModel const & DeadOilFlash::getGasPhaseModel() const
 {
-  return m_gasPhaseModel;
+  return *m_gasPhaseModel;
 }
 
 BlackOil_WaterModel const & DeadOilFlash::getWaterPhaseModel() const
 {
-  return m_waterPhaseModel;
+  return *m_waterPhaseModel;
 }
 
 bool DeadOilFlash::computeEquilibrium( DeadOilFlashMultiphaseSystemProperties & sysProps ) const

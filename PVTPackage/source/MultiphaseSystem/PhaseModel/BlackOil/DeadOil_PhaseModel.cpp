@@ -22,15 +22,6 @@
 namespace PVTPackage
 {
 
-DeadOil_PhaseModel::DeadOil_PhaseModel( pvt::PHASE_TYPE type )
-  : m_type( type ),
-    m_surfaceMassDensity( 0 ),
-    m_surfaceMoleDensity( 0 ),
-    m_surfaceMolecularWeight( 0 )
-{
-  // constructor called by DeadOilFlash if the (gas) phase is absent  
-}
-  
 DeadOil_PhaseModel::DeadOil_PhaseModel( pvt::PHASE_TYPE type,
                                         const std::vector< std::vector< double > > & PVD,
                                         double oilSurfaceMassDensity,

@@ -20,15 +20,6 @@
 namespace PVTPackage
 {
 
-BlackOil_WaterModel::BlackOil_WaterModel()
-  :
-  m_surfaceMassDensity( 0.0 ),
-  m_surfaceMoleDensity( 0.0 ),
-  m_surfaceMolecularWeight( 0.0 )
-{
-  // constructor called in DeadOilFlash if water is absent
-}
-  
 BlackOil_WaterModel::BlackOil_WaterModel( const std::vector< double > & PVTW,
                                           double waterSurfaceMassDensity,
                                           double waterSurfaceMolecularWeight )
