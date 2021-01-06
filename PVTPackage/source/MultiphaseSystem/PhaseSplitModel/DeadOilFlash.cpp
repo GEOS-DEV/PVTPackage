@@ -70,13 +70,11 @@ DeadOil_PhaseModel const & DeadOilFlash::getOilPhaseModel() const
   
 DeadOil_PhaseModel const & DeadOilFlash::getGasPhaseModel() const
 {
-  // Warning! the result returned by this function will be void for a two-phase oil-water model
   return *m_gasPhaseModel;
 }
 
 BlackOil_WaterModel const & DeadOilFlash::getWaterPhaseModel() const
 {
-  // Warning! the result returned by this function will be void for a two-phase oil-gas model  
   return *m_waterPhaseModel;
 }
 

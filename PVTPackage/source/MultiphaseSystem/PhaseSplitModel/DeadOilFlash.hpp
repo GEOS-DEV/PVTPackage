@@ -60,8 +60,14 @@ public:
   
   DeadOil_PhaseModel const & getOilPhaseModel() const;
 
+  /**
+   * @brief Warning! the result returned by this function will be void for a two-phase oil-water model  
+   */
   DeadOil_PhaseModel const & getGasPhaseModel() const;
 
+  /**
+   * @brief Warning! the result returned by this function will be void for a two-phase oil-gas model  
+   */
   BlackOil_WaterModel const & getWaterPhaseModel() const;
 
   bool computeEquilibrium( DeadOilFlashMultiphaseSystemProperties & sysProps ) const;
