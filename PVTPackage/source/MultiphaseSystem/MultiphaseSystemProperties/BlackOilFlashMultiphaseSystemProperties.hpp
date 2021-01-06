@@ -28,7 +28,7 @@ class BlackOilFlashMultiphaseSystemProperties : public BlackOilDeadOilMultiphase
 {
 public:
 
-  BlackOilFlashMultiphaseSystemProperties( std::size_t nComponents );
+  BlackOilFlashMultiphaseSystemProperties( std::vector< pvt::PHASE_TYPE > const & phases );
 
   void setOilFraction( double const & fraction );
 

@@ -25,6 +25,9 @@ class DeadOilFlash
 {
 public:
 
+  /**
+   * @brief Constructor for the three-phase Dead-Oil model
+   */  
   DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
                 double oilSurfaceMassDensity,
                 double oilSurfaceMolecularWeight,
@@ -35,10 +38,36 @@ public:
                 double waterSurfaceMassDensity,
                 double waterSurfaceMolecularWeight );
 
+  /**
+   * @brief Constructor for the two-phase oil-gas Dead-Oil model
+   */  
+  DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
+                double oilSurfaceMassDensity,
+                double oilSurfaceMolecularWeight,
+                std::vector< std::vector< double > > const & PVDG,
+                double gasSurfaceMassDensity,
+                double gasSurfaceMolecularWeight );
+
+  /**
+   * @brief Constructor for the two-phase oil-water Dead-Oil model
+   */  
+  DeadOilFlash( std::vector< std::vector< double > > const & PVDO,
+                double oilSurfaceMassDensity,
+                double oilSurfaceMolecularWeight,
+                std::vector< double > const & PVTW,
+                double waterSurfaceMassDensity,
+                double waterSurfaceMolecularWeight );
+  
   DeadOil_PhaseModel const & getOilPhaseModel() const;
 
+  /**
+   * @brief Warning! the result returned by this function will be void for a two-phase oil-water model  
+   */
   DeadOil_PhaseModel const & getGasPhaseModel() const;
 
+  /**
+   * @brief Warning! the result returned by this function will be void for a two-phase oil-gas model  
+   */
   BlackOil_WaterModel const & getWaterPhaseModel() const;
 
   bool computeEquilibrium( DeadOilFlashMultiphaseSystemProperties & sysProps ) const;
@@ -46,8 +75,8 @@ public:
 private:
 
   DeadOil_PhaseModel m_oilPhaseModel;
-  DeadOil_PhaseModel m_gasPhaseModel;
-  BlackOil_WaterModel m_waterPhaseModel;
+  std::unique_ptr< DeadOil_PhaseModel > m_gasPhaseModel;
+  std::unique_ptr< BlackOil_WaterModel > m_waterPhaseModel;
 };
 
 }

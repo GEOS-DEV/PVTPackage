@@ -33,7 +33,7 @@ BlackOilMultiphaseSystem::BlackOilMultiphaseSystem( const std::vector< pvt::PHAS
   m_blackOilFlash( PVTO, oilSurfaceMassDensity, oilSurfaceMolecularWeight,
                    PVTG, gasSurfaceMassDensity, gasSurfaceMolecularWeight,
                    PVTW, waterSurfaceMassDensity, waterSurfaceMolecularWeight ),
-  m_bofmsp( phases.size() )
+  m_bofmsp( phases )
 {
 
 }

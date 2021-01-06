@@ -17,10 +17,12 @@
 namespace PVTPackage
 {
 
-BlackOilFlashMultiphaseSystemProperties::BlackOilFlashMultiphaseSystemProperties( std::size_t nComponents )
+BlackOilFlashMultiphaseSystemProperties::BlackOilFlashMultiphaseSystemProperties( std::vector< pvt::PHASE_TYPE > const & phases )
   :
-  BlackOilDeadOilMultiphaseSystemProperties( nComponents )
+  BlackOilDeadOilMultiphaseSystemProperties( phases )
 {
+  size_t const nComponents = getNComponents();
+  
   for( pvt::PHASE_TYPE pt: getPhases() )
   {
     m_lnFugacity.insert( { pt, pvt::VectorPropertyAndDerivatives< double >( nComponents, nComponents ) } );

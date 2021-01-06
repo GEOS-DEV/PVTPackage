@@ -1,15 +1,15 @@
-/*	
- * ------------------------------------------------------------------------------------------------------------	
- * SPDX-License-Identifier: LGPL-2.1-only	
- *	
- * Copyright (c) 2018-2020 Lawrence Livermore National Security LLC	
- * Copyright (c) 2018-2020 The Board of Trustees of the Leland Stanford Junior University	
- * Copyright (c) 2018-2020 Total, S.A	
- * Copyright (c) 2020-     GEOSX Contributors	
- * All right reserved	
- *	
- * See top level LICENSE, COPYRIGHT, CONTRIBUTORS, NOTICE, and ACKNOWLEDGEMENTS files for details.	
- * ------------------------------------------------------------------------------------------------------------	
+/*      
+ * ------------------------------------------------------------------------------------------------------------ 
+ * SPDX-License-Identifier: LGPL-2.1-only       
+ *      
+ * Copyright (c) 2018-2020 Lawrence Livermore National Security LLC     
+ * Copyright (c) 2018-2020 The Board of Trustees of the Leland Stanford Junior University       
+ * Copyright (c) 2018-2020 Total, S.A   
+ * Copyright (c) 2020-     GEOSX Contributors   
+ * All right reserved   
+ *      
+ * See top level LICENSE, COPYRIGHT, CONTRIBUTORS, NOTICE, and ACKNOWLEDGEMENTS files for details.      
+ * ------------------------------------------------------------------------------------------------------------ 
  */
 
 #include "BlackOilDeadOilMultiphaseSystemProperties.hpp"
@@ -23,9 +23,9 @@
 namespace PVTPackage
 {
 
-BlackOilDeadOilMultiphaseSystemProperties::BlackOilDeadOilMultiphaseSystemProperties( std::size_t nComponents )
+BlackOilDeadOilMultiphaseSystemProperties::BlackOilDeadOilMultiphaseSystemProperties( std::vector< pvt::PHASE_TYPE > const & phases )
   :
-  FactorMultiphaseSystemProperties( { pvt::PHASE_TYPE::OIL, pvt::PHASE_TYPE::GAS, pvt::PHASE_TYPE::LIQUID_WATER_RICH }, nComponents )
+  FactorMultiphaseSystemProperties( phases, phases.size() ) // for both Black-Oil and Dead-Oil, the number of components is equal to the number of phases, hence we use phases.size() to fill nComponents in FactorMultiphaseSystemProperties
 {
 
 }
@@ -33,9 +33,9 @@ BlackOilDeadOilMultiphaseSystemProperties::BlackOilDeadOilMultiphaseSystemProper
 void BlackOilDeadOilMultiphaseSystemProperties::setModelProperties( pvt::PHASE_TYPE const & phase,
                                                                     BlackOilDeadOilProperties const & props )
 {
-  // FIXME Viscosity is never used so I do not store it.
   m_massDensity.at( phase ).value = props.massDensity;
   m_moleDensity.at( phase ).value = props.moleDensity;
+  m_viscosity.at( phase ).value = props.viscosity;
   m_molecularWeight.at( phase ).value = props.massDensity / props.moleDensity;
 }
 
@@ -54,4 +54,10 @@ void BlackOilDeadOilMultiphaseSystemProperties::setWaterModelProperties( BlackOi
   setModelProperties( pvt::PHASE_TYPE::LIQUID_WATER_RICH, props );
 }
 
+std::size_t BlackOilDeadOilMultiphaseSystemProperties::getNComponents() const
+{
+  // for Black-Oil and Dead-Oil the number of components is equal to the number of phases
+  return getPhases().size(); 
+}
+  
 }
