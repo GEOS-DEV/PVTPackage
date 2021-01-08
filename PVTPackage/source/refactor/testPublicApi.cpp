@@ -17,6 +17,8 @@
 #include "refactor/deserializers/CompositionalApiInputs.hpp"
 #include "refactor/deserializers/MultiphaseSystemProperties.hpp"
 
+#include "refactor/serializers/MultiphaseSystemProperties.hpp"
+
 #include "refactor/JsonKeys.hpp"
 
 #include "refactor/passiveDataStructures/BlackOilDeadOilApiInputs.hpp"
@@ -206,30 +208,32 @@ void validatePublicApi( const std::string & json_string )
 
   pds::FLASH_TYPE flashType = j.at( PublicAPIKeys::INPUT ).at( PublicAPIKeys::API ).at( FlashKeys::TYPE ).get< pds::FLASH_TYPE >();
 
+
+  pvt::MultiphaseSystem * multiphaseSystem = nullptr;
   if( flashType == pds::FLASH_TYPE::NEGATIVE_TWO_PHASE or
       flashType == pds::FLASH_TYPE::FREE_WATER or
       flashType == pds::FLASH_TYPE::TRIVIAL )
   {
     pds::CompositionalApiInputs const apiInputs = j.at( PublicAPIKeys::INPUT ).at( PublicAPIKeys::API ).get< pds::CompositionalApiInputs >();
-
-    pvt::MultiphaseSystem * neg = holder.getCompositionalSystem( apiInputs );
-
-    neg->Update( pressure, temperature, feed );
-    pvt::MultiphaseSystemProperties const & actualMsp = neg->getMultiphaseSystemProperties();
-
-    compare( actualMsp, refMsp );
+    multiphaseSystem = holder.getCompositionalSystem( apiInputs );
   }
   if( flashType == pds::FLASH_TYPE::BLACK_OIL or flashType == pds::FLASH_TYPE::DEAD_OIL )
   {
     pds::BlackOilDeadOilApiInputs const apiInputs = j.at( PublicAPIKeys::INPUT ).at( PublicAPIKeys::API ).get< pds::BlackOilDeadOilApiInputs >();
-
-    pvt::MultiphaseSystem * neg = holder.getDeadOilBlackOilSystem( flashType, apiInputs );
-
-    neg->Update( pressure, temperature, feed );
-    pvt::MultiphaseSystemProperties const & actualMsp = neg->getMultiphaseSystemProperties();
-
-    compare( actualMsp, refMsp );
+    multiphaseSystem = holder.getDeadOilBlackOilSystem( flashType, apiInputs );
   }
+
+  multiphaseSystem->Update( pressure, temperature, feed );
+  pvt::MultiphaseSystemProperties const & actualMsp = multiphaseSystem->getMultiphaseSystemProperties();
+
+  compare( actualMsp, refMsp );
+
+  // Building new json reference, uncomment lines below to display computed values as json.
+//  auto newRef = json{
+//    { PublicAPIKeys::INPUT,  j.at( PublicAPIKeys::INPUT )},
+//    { PublicAPIKeys::OUTPUT, actualMsp }
+//  };
+//  std::cout << newRef << std::endl;
 }
 
 TEST( pvt, publicApi )
@@ -241,7 +245,7 @@ TEST( pvt, publicApi )
     "dead_oil_wells_2d.log.err",
     "compositional_multiphase_wells_1d.log.err",
     "compositional_multiphase_wells_2d.log.err",
-    "deadoil_3ph_staircase_3d-10000.log.err",
+//    "deadoil_3ph_staircase_3d-10000.log.err", // TODO Waiting for more elements in the table.
     "blackoil_2ph_1d.log.err"
   };
 

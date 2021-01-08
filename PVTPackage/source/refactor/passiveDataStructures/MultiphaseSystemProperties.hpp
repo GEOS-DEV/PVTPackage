@@ -37,16 +37,14 @@ public:
   std::map< pds::PHASE_TYPE, pds::ScalarPropertyAndDerivatives< double > > m_moleDensity;
   std::map< pds::PHASE_TYPE, pds::ScalarPropertyAndDerivatives< double > > m_molecularWeight;
   std::map< pds::PHASE_TYPE, pds::ScalarPropertyAndDerivatives< double > > m_phaseMoleFraction;
+  std::map< pds::PHASE_TYPE, pds::ScalarPropertyAndDerivatives< double > > m_viscosity;
 
   pds::ScalarPropertyAndDerivatives< double > const & getMassDensity( pds::PHASE_TYPE const & phase ) const;
-
   pds::VectorPropertyAndDerivatives< double > const & getMoleComposition( pds::PHASE_TYPE const & phase ) const;
-
   pds::ScalarPropertyAndDerivatives< double > const & getMoleDensity( pds::PHASE_TYPE const & phase ) const;
-
   pds::ScalarPropertyAndDerivatives< double > const & getMolecularWeight( pds::PHASE_TYPE const & phase ) const;
-
   pds::ScalarPropertyAndDerivatives< double > const & getPhaseMoleFraction( pds::PHASE_TYPE const & phase ) const;
+  pds::ScalarPropertyAndDerivatives< double > const & getViscosity( pds::PHASE_TYPE const & phase ) const;
 
   std::set< pds::PHASE_TYPE > getPhases() const;
 };

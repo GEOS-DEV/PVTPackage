@@ -39,7 +39,8 @@ void from_json( const nlohmann::json & j,
     { PublicAPIKeys::MSP::MASS_DENSITY,        props.m_massDensity },
     { PublicAPIKeys::MSP::MOLE_DENSITY,        props.m_moleDensity },
     { PublicAPIKeys::MSP::MOLECULAR_WEIGHT,    props.m_molecularWeight },
-    { PublicAPIKeys::MSP::PHASE_MOLE_FRACTION, props.m_phaseMoleFraction }
+    { PublicAPIKeys::MSP::PHASE_MOLE_FRACTION, props.m_phaseMoleFraction },
+    { PublicAPIKeys::MSP::VISCOSITY,           props.m_viscosity }
   };
 
   // FIXME Use a typedef

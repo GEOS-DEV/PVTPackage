@@ -21,6 +21,7 @@ set( PVTPackage_dump_headers
      deserializers/MultiphaseSystemProperties.hpp
      deserializers/PropertyAndDerivatives.hpp
      deserializers/PVTEnums.hpp
+     serializers/MultiphaseSystemProperties.hpp
      passiveDataStructures/BlackOilDeadOilApiInputs.hpp
      passiveDataStructures/CompositionalApiInputs.hpp
      passiveDataStructures/MultiphaseSystemProperties.hpp
@@ -34,6 +35,7 @@ set( PVTPackage_dump_sources
      deserializers/BlackOilDeadOilApiInputs.cpp
      deserializers/CompositionalApiInputs.cpp
      deserializers/PropertyAndDerivatives.cpp
+     serializers/MultiphaseSystemProperties.cpp
      passiveDataStructures/BlackOilDeadOilApiInputs.cpp
      passiveDataStructures/CompositionalApiInputs.cpp
      passiveDataStructures/MultiphaseSystemProperties.cpp

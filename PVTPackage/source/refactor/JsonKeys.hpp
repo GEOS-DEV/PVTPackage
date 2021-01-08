@@ -95,6 +95,7 @@ struct PublicAPIKeys
     static constexpr auto MOLECULAR_WEIGHT = "MOLECULAR_WEIGHT";
     static constexpr auto PHASE_MOLE_FRACTION = "PHASE_MOLE_FRACTION";
     static constexpr auto MOLE_COMPOSITION = "MOLE_COMPOSITION";
+    static constexpr auto VISCOSITY = "VISCOSITY";
   };
 };
 

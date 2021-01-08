@@ -97,6 +97,7 @@ void compare( const pvt::MultiphaseSystemProperties & actual,
     compare( actual.getMoleDensity( phase ), expected.getMoleDensity( pdsPhase ), 1.e-10 );
     compare( actual.getMolecularWeight( phase ), expected.getMolecularWeight( pdsPhase ), 1.e-10 );
     compare( actual.getPhaseMoleFraction( phase ), expected.getPhaseMoleFraction( pdsPhase ), 1.e-10 );
+    compare( actual.getViscosity( phase ), expected.getViscosity( pdsPhase ), 1.e-10 );
   }
 }
 

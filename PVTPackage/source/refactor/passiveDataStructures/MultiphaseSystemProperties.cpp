@@ -46,6 +46,11 @@ pds::ScalarPropertyAndDerivatives< double > const & PDSMSP::getPhaseMoleFraction
   return m_phaseMoleFraction.at( phase );
 }
 
+pds::ScalarPropertyAndDerivatives< double > const & PDSMSP::getViscosity( pds::PHASE_TYPE const & phase ) const
+{
+  return m_viscosity.at( phase );
+}
+
 std::set< pds::PHASE_TYPE > PDSMSP::getPhases() const
 {
   std::set< pds::PHASE_TYPE > result;
