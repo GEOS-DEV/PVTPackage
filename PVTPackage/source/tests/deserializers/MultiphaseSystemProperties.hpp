@@ -15,12 +15,12 @@
 #ifndef PVTPACKAGE_DESERIALIZERS_MULTIPHASESYSTEMPROPERTIES_HPP
 #define PVTPACKAGE_DESERIALIZERS_MULTIPHASESYSTEMPROPERTIES_HPP
 
-#include "refactor/deserializers/PropertyAndDerivatives.hpp"
-#include "refactor/deserializers/PVTEnums.hpp"
+#include "./PropertyAndDerivatives.hpp"
+#include "./PVTEnums.hpp"
 
-#include "refactor/passiveDataStructures/MultiphaseSystemProperties.hpp"
-#include "refactor/passiveDataStructures/PropertyAndDerivatives.hpp"
-#include "refactor/passiveDataStructures/PVTEnums.hpp"
+#include "../passiveDataStructures/MultiphaseSystemProperties.hpp"
+#include "../passiveDataStructures/PropertyAndDerivatives.hpp"
+#include "../passiveDataStructures/PVTEnums.hpp"
 
 #include <nlohmann/json.hpp>
 

@@ -12,10 +12,10 @@
  * ------------------------------------------------------------------------------------------------------------	
  */
 
-#include "refactor/serializers/MultiphaseSystemProperties.hpp"
-#include "refactor/passiveDataStructures/PVTEnums.hpp"
+#include "./MultiphaseSystemProperties.hpp"
+#include "../passiveDataStructures/PVTEnums.hpp"
 
-#include "refactor/JsonKeys.hpp"
+#include "../JsonKeys.hpp"
 
 namespace pvt
 {

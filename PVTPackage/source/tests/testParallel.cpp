@@ -14,11 +14,11 @@
 
 #include "MultiphaseSystem/NegativeTwoPhaseMultiphaseSystem.hpp"
 
-#include "refactor/deserializers/CompositionalApiInputs.hpp"
-#include "refactor/deserializers/MultiphaseSystemProperties.hpp"
+#include "./deserializers/CompositionalApiInputs.hpp"
+#include "./deserializers/MultiphaseSystemProperties.hpp"
 
-#include "refactor/passiveDataStructures/CompositionalApiInputs.hpp"
-#include "refactor/JsonKeys.hpp"
+#include "./passiveDataStructures/CompositionalApiInputs.hpp"
+#include "./JsonKeys.hpp"
 
 #include "TestFactor.hpp"
 

@@ -83,7 +83,7 @@ set( PVTPackage_target PVTPackage )
 set( PVTPackage_dependencies "" )
 
 if( ENABLE_PVTPACKAGE_TESTS )
-  add_subdirectory( refactor )
+  add_subdirectory( tests )
 endif()
 
 message("adding PVTPackage library")

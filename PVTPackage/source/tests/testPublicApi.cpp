@@ -12,20 +12,20 @@
  * ------------------------------------------------------------------------------------------------------------	
  */
 
-#include "refactor/deserializers/PVTEnums.hpp"
-#include "refactor/deserializers/BlackOilDeadOilApiInputs.hpp"
-#include "refactor/deserializers/CompositionalApiInputs.hpp"
-#include "refactor/deserializers/MultiphaseSystemProperties.hpp"
+#include "./deserializers/PVTEnums.hpp"
+#include "./deserializers/BlackOilDeadOilApiInputs.hpp"
+#include "./deserializers/CompositionalApiInputs.hpp"
+#include "./deserializers/MultiphaseSystemProperties.hpp"
 
-#include "refactor/serializers/MultiphaseSystemProperties.hpp"
+#include "./serializers/MultiphaseSystemProperties.hpp"
 
-#include "refactor/JsonKeys.hpp"
+#include "./JsonKeys.hpp"
 
-#include "refactor/passiveDataStructures/BlackOilDeadOilApiInputs.hpp"
-#include "refactor/passiveDataStructures/CompositionalApiInputs.hpp"
-#include "refactor/passiveDataStructures/MultiphaseSystemProperties.hpp"
+#include "./passiveDataStructures/BlackOilDeadOilApiInputs.hpp"
+#include "./passiveDataStructures/CompositionalApiInputs.hpp"
+#include "./passiveDataStructures/MultiphaseSystemProperties.hpp"
 
-#include "TestFactor.hpp"
+#include "./TestFactor.hpp"
 
 #include "pvt/pvt.hpp"
 

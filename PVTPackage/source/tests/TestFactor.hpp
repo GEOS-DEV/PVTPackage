@@ -15,9 +15,9 @@
 #ifndef PVTPACKAGE_TESTFACTOR_HPP
 #define PVTPACKAGE_TESTFACTOR_HPP
 
-#include "refactor/passiveDataStructures/PVTEnums.hpp"
-#include "refactor/passiveDataStructures/PropertyAndDerivatives.hpp"
-#include "refactor/passiveDataStructures/MultiphaseSystemProperties.hpp"
+#include "./passiveDataStructures/PVTEnums.hpp"
+#include "./passiveDataStructures/PropertyAndDerivatives.hpp"
+#include "./passiveDataStructures/MultiphaseSystemProperties.hpp"
 
 #include "TestFactor.hpp"
 
