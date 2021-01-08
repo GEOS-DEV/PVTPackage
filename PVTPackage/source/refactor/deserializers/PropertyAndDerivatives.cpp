@@ -12,9 +12,9 @@
  * ------------------------------------------------------------------------------------------------------------
  */
 
-#include "refactor/JsonKeys.hpp"
+#include "../JsonKeys.hpp"
 
-#include "refactor/passiveDataStructures/PropertyAndDerivatives.hpp"
+#include "./PropertyAndDerivatives.hpp"
 
 #include <nlohmann/json.hpp>
 

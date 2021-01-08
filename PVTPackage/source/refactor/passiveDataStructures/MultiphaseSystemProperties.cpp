@@ -12,7 +12,7 @@
  * ------------------------------------------------------------------------------------------------------------	
  */
 
-#include "refactor/passiveDataStructures/MultiphaseSystemProperties.hpp"
+#include "./MultiphaseSystemProperties.hpp"
 
 namespace PVTPackage
 {

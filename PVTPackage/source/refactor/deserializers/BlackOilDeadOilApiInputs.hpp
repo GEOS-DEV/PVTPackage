@@ -15,7 +15,7 @@
 #ifndef PVTPACKAGE_DESERIALIZERS_BLACKOILDEADOILAPIINPUTS_HPP
 #define PVTPACKAGE_DESERIALIZERS_BLACKOILDEADOILAPIINPUTS_HPP
 
-#include "refactor/passiveDataStructures/BlackOilDeadOilApiInputs.hpp"
+#include "../passiveDataStructures/BlackOilDeadOilApiInputs.hpp"
 
 #include <nlohmann/json.hpp>
 

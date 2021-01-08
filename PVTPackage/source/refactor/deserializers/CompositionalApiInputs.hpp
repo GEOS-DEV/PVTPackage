@@ -15,7 +15,7 @@
 #ifndef PVTPACKAGE_DESERIALIZERS_COMPOSITIONALAPIINPUTS_HPP
 #define PVTPACKAGE_DESERIALIZERS_COMPOSITIONALAPIINPUTS_HPP
 
-#include "refactor/passiveDataStructures/CompositionalApiInputs.hpp"
+#include "../passiveDataStructures/CompositionalApiInputs.hpp"
 
 #include <nlohmann/json.hpp>
 

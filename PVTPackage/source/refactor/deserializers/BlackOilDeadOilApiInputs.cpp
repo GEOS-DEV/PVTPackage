@@ -12,9 +12,9 @@
  * ------------------------------------------------------------------------------------------------------------	
  */
 
-#include "refactor/deserializers/BlackOilDeadOilApiInputs.hpp"
+#include "./BlackOilDeadOilApiInputs.hpp"
 
-#include "refactor/JsonKeys.hpp"
+#include "../JsonKeys.hpp"
 
 namespace PVTPackage
 {

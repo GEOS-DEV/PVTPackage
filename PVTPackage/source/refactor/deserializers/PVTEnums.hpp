@@ -15,9 +15,9 @@
 #ifndef PVTPACKAGE_DESERIALIZERS_PVTENUMS_HPP
 #define PVTPACKAGE_DESERIALIZERS_PVTENUMS_HPP
 
-#include "refactor/JsonKeys.hpp"
+#include "../JsonKeys.hpp"
 
-#include "refactor/passiveDataStructures/PVTEnums.hpp"
+#include "../passiveDataStructures/PVTEnums.hpp"
 
 #include <nlohmann/json.hpp>
 

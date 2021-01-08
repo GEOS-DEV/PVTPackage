@@ -12,10 +12,10 @@
  * ------------------------------------------------------------------------------------------------------------	
  */
 
-#include "refactor/deserializers/CompositionalApiInputs.hpp"
+#include "./CompositionalApiInputs.hpp"
 
-#include "refactor/deserializers/PVTEnums.hpp"
-#include "refactor/JsonKeys.hpp"
+#include "./PVTEnums.hpp"
+#include "../JsonKeys.hpp"
 
 namespace PVTPackage
 {

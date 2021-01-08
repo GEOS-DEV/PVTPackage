@@ -1,72 +1,71 @@
-include(FetchContent)
+include( FetchContent )
 
-FetchContent_Declare(json
-                     GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
-                     GIT_TAG v3.9.1)
+FetchContent_Declare( json
+                      GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+                      GIT_TAG v3.9.1 )
 
-FetchContent_GetProperties(json)
-if(NOT json_POPULATED)
-  FetchContent_Populate(json)
-  add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
+FetchContent_GetProperties( json )
+if( NOT json_POPULATED )
+  FetchContent_Populate( json )
+  add_subdirectory( ${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL )
 endif()
 
+if( ENABLE_OPENMP )
+  find_package( OpenMP )
+endif()
 
-find_package(OpenMP)
+# I did not want to make one folder just for one file of constants
+blt_add_library( NAME pvt_tests_constants
+                 SOURCES JsonKeys.cpp
+                 HEADERS JsonKeys.hpp
+                 )
 
-set( PVTPackage_dump_headers
-     JsonKeys.hpp
-     TestFactor.hpp
-     deserializers/BlackOilDeadOilApiInputs.hpp
-     deserializers/CompositionalApiInputs.hpp
-     deserializers/MultiphaseSystemProperties.hpp
-     deserializers/PropertyAndDerivatives.hpp
-     deserializers/PVTEnums.hpp
-     serializers/MultiphaseSystemProperties.hpp
-     passiveDataStructures/BlackOilDeadOilApiInputs.hpp
-     passiveDataStructures/CompositionalApiInputs.hpp
-     passiveDataStructures/MultiphaseSystemProperties.hpp
-     passiveDataStructures/PropertyAndDerivatives.hpp
-     passiveDataStructures/PVTEnums.hpp
+# Those directories contain some targets
+add_subdirectory( passiveDataStructures )
+add_subdirectory( serializers )
+add_subdirectory( deserializers )
+
+# We have these files containing elements for the tests
+# But they do not contain test, so a dedicated target is done
+set( pvt_tests_factor_dependencies
+     gtest
+     PVTPackage
+     pvt_tests_pds
      )
 
-set( PVTPackage_dump_sources
-     JsonKeys.cpp
-     TestFactor.cpp
-     deserializers/BlackOilDeadOilApiInputs.cpp
-     deserializers/CompositionalApiInputs.cpp
-     deserializers/PropertyAndDerivatives.cpp
-     serializers/MultiphaseSystemProperties.cpp
-     passiveDataStructures/BlackOilDeadOilApiInputs.cpp
-     passiveDataStructures/CompositionalApiInputs.cpp
-     passiveDataStructures/MultiphaseSystemProperties.cpp
-     )
+message( "adding pvt_tests_factor library" )
+blt_add_library( NAME pvt_tests_factor
+                 SOURCES TestFactor.cpp
+                 HEADERS TestFactor.hpp
+                 DEPENDS_ON ${pvt_tests_factor_dependencies} )
 
-set(PVTPackage_dump_target PVTPackageDump)
-set(PVTPackage_dump_dependencies nlohmann_json::nlohmann_json gtest PVTPackage)
-
-message("adding PVTPackageDump library")
-blt_add_library(NAME       ${PVTPackage_dump_target}
-                SOURCES    ${PVTPackage_dump_sources}
-                HEADERS    ${PVTPackage_dump_headers}
-                DEPENDS_ON ${PVTPackage_dump_dependencies})
-
-# Tests (poor cmake impl)
-set( PVTPackage_dump_test_sources
+# This part contain the real "test end points"
+# TODO There is probably something to do for the testParallel if openmp is considered
+set( pvt_tests_sources
      testPublicApi.cpp
      testParallel.cpp
-)
+     )
 
-#
+set( pvt_tests_target pvt_tests )
+
+set( pvt_tests_dependencies
+     nlohmann_json::nlohmann_json
+     gtest
+     PVTPackage
+     pvt_tests_factor
+     pvt_tests_constants
+     pvt_tests_pds
+     pvt_tests_deserializers
+     pvt_tests_serializers
+     )
+
 # Add gtest C++ based tests
-#
-foreach(test ${PVTPackage_dump_test_sources})
+foreach( test ${pvt_tests_sources} )
   get_filename_component( test_name ${test} NAME_WE )
   blt_add_executable( NAME ${test_name}
                       SOURCES ${test}
                       OUTPUT_DIR ${TEST_OUTPUT_DIRECTORY}
-                      DEPENDS_ON gtest PVTPackageDump )
-
+                      DEPENDS_ON ${pvt_tests_dependencies} )
   blt_add_test( NAME ${test_name}
                 COMMAND ${test_name} )
-
 endforeach()

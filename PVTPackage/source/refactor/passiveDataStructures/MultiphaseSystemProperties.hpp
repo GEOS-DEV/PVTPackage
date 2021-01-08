@@ -15,8 +15,8 @@
 #ifndef PVTPACKAGE_PDS_MULTIPHASESYSTEMPROPERTIES_HPP
 #define PVTPACKAGE_PDS_MULTIPHASESYSTEMPROPERTIES_HPP
 
-#include "refactor/passiveDataStructures/PropertyAndDerivatives.hpp"
-#include "refactor/passiveDataStructures/PVTEnums.hpp"
+#include "./PropertyAndDerivatives.hpp"
+#include "./PVTEnums.hpp"
 
 #include <map>
 #include <set>

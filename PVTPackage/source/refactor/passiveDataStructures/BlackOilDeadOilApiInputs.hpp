@@ -15,7 +15,7 @@
 #ifndef PVTPACKAGE_PDS_BLACKOILDEADOILAPIINPUTS_HPP
 #define PVTPACKAGE_PDS_BLACKOILDEADOILAPIINPUTS_HPP
 
-#include "refactor/passiveDataStructures/PVTEnums.hpp"
+#include "./PVTEnums.hpp"
 
 #include <string>
 #include <vector>
