@@ -10,9 +10,9 @@ if( NOT json_POPULATED )
   add_subdirectory( ${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL )
 endif()
 
-if( ENABLE_OPENMP )
-  find_package( OpenMP )
-endif()
+#if( ENABLE_OPENMP )
+#  find_package( OpenMP )
+#endif()
 
 # I did not want to make one folder just for one file of constants
 blt_add_library( NAME pvt_tests_constants
@@ -40,11 +40,13 @@ blt_add_library( NAME pvt_tests_factor
                  DEPENDS_ON ${pvt_tests_factor_dependencies} )
 
 # This part contain the real "test end points"
-# TODO There is probably something to do for the testParallel if openmp is considered
 set( pvt_tests_sources
      testPublicApi.cpp
-     testParallel.cpp
      )
+
+#if( ENABLE_OPENMP )
+#  list( APPEND pvt_tests_sources testParallel.cpp )
+#endif()
 
 set( pvt_tests_target pvt_tests )
 

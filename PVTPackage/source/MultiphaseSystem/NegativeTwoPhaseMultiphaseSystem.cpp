@@ -18,9 +18,10 @@
 
 #include "pvt/pvt.hpp"
 
+#if defined(GEOSX_USE_OPENMP)
 #include <omp.h>
-
 #include <chrono>
+#endif
 #include <memory>
 
 namespace PVTPackage
@@ -83,6 +84,7 @@ const pvt::MultiphaseSystemProperties & NegativeTwoPhaseMultiphaseSystem::getMul
   return m_ntpfmsp;
 }
 
+#if defined(GEOSX_USE_OPENMP)
 void NegativeTwoPhaseMultiphaseSystem::BatchUpdate( std::vector< double > const & pressure,
                                                     std::vector< double > const & temperature,
                                                     std::vector< std::vector< double > > const & feed )
@@ -115,5 +117,5 @@ void NegativeTwoPhaseMultiphaseSystem::BatchUpdate( std::vector< double > const 
   double elapsed_time_ms = std::chrono::duration< double, std::milli >( t_end - t_start ).count();
   std::cout << "TIME (ms) = " << elapsed_time_ms << std::endl;
 }
-
+#endif
 }
