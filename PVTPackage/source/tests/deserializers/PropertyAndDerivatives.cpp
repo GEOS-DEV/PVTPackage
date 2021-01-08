@@ -19,7 +19,7 @@
 #include <nlohmann/json.hpp>
 
 namespace PVTPackage {
-namespace refactor {
+namespace tests {
 namespace pds {
 
 using json = nlohmann::json;
@@ -42,6 +42,6 @@ void from_json( const nlohmann::json & j,
   v.dz = j[ScalarVectorPropertyAndDerivativesKeys::DZ].get< std::vector< std::vector< double > > >();
 }
 
-} // end of namespace refactor
+} // end of namespace tests
 } // end of namespace pds
 } // end of namespace PVTPackage

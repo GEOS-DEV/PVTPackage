@@ -18,7 +18,7 @@
 namespace PVTPackage
 {
 
-namespace refactor
+namespace tests
 {
 
 struct ScalarVectorPropertyAndDerivativesKeys
@@ -99,7 +99,7 @@ struct PublicAPIKeys
   };
 };
 
-} // end of namespace refactor
+} // end of namespace tests
 } // end of namespace PVTPackage
 
 #endif //PVTPACKAGE_JSONKEYS_HPP

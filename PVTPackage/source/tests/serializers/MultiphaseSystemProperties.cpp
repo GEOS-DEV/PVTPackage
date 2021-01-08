@@ -21,16 +21,16 @@ namespace pvt
 {
 
 NLOHMANN_JSON_SERIALIZE_ENUM( pvt::PHASE_TYPE, {
-  { pvt::PHASE_TYPE::UNKNOWN, PVTPackage::refactor::PhaseTypeKeys::UNKNOWN },
-  { pvt::PHASE_TYPE::LIQUID_WATER_RICH, PVTPackage::refactor::PhaseTypeKeys::LIQUID_WATER_RICH },
-  { pvt::PHASE_TYPE::OIL, PVTPackage::refactor::PhaseTypeKeys::OIL },
-  { pvt::PHASE_TYPE::GAS, PVTPackage::refactor::PhaseTypeKeys::GAS }
+  { pvt::PHASE_TYPE::UNKNOWN, PVTPackage::tests::PhaseTypeKeys::UNKNOWN },
+  { pvt::PHASE_TYPE::LIQUID_WATER_RICH, PVTPackage::tests::PhaseTypeKeys::LIQUID_WATER_RICH },
+  { pvt::PHASE_TYPE::OIL, PVTPackage::tests::PhaseTypeKeys::OIL },
+  { pvt::PHASE_TYPE::GAS, PVTPackage::tests::PhaseTypeKeys::GAS }
 } )
 
 void to_json( nlohmann::json & j,
               const ScalarPropertyAndDerivatives< double > & s )
 {
-  using Keys = PVTPackage::refactor::ScalarVectorPropertyAndDerivativesKeys;
+  using Keys = PVTPackage::tests::ScalarVectorPropertyAndDerivativesKeys;
   j = {
     { Keys::VALUE, s.value },
     { Keys::DP,    s.dP },
@@ -42,7 +42,7 @@ void to_json( nlohmann::json & j,
 void to_json( nlohmann::json & j,
               const VectorPropertyAndDerivatives< double > & s )
 {
-  using Keys = PVTPackage::refactor::ScalarVectorPropertyAndDerivativesKeys;
+  using Keys = PVTPackage::tests::ScalarVectorPropertyAndDerivativesKeys;
   j = {
     { Keys::VALUE, s.value },
     { Keys::DP,    s.dP },
@@ -54,7 +54,7 @@ void to_json( nlohmann::json & j,
 void to_json( nlohmann::json & j,
               const MultiphaseSystemProperties & msp )
 {
-  using Keys = PVTPackage::refactor::PublicAPIKeys::MSP;
+  using Keys = PVTPackage::tests::PublicAPIKeys::MSP;
 
   // The dataProvider takes a phase and returns the data accordingly.
   // This lambda function is a generic coding hack because data can be scalar or vector.

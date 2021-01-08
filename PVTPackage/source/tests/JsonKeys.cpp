@@ -16,7 +16,7 @@
 
 namespace PVTPackage
 {
-namespace refactor
+namespace tests
 {
 
 #define DECLARE_STRING( val ) decltype( val ) val
@@ -56,5 +56,5 @@ DECLARE_STRING( PublicAPIKeys::MSP::VISCOSITY );
 
 #undef DECLARE_STRING
 
-} // end of namespace refactor
+} // end of namespace tests
 } // end of namespace PVTPackage

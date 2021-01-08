@@ -30,7 +30,7 @@
 
 namespace PVTPackage
 {
-namespace refactor
+namespace tests
 {
 
 pvt::COMPOSITIONAL_FLASH_TYPE convert( const pds::FLASH_TYPE & input );

@@ -23,7 +23,7 @@
 
 namespace PVTPackage
 {
-namespace refactor
+namespace tests
 {
 namespace pds
 {
@@ -50,7 +50,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM( pds::FLASH_TYPE, {
 } )
 
 } // end of namespace pds
-} // end of namespace refactor
+} // end of namespace tests
 } // end of namespace PVTPackage
 
 #endif //PVTPACKAGE_DESERIALIZERS_PVTENUMS_HPP

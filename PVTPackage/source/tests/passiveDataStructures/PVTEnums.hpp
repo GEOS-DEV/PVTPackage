@@ -17,7 +17,7 @@
 
 namespace PVTPackage
 {
-namespace refactor
+namespace tests
 {
 namespace pds
 {
@@ -56,7 +56,7 @@ enum class FLASH_TYPE : int
 //}
 
 } // end of namespace pds
-} // end of namespace refactor
+} // end of namespace tests
 } // end of namespace PVTPackage
 
 #endif //PVTPACKAGE_PDS_PVTENUMS_HPP

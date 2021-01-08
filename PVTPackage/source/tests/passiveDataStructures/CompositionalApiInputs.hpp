@@ -22,7 +22,7 @@
 
 namespace PVTPackage
 {
-namespace refactor
+namespace tests
 {
 namespace pds
 {

@@ -18,7 +18,7 @@
 
 namespace PVTPackage
 {
-namespace refactor
+namespace tests
 {
 namespace pds
 {
@@ -41,6 +41,6 @@ struct VectorPropertyAndDerivatives
   std::vector <std::vector< T>> dz;
 };
 
-} // end of namespace refactor
+} // end of namespace tests
 } // end of namespace pds
 } // end of namespace PVTPackage
