@@ -63,7 +63,7 @@ std::set< pds::PHASE_TYPE > PDSMSP::getPhases() const
     }
   };
 
-  for( const auto & m: { m_massDensity, m_moleDensity, m_molecularWeight, m_phaseMoleFraction } )
+  for( const auto & m: { m_massDensity, m_moleDensity, m_molecularWeight, m_phaseMoleFraction, m_viscosity } )
   {
     addPhase( m );
   }
