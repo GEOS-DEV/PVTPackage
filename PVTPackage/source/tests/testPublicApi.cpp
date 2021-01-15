@@ -240,13 +240,13 @@ TEST( pvt, publicApi )
 {
   // FIXME Is there a simple way to use data providers with gtest?
   const std::vector< std::string > fileNames{
-    "pvt_data.txt",
-    "4comp_2ph_1d.log.err",
-    "dead_oil_wells_2d.log.err",
-    "compositional_multiphase_wells_1d.log.err",
-    "compositional_multiphase_wells_2d.log.err",
+    "pvt_data.txt"
+//    "4comp_2ph_1d.log.err",
+//    "dead_oil_wells_2d.log.err",
+//    "compositional_multiphase_wells_1d.log.err",
+//    "compositional_multiphase_wells_2d.log.err",
 //    "deadoil_3ph_staircase_3d-10000.log.err", // TODO Waiting for more elements in the table.
-    "blackoil_2ph_1d.log.err"
+//    "blackoil_2ph_1d.log.err"
   };
 
   // FIXME Fail if file is not found!
