@@ -33,27 +33,6 @@ public:
                      double gasSurfaceMassDensity,
                      double gasSurfaceMw );
 
-  /**
-   * @brief Paramter constructor for refactor only
-   * FIXME REFACTOR
-   */
-  BlackOil_GasModel( const PVTGdata & PVTG,
-                     double minPressure,
-                     double maxPressure,
-                     double surfaceMassDensity,
-                     double surfaceMoleDensity,
-                     double surfaceMolecularWeight )
-    :
-    m_PVTG( PVTG ),
-    m_minPressure( minPressure ),
-    m_maxPressure( maxPressure ),
-    m_surfaceMassDensity( surfaceMassDensity ),
-    m_surfaceMoleDensity( surfaceMoleDensity ),
-    m_surfaceMolecularWeight( surfaceMolecularWeight )
-  {
-    // Left blank
-  }
-
   const double & getSurfaceMassDensity() const
   {
     return m_surfaceMassDensity;
@@ -108,28 +87,6 @@ private:
   void checkTableConsistency() const;
 
   static void refineTable( std::size_t nLevel );
-
-public:
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  PVTGdata const & getPvtg() const
-  { return m_PVTG; }
-
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  double getMinPressure() const
-  { return m_minPressure; }
-
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  double getMaxPressure() const
-  { return m_maxPressure; }
 };
 
 }

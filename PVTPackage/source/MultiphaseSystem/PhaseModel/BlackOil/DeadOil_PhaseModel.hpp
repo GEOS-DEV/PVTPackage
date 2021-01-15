@@ -30,25 +30,6 @@ namespace PVTPackage
 class DeadOil_PhaseModel final
 {
 public:
-  /**
-   * @brief Parametrized constructof for refactor
-   * FIXME REFACTOR
-   */
-  DeadOil_PhaseModel( pvt::PHASE_TYPE type,
-                      PVDdata const & pvd,
-                      double minPressure,
-                      double maxPressure,
-                      double surfaceMassDensity,
-                      double surfaceMoleDensity,
-                      double surfaceMolecularWeight )
-    : m_type( type ),
-      m_PVD( pvd ),
-      m_minPressure( minPressure ),
-      m_maxPressure( maxPressure ),
-      m_surfaceMassDensity( surfaceMassDensity ),
-      m_surfaceMoleDensity( surfaceMoleDensity ),
-      m_surfaceMolecularWeight( surfaceMolecularWeight )
-  { }
 
   DeadOil_PhaseModel( pvt::PHASE_TYPE type,
                       const std::vector< std::vector< double > > & PVD,
@@ -99,43 +80,6 @@ private:
   void createTable( const std::vector< std::vector< double > > & PVD );
 
   void checkTableConsistency();
-
-public:
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  pvt::PHASE_TYPE getType() const
-  {
-    return m_type;
-  }
-
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  PVDdata const & getPvd() const
-  {
-    return m_PVD;
-  }
-
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  double getMinPressure() const
-  {
-    return m_minPressure;
-  }
-
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  double getMaxPressure() const
-  {
-    return m_maxPressure;
-  }
 };
 
 }

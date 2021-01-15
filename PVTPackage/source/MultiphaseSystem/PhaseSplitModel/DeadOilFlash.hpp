@@ -61,12 +61,14 @@ public:
   DeadOil_PhaseModel const & getOilPhaseModel() const;
 
   /**
-   * @brief Warning! the result returned by this function will be void for a two-phase oil-water model  
+   * @brief Reference to a gas model
+   * @warning The result returned by this function will be void for a two-phase oil-water model
    */
   DeadOil_PhaseModel const & getGasPhaseModel() const;
 
   /**
-   * @brief Warning! the result returned by this function will be void for a two-phase oil-gas model  
+   * @brief Reference to a water model
+   * @warning The result returned by this function will be void for a two-phase oil-gas model
    */
   BlackOil_WaterModel const & getWaterPhaseModel() const;
 

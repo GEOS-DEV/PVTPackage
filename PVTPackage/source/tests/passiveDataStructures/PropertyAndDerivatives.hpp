@@ -18,26 +18,29 @@
 
 namespace PVTPackage
 {
-
-struct PVTOdata
+namespace tests
 {
-  friend class BlackOil_OilModel;
+namespace pds
+{
 
-  std::vector< double > Rs;
-  std::vector< double > BubblePressure;
-  // Saturated
-  std::size_t NSaturatedPoints;
-  std::vector< double > SaturatedBo;
-  std::vector< double > SaturatedViscosity;
-  // Unsaturated
-  std::vector< std::vector< double > > UndersaturatedPressure;   // Pressure - Pbub -> always start at 0
-  std::vector< std::vector< double > > UndersaturatedBo;
-  std::vector< std::vector< double > > UndersaturatedViscosity;
-
-private:
-  //Pressure
-  double MaxRelativePressure;
-  double MinRelativePressure;
+template< typename T >
+struct ScalarPropertyAndDerivatives
+{
+  T value;
+  T dP;
+  T dT;
+  std::vector <T> dz;
 };
 
-}
+template< typename T >
+struct VectorPropertyAndDerivatives
+{
+  std::vector <T> value;
+  std::vector <T> dP;
+  std::vector <T> dT;
+  std::vector <std::vector< T>> dz;
+};
+
+} // end of namespace tests
+} // end of namespace pds
+} // end of namespace PVTPackage

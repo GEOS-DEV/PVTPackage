@@ -12,32 +12,25 @@
  * ------------------------------------------------------------------------------------------------------------
  */
 
-#pragma once
+#ifndef PVTPACKAGE_DESERIALIZERS_PROPERTYANDDERIVATIVES_HPP
+#define PVTPACKAGE_DESERIALIZERS_PROPERTYANDDERIVATIVES_HPP
 
-#include <vector>
+#include "../passiveDataStructures/PropertyAndDerivatives.hpp"
 
-namespace PVTPackage
-{
+#include <nlohmann/json.hpp>
 
-struct PVTOdata
-{
-  friend class BlackOil_OilModel;
+namespace PVTPackage {
+namespace tests {
+namespace pds {
 
-  std::vector< double > Rs;
-  std::vector< double > BubblePressure;
-  // Saturated
-  std::size_t NSaturatedPoints;
-  std::vector< double > SaturatedBo;
-  std::vector< double > SaturatedViscosity;
-  // Unsaturated
-  std::vector< std::vector< double > > UndersaturatedPressure;   // Pressure - Pbub -> always start at 0
-  std::vector< std::vector< double > > UndersaturatedBo;
-  std::vector< std::vector< double > > UndersaturatedViscosity;
+void from_json( const nlohmann::json & j,
+                pds::ScalarPropertyAndDerivatives< double > & s );
 
-private:
-  //Pressure
-  double MaxRelativePressure;
-  double MinRelativePressure;
-};
+void from_json( const nlohmann::json & j,
+                pds::VectorPropertyAndDerivatives< double > & v );
 
-}
+} // end of namespace pds
+} // end of namespace tests
+} // end of namespace PVTPackage
+
+#endif // PVTPACKAGE_DESERIALIZERS_PROPERTYANDDERIVATIVES_HPP
