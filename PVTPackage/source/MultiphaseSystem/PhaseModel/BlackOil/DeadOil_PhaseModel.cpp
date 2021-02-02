@@ -59,19 +59,10 @@ void DeadOil_PhaseModel::checkTableConsistency()
   //Check for saturated region
   for( std::size_t i = 0; i < m_PVD.NPoints - 1; ++i )
   {
-    if( m_type == pvt::PHASE_TYPE::OIL )
-    {
-      //Bo must increase with P
-      ASSERT( ( m_PVD.B[i + 1] - m_PVD.B[i] ) > 0, "Bo must increase with P" );
-      //Visc must decrease with P
-      ASSERT( ( m_PVD.Viscosity[i + 1] - m_PVD.Viscosity[i] ) < 0, "Viscosity must increase with P" );
-    }
-    else if( m_type == pvt::PHASE_TYPE::GAS )
+    if( m_type == pvt::PHASE_TYPE::GAS )
     {
       //Bg must decrease with P
-      ASSERT( ( m_PVD.B[i + 1] - m_PVD.B[i] ) < 0, "Bo must increase with P" );
-      //Visc must increase with P
-      ASSERT( ( m_PVD.Viscosity[i + 1] - m_PVD.Viscosity[i] ) > 0, "Viscosity must increase with P" );
+      ASSERT( ( m_PVD.B[i + 1] - m_PVD.B[i] ) < 0, "Bg must increase with P" );
     }
   }
 }
