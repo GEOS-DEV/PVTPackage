@@ -276,7 +276,7 @@ BlackOilDeadOilProperties BlackOil_GasModel::computeSaturatedProperties( double 
   ASSERT( ( Pdew < m_maxPressure ) & ( Pdew > m_minPressure ), "Pressure out of table range" );
   auto Rv = computeRv( Pdew );
   double Bg, viscosity;
-  computeSaturatedBgVisc( Rv, Bg, viscosity );
+  computeBgVisc( Pdew, Bg, viscosity );
 
   return BlackOilDeadOilProperties(
     computeMassDensity( Rv, Bg, oilMassSurfaceDensity ),
@@ -285,19 +285,18 @@ BlackOilDeadOilProperties BlackOil_GasModel::computeSaturatedProperties( double 
   );
 }
 
-void BlackOil_GasModel::computeSaturatedBgVisc( double Rv,
-                                                double & Bg,
-                                                double & viscosity ) const
+void BlackOil_GasModel::computeBgVisc( const double & pres,
+                                       double & Bg,
+                                       double & viscosity ) const
 {
-  std::size_t i_lower_branch, i_upper_branch;
-  auto const & Rs_vec = m_PVTG.Rv;
+  std::size_t i_lower, i_upper;
   auto const & Bg_vec = m_PVTG.SaturatedBg;
   auto const & visc_vec = m_PVTG.SaturatedViscosity;
-  math::FindSurrondingIndex( Rs_vec, Rv, i_lower_branch, i_upper_branch );
-  Bg = math::LinearInterpolation( Rv - Rs_vec[i_lower_branch], Rs_vec[i_upper_branch] - Rv, Bg_vec[i_lower_branch], Bg_vec[i_upper_branch] );
-  viscosity = math::LinearInterpolation( Rv - Rs_vec[i_lower_branch], Rs_vec[i_upper_branch] - Rv, visc_vec[i_lower_branch], visc_vec[i_upper_branch] );
+  math::FindSurrondingIndex( m_PVTG.DewPressure, pres, i_lower, i_upper );
+  Bg = math::LinearInterpolation( m_PVTG.DewPressure[i_lower], Bg_vec[i_lower], m_PVTG.DewPressure[i_upper], Bg_vec[i_upper] );
+  viscosity = math::LinearInterpolation( m_PVTG.DewPressure[i_lower], visc_vec[i_lower], m_PVTG.DewPressure[i_upper], visc_vec[i_upper] );
 }
-
+  
 double BlackOil_GasModel::computeMoleDensity( double Rv,
                                               double Bg,
                                               double surfaceOilMoleDensity ) const
