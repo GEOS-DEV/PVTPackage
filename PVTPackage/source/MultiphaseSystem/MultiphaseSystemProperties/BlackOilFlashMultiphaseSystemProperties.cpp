@@ -14,6 +14,8 @@
 
 #include "BlackOilFlashMultiphaseSystemProperties.hpp"
 
+#include <cmath>
+
 namespace PVTPackage
 {
 
@@ -28,6 +30,10 @@ BlackOilFlashMultiphaseSystemProperties::BlackOilFlashMultiphaseSystemProperties
     m_lnFugacity.insert( { pt, pvt::VectorPropertyAndDerivatives< double >( nComponents, nComponents ) } );
   }
 
+  m_lnFugacity.at( pvt::PHASE_TYPE::OIL ).value = { std::log( 1. ), std::log( 1. ), std::log( 1. ) };
+  m_lnFugacity.at( pvt::PHASE_TYPE::GAS ).value = { std::log( 1. ), std::log( 1. ), std::log( 1. ) };
+  m_lnFugacity.at( pvt::PHASE_TYPE::LIQUID_WATER_RICH ).value = { std::log( 1. ), std::log( 1. ), std::log( 1. ) };
+  
   m_moleComposition.at( pvt::PHASE_TYPE::LIQUID_WATER_RICH ).value = { 0., 0., 1. };
 }
 

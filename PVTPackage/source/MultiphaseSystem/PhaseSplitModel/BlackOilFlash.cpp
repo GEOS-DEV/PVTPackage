@@ -14,8 +14,6 @@
 
 #include "BlackOilFlash.hpp"
 
-#include <cmath>
-
 namespace PVTPackage
 {
 
@@ -61,11 +59,6 @@ bool BlackOilFlash::computeEquilibrium( BlackOilFlashMultiphaseSystemProperties 
     BlackOilDeadOilProperties tmp( 0.0, 0.0, 0.0 );
     sysProps.setOilModelProperties( tmp );
     sysProps.setGasModelProperties( tmp );
-
-    // fugacities
-    sysProps.setOilLnFugacity( { std::log( 1.0 ), std::log( 1.0 ), std::log( 1.0 ) } );
-    sysProps.setGasLnFugacity( { std::log( 1.0 ), std::log( 1.0 ), std::log( 1.0 ) } );
-    sysProps.setWaterLnFugacity( { std::log( 1.0 ), std::log( 1.0 ), std::log( 1.0 ) } );        
 
     // water
     auto const waterProperties = m_waterPhaseModel.computeProperties( pressure );
@@ -129,11 +122,6 @@ bool BlackOilFlash::computeEquilibrium( BlackOilFlashMultiphaseSystemProperties 
       sysProps.setOilMoleComposition( oilMoleComposition );
       auto const oilUnderSaturatedProperties = m_oilPhaseModel.computeUnderSaturatedProperties( pressure, oilMoleComposition, gasSurfaceMoleDensity, gasSurfaceMassDensity );
       sysProps.setOilModelProperties( oilUnderSaturatedProperties );
-
-      // LN FUGACITIES
-      sysProps.setOilLnFugacity( { std::log( 1. ), std::log( 1. ), std::log( 1. ) } );
-      sysProps.setGasLnFugacity( { std::log( 1. ), std::log( 1. ), std::log( 1. ) } );
-      sysProps.setWaterLnFugacity( { std::log( 1. ), std::log( 1. ), std::log( 1. ) } );
     }
 
     // Water
