@@ -56,19 +56,4 @@ void BlackOilFlashMultiphaseSystemProperties::setGasMoleComposition( std::vector
   setMoleComposition( pvt::PHASE_TYPE::GAS, moleComposition );
 }
 
-void BlackOilFlashMultiphaseSystemProperties::setOilLnFugacity( std::vector< double > const & lnFugacity )
-{
-  m_lnFugacity.at( pvt::PHASE_TYPE::OIL ).value = lnFugacity;
-}
-
-void BlackOilFlashMultiphaseSystemProperties::setGasLnFugacity( std::vector< double > const & lnFugacity )
-{
-  m_lnFugacity.at( pvt::PHASE_TYPE::GAS ).value = lnFugacity;
-}
-
-void BlackOilFlashMultiphaseSystemProperties::setWaterLnFugacity( std::vector< double > const & lnFugacity )
-{
-  m_lnFugacity.at( pvt::PHASE_TYPE::LIQUID_WATER_RICH ).value = lnFugacity;
-}
-
 } // end of namespace PVTPackage
