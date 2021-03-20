@@ -40,12 +40,6 @@ public:
 
   void setGasMoleComposition( std::vector< double > const & moleComposition );
 
-  void setOilLnFugacity( std::vector< double > const & lnFugacity );
-
-  void setGasLnFugacity( std::vector< double > const & lnFugacity );
-
-  void setWaterLnFugacity( std::vector< double > const & lnFugacity );
-
 private:
 
   std::map< pvt::PHASE_TYPE, pvt::VectorPropertyAndDerivatives< double > > m_lnFugacity;

@@ -36,7 +36,7 @@ void BlackOilDeadOilMultiphaseSystemProperties::setModelProperties( pvt::PHASE_T
   m_massDensity.at( phase ).value = props.massDensity;
   m_moleDensity.at( phase ).value = props.moleDensity;
   m_viscosity.at( phase ).value = props.viscosity;
-  m_molecularWeight.at( phase ).value = props.massDensity / props.moleDensity;
+  m_molecularWeight.at( phase ).value = props.moleDensity > 0 ? props.massDensity / props.moleDensity : 0.0;
 }
 
 void BlackOilDeadOilMultiphaseSystemProperties::setOilModelProperties( BlackOilDeadOilProperties const & props )

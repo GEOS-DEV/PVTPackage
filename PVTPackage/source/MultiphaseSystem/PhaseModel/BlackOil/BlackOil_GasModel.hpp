@@ -68,10 +68,10 @@ private:
 
   double computePdew( double Rv ) const;
 
-  void computeSaturatedBgVisc( double Rv,
-                               double & Bg,
-                               double & viscosity ) const;
-
+  void computeBgVisc( const double & pres,
+                      double & Bg,
+                      double & viscosity ) const;
+  
   double computeMoleDensity( double Rv,
                              double Bg,
                              double surfaceOilMoleDensity ) const;
