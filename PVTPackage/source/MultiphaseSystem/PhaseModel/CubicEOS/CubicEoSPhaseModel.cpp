@@ -106,6 +106,16 @@ double CubicEoSPhaseModel::computeCompressibilityFactor( double pressure,
   }
   else
   {
+
+    // Check for unphysical roots and remove them 
+    for( std::size_t i=0; i< sols.size(); ++i)
+    {
+      if(sols[i] <= mixCoeffs.BMixture)
+      {
+        sols.erase(sols.begin()+i);
+      }
+    }
+
     // Choose the root according to Gibbs' free energy minimization
     const double Zmin = *std::min_element( sols.begin(), sols.end() );
     const double Zmax = *std::max_element( sols.begin(), sols.end() );
