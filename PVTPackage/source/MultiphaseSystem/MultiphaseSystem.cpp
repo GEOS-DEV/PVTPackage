@@ -32,6 +32,7 @@ struct FiniteDifferenceDerivatives
   double dMolecularWeight;
   double dMoleDensity;
   double dMassDensity;
+  double dViscosity;
   std::vector< double > dMoleComposition;
 };
 
@@ -57,6 +58,7 @@ FiniteDifferenceDerivatives updateDerivativeFiniteDifference( const pvt::PHASE_T
   result.dMolecularWeight = ( variation.getMolecularWeight( phase ).value - reference.getMolecularWeight( phase ).value ) / delta;
   result.dMoleDensity = ( variation.getMoleDensity( phase ).value - reference.getMoleDensity( phase ).value ) / delta;
   result.dMassDensity = ( variation.getMassDensity( phase ).value - reference.getMassDensity( phase ).value ) / delta;
+  result.dViscosity = ( variation.getViscosity( phase ).value - reference.getViscosity( phase ).value ) / delta;  
 
   const std::vector< double > & refMoleComposition = reference.getMoleComposition( phase ).value;
   const std::vector< double > & varMoleComposition = variation.getMoleComposition( phase ).value;
@@ -81,6 +83,7 @@ void MultiphaseSystem::updateDerivativeDPFiniteDifference( FactorMultiphaseSyste
     sysProps.setMolecularWeightDP( phase, values.dMolecularWeight );
     sysProps.setMoleDensityDP( phase, values.dMoleDensity );
     sysProps.setMassDensityDP( phase, values.dMassDensity );
+    sysProps.setViscosityDP( phase, values.dViscosity );
     sysProps.setMoleCompositionDP( phase, values.dMoleComposition );
   }
 }
@@ -98,6 +101,7 @@ void MultiphaseSystem::updateDerivativeDZFiniteDifference( std::size_t iComponen
     sysProps.setMolecularWeightDZ( phase, iComponent, values.dMolecularWeight );
     sysProps.setMoleDensityDZ( phase, iComponent, values.dMoleDensity );
     sysProps.setMassDensityDZ( phase, iComponent, values.dMassDensity );
+    sysProps.setViscosityDZ( phase, iComponent, values.dViscosity );
     sysProps.setMoleCompositionDZ( phase, iComponent, values.dMoleComposition );
   }
 }
@@ -137,14 +141,13 @@ TableReader::Properties TableReader::buildTables( const std::vector< pvt::PHASE_
 {
   // Check if both oil and gas are defined
   const bool containsOil = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::OIL ) != phases.end();
-  const bool containsGas = std::find( phases.cbegin(), phases.cend(), pvt::PHASE_TYPE::GAS ) != phases.end();
-  ASSERT( containsOil and containsGas, "Both oil and gas phase must be defined for neither DeadOil nor BlackOil model" );
+  ASSERT( containsOil, "The oil phase must be defined for all PVT models" );
 
   // Reading data from files
   const std::vector< std::vector< std::vector< double > > > phaseTables = readTables( phases, tableFileNames );
 
   Properties result;
-
+  
   for( std::size_t i = 0; i != phases.size(); ++i )
   {
     pvt::PHASE_TYPE const & phase = phases[i];
@@ -204,6 +207,7 @@ void CompositionalMultiphaseSystem::updateDerivativeDTFiniteDifference( Composit
     sysProps.setMolecularWeightDT( phase, values.dMolecularWeight );
     sysProps.setMoleDensityDT( phase, values.dMoleDensity );
     sysProps.setMassDensityDT( phase, values.dMassDensity );
+    sysProps.setViscosityDT( phase, values.dViscosity );
     sysProps.setMoleCompositionDT( phase, values.dMoleComposition );
   }
 }

@@ -31,9 +31,10 @@ CubicEoSPhaseModel::Properties CubicEoSPhaseModel::computeAllProperties( double 
   const double moleDensity = computeMoleDensity( m_componentProperties, pressure, temperature, composition, compressibilityFactor );
   const double molecularWeight = computeMolecularWeight( m_componentProperties, composition );
   const double massDensity = computeMassDensity( moleDensity, molecularWeight );
-
+  const double viscosity = computeViscosity();
+  
   return Properties{
-    compressibilityFactor, massDensity, moleDensity, molecularWeight, lnFugacitiesCoeffs
+    compressibilityFactor, massDensity, moleDensity, viscosity, molecularWeight, lnFugacitiesCoeffs
   };
 }
 
@@ -216,6 +217,13 @@ double CubicEoSPhaseModel::computeMassDensity( double moleDensity,
                                                double mw )
 {
   return moleDensity * mw;
+}
+
+double CubicEoSPhaseModel::computeViscosity()
+{
+  // TODO: implement correlations here
+  // needs componentProperties, pressure, temperature, composition
+  return 0.001; 
 }
 
 void CubicEoSPhaseModel::init()

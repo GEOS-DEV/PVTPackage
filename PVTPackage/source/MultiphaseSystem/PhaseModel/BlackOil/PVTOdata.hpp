@@ -38,43 +38,6 @@ private:
   //Pressure
   double MaxRelativePressure;
   double MinRelativePressure;
-
-public:
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  double getMaxRelativePressure() const
-  {
-    return MaxRelativePressure;
-  }
-
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  double getMinRelativePressure() const
-  {
-    return MaxRelativePressure;
-  }
-
-  /**
-   * @brief Setter for refactor only
-   * FIXME REFACTOR
-   */
-  void setMaxRelativePressure( double maxRelativePressure )
-  {
-    MaxRelativePressure = maxRelativePressure;
-  }
-
-  /**
-   * @brief Setter for refactor only
-   * FIXME REFACTOR
-   */
-  void setMinRelativePressure( double minRelativePressure )
-  {
-    MinRelativePressure = minRelativePressure;
-  }
 };
 
 }

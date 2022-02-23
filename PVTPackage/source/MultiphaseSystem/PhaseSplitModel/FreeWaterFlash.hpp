@@ -73,16 +73,6 @@ private:
                                                    double kWater_oilWater,
                                                    double waterFeed,
                                                    std::size_t waterIndex );
-
-public:
-  /**
-   * @brief Getter for refactor purpose
-   * FIXME REFACTOR
-   */
-  std::size_t getWaterIndex() const
-  {
-    return m_WaterIndex;
-  }
 };
 
 }

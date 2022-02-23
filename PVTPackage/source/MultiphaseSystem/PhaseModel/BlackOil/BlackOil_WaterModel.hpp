@@ -26,23 +26,6 @@ class BlackOil_WaterModel final
 {
 public:
 
-  /**
-   * @brief Parameter constructor for refactor only
-   * FIXME REFACTOR
-   */
-  BlackOil_WaterModel( const PVTWdata & PVTW,
-                       double surfaceMassDensity,
-                       double surfaceMoleDensity,
-                       double surfaceMolecularWeight )
-    :
-    m_PVTW( PVTW ),
-    m_surfaceMassDensity( surfaceMassDensity ),
-    m_surfaceMoleDensity( surfaceMoleDensity ),
-    m_surfaceMolecularWeight( surfaceMolecularWeight )
-  {
-    // Left blank
-  }
-
   BlackOil_WaterModel( const std::vector< double > & PVTW,
                        double waterSurfaceMassDensity,
                        double waterSurfaceMolecularWeight );
@@ -62,34 +45,6 @@ private:
   double m_surfaceMassDensity;
   double m_surfaceMoleDensity;
   double m_surfaceMolecularWeight;
-
-public:
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  double getSurfaceMassDensity() const
-  {
-    return m_surfaceMassDensity;
-  }
-
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  double getSurfaceMoleDensity() const
-  {
-    return m_surfaceMoleDensity;
-  }
-
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  PVTWdata const & getPvtw() const
-  {
-    return m_PVTW;
-  }
 };
 
 }

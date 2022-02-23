@@ -69,6 +69,9 @@ public:
   void setMassDensityDT( pvt::PHASE_TYPE const & phase,
                          double const & value );
 
+  void setViscosityDT( pvt::PHASE_TYPE const & phase,
+                       double const & value );
+
   void setMoleCompositionDT( pvt::PHASE_TYPE const & phase,
                              std::vector< double > const & value );
 
