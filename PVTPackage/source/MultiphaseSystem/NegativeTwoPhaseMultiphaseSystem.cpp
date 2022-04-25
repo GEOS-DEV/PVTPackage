@@ -18,10 +18,6 @@
 
 #include "pvt/pvt.hpp"
 
-#if defined(GEOSX_USE_OPENMP)
-#include <omp.h>
-#include <chrono>
-#endif
 #include <memory>
 
 namespace PVTPackage
