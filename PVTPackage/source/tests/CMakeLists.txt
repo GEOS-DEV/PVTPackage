@@ -10,10 +10,6 @@ if( NOT json_POPULATED )
   add_subdirectory( ${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL )
 endif()
 
-#if( ENABLE_OPENMP )
-#  find_package( OpenMP )
-#endif()
-
 # I did not want to make one folder just for one file of constants
 blt_add_library( NAME pvt_tests_constants
                  SOURCES JsonKeys.cpp
@@ -43,10 +39,6 @@ blt_add_library( NAME pvt_tests_factor
 set( pvt_tests_sources
      testPublicApi.cpp
      )
-
-#if( ENABLE_OPENMP )
-#  list( APPEND pvt_tests_sources testParallel.cpp )
-#endif()
 
 set( pvt_tests_target pvt_tests )
 
