@@ -80,38 +80,4 @@ const pvt::MultiphaseSystemProperties & NegativeTwoPhaseMultiphaseSystem::getMul
   return m_ntpfmsp;
 }
 
-#if defined(GEOSX_USE_OPENMP)
-void NegativeTwoPhaseMultiphaseSystem::BatchUpdate( std::vector< double > const & pressure,
-                                                    std::vector< double > const & temperature,
-                                                    std::vector< std::vector< double > > const & feed )
-{
-  const std::size_t n = pressure.size();
-  ASSERT( temperature.size() == n, "Inconsistent inputs" );
-  ASSERT( feed.size() == n, "Inconsistent inputs" );
-
-  m_batchProps.reserve( n );
-  for( std::size_t i = 0; i < n; ++i )
-  {
-    NegativeTwoPhaseFlashMultiphaseSystemProperties d( m_ntpfmsp.getPhases(), feed[i].size() );// FIXME note sure about the feed.size()...
-    d.setPressure( pressure[i] );
-    d.setTemperature( temperature[i] );
-    d.setFeed( feed[i] );
-    m_batchProps.emplace_back( d );
-  }
-
-  auto t_start = std::chrono::high_resolution_clock::now();
-  #pragma omp parallel for default(none)
-  for( std::size_t i = 0; i < n; ++i )
-  {
-//    std::cout << "max:" << omp_get_max_threads() << std::endl;
-//    std::cout << omp_get_thread_num() << std::endl;
-//    m_negativeTwoPhaseFlash.computeEquilibrium( m_batchProps[i] );
-    computeEquilibriumAndDerivativesWithTemperature( m_negativeTwoPhaseFlash, m_batchProps[i] );
-  }
-// do something
-  auto t_end = std::chrono::high_resolution_clock::now();
-  double elapsed_time_ms = std::chrono::duration< double, std::milli >( t_end - t_start ).count();
-  std::cout << "TIME (ms) = " << elapsed_time_ms << std::endl;
-}
-#endif
 }
