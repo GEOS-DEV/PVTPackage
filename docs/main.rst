@@ -5,6 +5,7 @@ PVT Package Hierarchy
 The architecture of the PVT package is as follows
 
 .. uml::
+   :caption: Architecture of the PVT package
 
    @startuml
 
