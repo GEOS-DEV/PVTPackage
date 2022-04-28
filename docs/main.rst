@@ -155,3 +155,81 @@ The color scheme is:
 
 * Light blue are for computational system (algorithms and data combined)
 
+.. uml::
+   :caption: Public interface of the PVT package
+
+   @startuml
+
+   package public {
+
+   enum PHASE_TYPE {
+     LIQUID_WATER_RICH
+     OIL
+     GAS
+     UNKNOWN
+   }
+
+   enum EOS_TYPE {
+     REDLICH_KWONG_SOAVE
+     PENG_ROBINSON
+     UNKNOWN
+   }
+
+   enum COMPOSITIONAL_FLASH_TYPE {
+     TRIVIAL
+     NEGATIVE_OIL_GAS
+     TABULATED_KVALUES
+     FREE_WATER
+     THREE_PHASE
+     UNKNOWN
+   }
+
+   class ScalarPropertyAndDerivatives< T > {
+     T value
+     T dP
+     T dT
+     std::vector< T > dz
+   }
+
+   class VectorPropertyAndDerivatives< T > {
+     std::vector< T > value
+     std::vector< T > dP
+     std::vector< T > dT
+     std::vector< std::vector< T > > dz
+   }
+
+   abstract MultiphaseSystemProperties #PaleTurquoise {
+     + {abstract} getMassDensity( phaseType ): ScalarPropertyAndDerivatives< double >
+     + {abstract} getMoleComposition( phaseType ): VectorPropertyAndDerivatives< double >
+     + {abstract} getMoleDensity( phaseType ): ScalarPropertyAndDerivatives< double >
+     + {abstract} getMolecularWeight( phaseType ): ScalarPropertyAndDerivatives< double >
+     + {abstract} getPhaseMoleFraction( phaseType ): ScalarPropertyAndDerivatives< double >
+   }
+
+   abstract MultiphaseSystem #Plum {
+    + {abstract} Update( double pressure, double temperature, std::vector< double > feed )
+    + {abstract} getMultiphaseSystemProperties(): MultiphaseSystemProperties const &
+    + {abstract} hasSucceeded(): bool
+   }
+
+   class MultiphaseSystemBuilder {
+     buildCompositional( properties... ): std::unique_ptr< System  >
+     buildLiveOil( properties... ): std::unique_ptr< System >
+     buildDeadOil( properties... ): std::unique_ptr< System >
+   }
+
+   } /' end of package public '/
+
+   @enduml
+
+Only classes exposed in the public interface of the PVT package is meant to be used outside the PVT package.
+
+* ``PHASE_TYPE``, ``EOS_TYPE`` and ``COMPOSITIONAL_FLASH_TYPE`` ``enums`` are meant to be used to select the models one wants to use.
+
+* ``ScalarPropertyAndDerivatives`` and ``VectorPropertyAndDerivatives`` are utility classes used to return the results. Those classes should eventually be replaced by ``LvArray``.
+
+* ``MultiphaseSystemProperties`` agglomerates the result of the computation.
+
+* ``MultiphaseSystem`` is responsible for performing the computation and serving the results.
+
+* ``MultiphaseSystemBuilder`` builds the system.
