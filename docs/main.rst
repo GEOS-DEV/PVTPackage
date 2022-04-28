@@ -13,16 +13,8 @@ The architecture of the PVT package is as follows
 
    package public_interface {
 
-   'abstract LimitedPhaseProperties {
-   '  + {abstract} getMoleComposition(): ScalarPropertyAndDerivatives< double >
-   '  + {abstract} getDensity(): ScalarPropertyAndDerivatives< double >
-   '  + {abstract} getMolecularWeight(): ScalarPropertyAndDerivatives< double >
-   '}
-   '' FIXME getDensity -> getMassDensity ou getMoleDensity: note
-   '
    abstract LimitedMultiphaseSystem #PaleTurquoise {
      + {abstract} getLimitedMultiphaseSystemProperties(): LimitedMultiphaseSystemProperties
-   '  + {abstract} getLimitedPhaseProperties( phaseType ): LimitedPhaseProperties
    }
 
    abstract LimitedMultiphaseSystemProperties #Plum {
@@ -36,7 +28,7 @@ The architecture of the PVT package is as follows
      + {static} Build( args... ): LimitedMultiphaseSystem
    }
 
-   }
+   } /' end of package public_interface '/
 
    note top of LimitedMultiphaseSystemProperties
      The PhaseProperties are not exposed anymore and their informations are accessed through LimitedMultiphaseSystemProperties getters
@@ -116,11 +108,6 @@ The architecture of the PVT package is as follows
    Flash <.. MultiphaseSystem
 
    Flash <.. FlashFactory
-   'CompositionalFlash  <.. FlashFactory
-   'NegativeTwoPhaseFlash <.. FlashFactory
-   'TrivialFlash <.. FlashFactory
-   'BlackOilFlash <.. FlashFactory
-   'DeadOilFlash <.. FlashFactory
 
    FreeWaterFlashMultiphaseSystemProperties <.. FreeWaterFlash
    NegativeTwoPhaseFlashMultiphaseSystemProperties  <.. NegativeTwoPhaseFlash
