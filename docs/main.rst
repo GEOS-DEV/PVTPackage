@@ -30,10 +30,6 @@ The architecture of the PVT package is as follows
 
    } /' end of package public_interface '/
 
-   note top of LimitedMultiphaseSystemProperties
-     The PhaseProperties are not exposed anymore and their informations are accessed through LimitedMultiphaseSystemProperties getters
-   end note
-
    class MultiphaseSystem #PaleTurquoise {
      # Flash * flash
      + getLimitedMultiphaseSystemProperties(): LimitedMultiphaseSystemProperties
