@@ -61,6 +61,7 @@ public:
     double compressibilityFactor;
     double massDensity;
     double moleDensity;
+    double viscosity;
     double molecularWeight;
     std::vector< double > lnFugacityCoefficients;
   };
@@ -130,6 +131,8 @@ private:
   static double computeMassDensity( double moleDensity,
                                     double mw );
 
+  static double computeViscosity(); 
+  
   std::vector< double > computeLnFugacitiesCoefficients( std::vector< double > const & composition,
                                                          double Z,
                                                          CubicEosMixtureCoefficients const & mixtureCoefficients ) const;

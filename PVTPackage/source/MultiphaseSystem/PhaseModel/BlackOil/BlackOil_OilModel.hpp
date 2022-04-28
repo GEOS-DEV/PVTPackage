@@ -28,24 +28,6 @@ class BlackOil_OilModel final
 {
 public:
 
-  /**
-   * @brief Paramter constructor for refactor only
-   * FIXME REFACTOR
-   */
-  BlackOil_OilModel( PVTOdata const & pvto,
-                     double minPressure,
-                     double maxPressure,
-                     double surfaceMassDensity,
-                     double surfaceMoleDensity,
-                     double surfaceMolecularWeight )
-    : m_PVTO( pvto ),
-      m_minPressure( minPressure ),
-      m_maxPressure( maxPressure ),
-      m_surfaceMassDensity( surfaceMassDensity ),
-      m_surfaceMoleDensity( surfaceMoleDensity ),
-      m_surfaceMolecularWeight( surfaceMolecularWeight )
-  { }
-
   BlackOil_OilModel( const std::vector< std::vector< double > > & PVTO,
                      double oilSurfaceMassDensity,
                      double oilSurfaceMw );
@@ -118,28 +100,6 @@ private:
   void checkTableConsistency() const;
 
   void refineTable( std::size_t nLevel );
-
-public:
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  PVTOdata const & getPvto() const
-  { return m_PVTO; }
-
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  double getMinPressure() const
-  { return m_minPressure; }
-
-  /**
-   * @brief Getter for refactor only
-   * FIXME REFACTOR
-   */
-  double getMaxPressure() const
-  { return m_maxPressure; }
 };
 
 }

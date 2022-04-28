@@ -31,17 +31,22 @@ DeadOil_PhaseModel::DeadOil_PhaseModel( pvt::PHASE_TYPE type,
     m_surfaceMoleDensity( 0 ),
     m_surfaceMolecularWeight( oilSurfaceMw )
 {
+  // if the phase is present, PVTD.size() == 3
+  if( PVD[0].size() != 3 )
+  {
+    LOGERROR( "The PVD table must contain 3 columns" );
+  }
 
-  //--Fill table
+  // Fill table
   createTable( PVD );
 
-  //Check Consistency
+  // Check consistency
   checkTableConsistency();
 
-  //Check Consistency
+  // Check consistency
   checkTableConsistency();
-
-  //Density
+  
+  // Compute density
   m_surfaceMassDensity = oilSurfaceMassDensity;
   m_surfaceMoleDensity = m_surfaceMassDensity / m_surfaceMolecularWeight;
 }
@@ -54,19 +59,10 @@ void DeadOil_PhaseModel::checkTableConsistency()
   //Check for saturated region
   for( std::size_t i = 0; i < m_PVD.NPoints - 1; ++i )
   {
-    if( m_type == pvt::PHASE_TYPE::OIL )
-    {
-      //Bo must increase with P
-      ASSERT( ( m_PVD.B[i + 1] - m_PVD.B[i] ) > 0, "Bo must increase with P" );
-      //Visc must decrease with P
-      ASSERT( ( m_PVD.Viscosity[i + 1] - m_PVD.Viscosity[i] ) < 0, "Viscosity must increase with P" );
-    }
-    else if( m_type == pvt::PHASE_TYPE::GAS )
+    if( m_type == pvt::PHASE_TYPE::GAS )
     {
       //Bg must decrease with P
-      ASSERT( ( m_PVD.B[i + 1] - m_PVD.B[i] ) < 0, "Bo must increase with P" );
-      //Visc must increase with P
-      ASSERT( ( m_PVD.Viscosity[i + 1] - m_PVD.Viscosity[i] ) > 0, "Viscosity must increase with P" );
+      ASSERT( ( m_PVD.B[i + 1] - m_PVD.B[i] ) < 0, "Bg must increase with P" );
     }
   }
 }
@@ -87,15 +83,7 @@ void DeadOil_PhaseModel::createTable( const std::vector< std::vector< double>> &
     m_PVD.Viscosity[i] = PVD[i][2];
   }
 
-  //Add 1atm value if does not exist yet
-  auto Pref = 101325.0;
-  if( !math::isNearlyEqual( m_PVD.Pressure[0], Pref ) )
-  {
-    m_PVD.Pressure.insert( m_PVD.Pressure.begin(), Pref );
-    m_PVD.NPoints++;
-  }
-
-  //
+  // find the min and max pressure in the table
   m_maxPressure = *( std::max_element( m_PVD.Pressure.begin(), m_PVD.Pressure.end() ) );
   m_minPressure = *( std::min_element( m_PVD.Pressure.begin(), m_PVD.Pressure.end() ) );
 }
