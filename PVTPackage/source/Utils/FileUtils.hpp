@@ -49,7 +49,7 @@ void ReadTable( const std::string & fileName,
     // Remove whitespace and end-of-line characters, if any
     StringUtils::Trim( str );
 
-    // Remove # and -- (Eclipse-style) comments
+    // Remove # and -- comments
     StringUtils::RemoveStringAndFollowingContentFromLine( "#", str );
     StringUtils::RemoveStringAndFollowingContentFromLine( "--", str );
 
