@@ -12,8 +12,8 @@
  * ------------------------------------------------------------------------------------------------------------	
  */
 
-#ifndef GEOSX_SERIALIZERS_MULTIPHASESYSTEMPROPERTIES_HPP
-#define GEOSX_SERIALIZERS_MULTIPHASESYSTEMPROPERTIES_HPP
+#ifndef GEOS_SERIALIZERS_MULTIPHASESYSTEMPROPERTIES_HPP
+#define GEOS_SERIALIZERS_MULTIPHASESYSTEMPROPERTIES_HPP
 
 #include "pvt/pvt.hpp"
 
@@ -25,4 +25,4 @@ void to_json( nlohmann::json & dataProvider, const MultiphaseSystemProperties & 
 
 }
 
-#endif //GEOSX_SERIALIZERS_MULTIPHASESYSTEMPROPERTIES_HPP
+#endif //GEOS_SERIALIZERS_MULTIPHASESYSTEMPROPERTIES_HPP
