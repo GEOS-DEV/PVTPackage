@@ -94,3 +94,5 @@ blt_add_library(NAME       ${PVTPackage_target}
 
 # FIXME only pvt PUBLIC, the rest should be private.
 target_include_directories( ${PVTPackage_target} PUBLIC ${CMAKE_CURRENT_LIST_DIR} )
+
+install( TARGETS ${PVTPackage_target} LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )
