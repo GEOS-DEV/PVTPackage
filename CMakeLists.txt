@@ -1,5 +1,5 @@
 #Definitions
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required(VERSION 3.23.1)
 
 project(PVTPackage LANGUAGES CXX C)
 
